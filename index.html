@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>물리 퀴즈 — 원자모형 & 반도체</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161a24;
+    --surface2: #1e2432;
+    --border: #2a3040;
+    --accent: #4af0c4;
+    --accent2: #f0c44a;
+    --wrong: #f05a4a;
+    --text: #e8ecf4;
+    --text-dim: #7a8499;
+    --correct-bg: rgba(74,240,196,0.08);
+    --wrong-bg: rgba(240,90,74,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Serif KR', serif;
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  /* Header */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 40px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .header-left h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .header-left p {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-top: 3px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .score-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 20px;
+    text-align: center;
+    min-width: 120px;
+  }
+
+  .score-badge .score-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .score-badge .score-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 3px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Progress bar */
+  .progress-bar-wrap {
+    background: var(--surface2);
+    height: 3px;
+    width: 100%;
+  }
+
+  .progress-bar-fill {
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* Controls */
+  .controls {
+    padding: 20px 40px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .filter-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 7px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(74,240,196,0.06);
+  }
+
+  .reset-btn {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 7px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.2s;
+  }
+
+  .reset-btn:hover {
+    border-color: var(--wrong);
+    color: var(--wrong);
+  }
+
+  /* Quiz grid */
+  .quiz-container {
+    padding: 32px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* Question card */
+  .q-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .q-card.answered-correct { border-color: var(--accent); }
+  .q-card.answered-wrong { border-color: var(--wrong); }
+
+  .q-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px 24px 16px;
+  }
+
+  .q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--accent);
+    background: rgba(74,240,196,0.1);
+    border: 1px solid rgba(74,240,196,0.25);
+    border-radius: 6px;
+    padding: 3px 8px;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+
+  .q-text {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text);
+    flex: 1;
+  }
+
+  /* Options */
+  .q-options {
+    padding: 0 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .option-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    width: 100%;
+    color: var(--text);
+    font-family: 'Noto Serif KR', serif;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: rgba(74,240,196,0.05);
+  }
+
+  .option-btn:disabled { cursor: default; }
+
+  .option-btn.correct {
+    border-color: var(--accent);
+    background: var(--correct-bg);
+    color: var(--accent);
+  }
+
+  .option-btn.wrong {
+    border-color: var(--wrong);
+    background: var(--wrong-bg);
+    color: var(--wrong);
+  }
+
+  .option-btn.reveal-correct {
+    border-color: rgba(74,240,196,0.4);
+    background: rgba(74,240,196,0.04);
+    color: rgba(74,240,196,0.7);
+  }
+
+  .opt-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 2px 7px;
+    min-width: 28px;
+    text-align: center;
+    margin-top: 1px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .option-btn.correct .opt-label {
+    background: rgba(74,240,196,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .option-btn.wrong .opt-label {
+    background: rgba(240,90,74,0.15);
+    border-color: var(--wrong);
+    color: var(--wrong);
+  }
+
+  .option-btn.reveal-correct .opt-label {
+    background: rgba(74,240,196,0.08);
+    border-color: rgba(74,240,196,0.4);
+  }
+
+  /* Explanation */
+  .explanation {
+    padding: 14px 24px 20px;
+    border-top: 1px solid var(--border);
+    display: none;
+    background: rgba(0,0,0,0.2);
+  }
+
+  .explanation.show { display: block; }
+
+  .explanation-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--accent2);
+    margin-bottom: 6px;
+    letter-spacing: 0.08em;
+  }
+
+  .explanation p {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  /* Result indicator */
+  .result-icon {
+    font-size: 1rem;
+    margin-left: auto;
+    flex-shrink: 0;
+    display: none;
+  }
+
+  .q-card.answered-correct .result-icon { display: block; color: var(--accent); }
+  .q-card.answered-wrong .result-icon { display: block; color: var(--wrong); }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    display: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    header { padding: 18px 20px; }
+    .controls { padding: 14px 20px; }
+    .quiz-container { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>원자모형 &amp; 반도체 퀴즈</h1>
+    <p>PHYSICS · 31 QUESTIONS</p>
+  </div>
+  <div class="score-badge">
+    <div class="score-num" id="scoreDisplay">0 / 0</div>
+    <div class="score-label">SCORE</div>
+  </div>
+</header>
+<div class="progress-bar-wrap">
+  <div class="progress-bar-fill" id="progressBar"></div>
+</div>
+
+<div class="controls">
+  <button class="filter-btn active" onclick="filterCards('all', this)">전체 (31)</button>
+  <button class="filter-btn" onclick="filterCards('unanswered', this)">미답 <span id="unansweredCount">31</span></button>
+  <button class="filter-btn" onclick="filterCards('correct', this)">정답 <span id="correctCount">0</span></button>
+  <button class="filter-btn" onclick="filterCards('wrong', this)">오답 <span id="wrongCount">0</span></button>
+  <button class="reset-btn" onclick="resetAll()">↺ 초기화</button>
+</div>
+
+<div class="quiz-container" id="quizContainer"></div>
+<div class="empty-state" id="emptyState">해당 항목이 없습니다.</div>
+
+<script>
+const quizData = [
+  {num:1, text:"러더퍼드(Rutherford) 원자 모형의 한계점으로 옳은 것만을 보기에서 모두 고른 것은?\n[보기]\nㄱ. 원자핵의 존재를 발견하지 못했다.\nㄴ. 가속하는 전하가 에너지를 잃고 원자핵으로 추락하는 문제를 해결하지 못했다.\nㄷ. 선 스펙트럼의 불연속성을 설명하지 못했다.", opts:["ㄱ","ㄴ","ㄱ, ㄷ","ㄴ, ㄷ"], ans:4, exp:"러더퍼드는 원자핵을 발견했으나 원자의 안정성과 선 스펙트럼을 설명하지 못했습니다."},
+  {num:2, text:"보어(Bohr)의 원자 모형에 대한 설명으로 옳은 것만을 보기에서 모두 고른 것은?\n[보기]\nㄱ. 전자는 특정한 궤도에서만 원운동 한다.\nㄴ. '에너지의 양자화'란 에너지가 불연속적인 값만을 가짐을 의미한다.\nㄷ. 높은 궤도에서 낮은 궤도로 전이할 때 광자를 흡수한다.", opts:["ㄱ","ㄴ","ㄱ, ㄴ","ㄴ, ㄷ"], ans:3, exp:"높은 곳에서 낮은 곳으로 전이할 때는 에너지를 방출해야 합니다."},
+  {num:3, text:"수소 원자의 전자가 n=2에서 n=1로 전이할 때 방출되는 광자의 에너지는?", opts:["E₂ - E₁","E₁ - E₂","E₂ + E₁","E₁ / E₂"], ans:1, exp:"방출되는 광자의 에너지는 전이 전후 두 에너지 준위의 차와 같습니다."},
+  {num:4, text:"수소 원자 스펙트럼에서 발머(Balmer) 계열에 해당하는 전이는?", opts:["어느 궤도에서든 n=1로 전이","어느 궤도에서든 n=2로 전이","어느 궤도에서든 n=3로 전이","n=2에서 n=3으로 전이"], ans:2, exp:"발머 계열은 가시광선 영역으로 n=2인 궤도로 떨어질 때 나타납니다."},
+  {num:5, text:"보어 모델 이후에 현대의 원자 모형으로 적절한 설명은?", opts:["전자는 일정한 궤도를 따라 원운동 한다.","전자가 발견될 확률을 계산하여 구름 형태로 나타낸다.","전자는 원자핵 내부에서 진동 운동을 한다.","원자 내 전자의 에너지는 연속적이다."], ans:2, exp:"현대 모형은 전자의 위치를 확률로 나타내는 전자 구름 모형을 사용합니다."},
+  {num:6, text:"저온의 기체를 통과한 백색광을 관찰할 때 나타나는 스펙트럼은?", opts:["연속 스펙트럼","방출 스펙트럼","흡수 스펙트럼","암흑 스펙트럼"], ans:3, exp:"저온 기체가 특정 파장을 흡수하여 연속 바탕에 검은 선이 나타납니다."},
+  {num:7, text:"광자의 에너지 E와 진동수 f, 플랑크 상수 h의 관계식으로 옳은 것은?", opts:["E = h / f","E = f / h","E = hf","E = h + f"], ans:3, exp:"광자의 에너지는 진동수에 비례하며 E=hf로 나타냅니다."},
+  {num:8, text:"보어 모형이 다전자 원자를 설명하지 못한 주된 이유는?", opts:["원자핵이 너무 무거워서","전자 사이의 전기적 상호작용을 고려하지 못해서","중력이 너무 강해서","전자가 너무 많아서"], ans:2, exp:"전자가 여러 개인 경우 전자 간의 반발력을 보어 식으로는 계산할 수 없습니다."},
+  {num:9, text:"태양이나 백열등에서 관찰되는 스펙트럼의 종류는?", opts:["연속 스펙트럼","흡수 스펙트럼","선 스펙트럼","방전 스펙트럼"], ans:1, exp:"고온의 고체나 밀도가 높은 광원은 모든 파장의 빛을 냅니다."},
+  {num:10, text:"기체 방전관에서 나오는 빛을 관찰할 때 검은 배경에 밝은 선으로 나타나는 것은?", opts:["연속 스펙트럼","흡수 스펙트럼","선 스펙트럼","백색 스펙트럼"], ans:3, exp:"특정 에너지 준위 차에 해당하는 파장만 방출되므로 선 형태로 나타납니다."},
+  {num:11, text:"고체에서 에너지 준위가 미세하게 갈라져 '에너지띠'를 형성하는 원리는?", opts:["원자의 핵융합","인접한 원자들 간의 에너지 준위 겹침","전자의 질량 변화","고체의 온도 변화"], ans:2, exp:"원자들이 가까워지면 에너지 준위가 겹치지 않게 미세하게 갈라집니다."},
+  {num:12, text:"0K에서 전자가 채워져 있는 에너지띠 중 가장 높은 띠의 명칭은?", opts:["전도띠","원자가 띠","띠 간격","허용된 띠"], ans:2, exp:"전자가 채워진 마지막 에너지띠를 원자가 띠라고 합니다."},
+  {num:13, text:"원자가 띠 위에 있는 비어 있는 에너지띠의 명칭은?", opts:["금지띠","전도띠","원자가 띠","준위띠"], ans:2, exp:"전자가 에너지를 얻어 올라가면 자유롭게 이동할 수 있는 띠입니다."},
+  {num:14, text:"부도체(절연체)의 전기 전도성이 매우 낮은 이유는?", opts:["전도띠에 전자가 너무 많아서","띠 간격(띠 틈)이 매우 넓어서","원자가 띠가 비어 있어서","전자가 원자핵과 결합하지 않아서"], ans:2, exp:"띠 간격이 넓어 전자가 전도띠로 올라가기 매우 어렵기 때문입니다."},
+  {num:15, text:"도체(금속)의 에너지 구조상 특징은?", opts:["띠 간격이 매우 넓다.","원자가 띠와 전도띠가 겹쳐 있거나 매우 가깝다.","전도띠가 완전히 비어 있다.","원자가 띠에 전자가 없다."], ans:2, exp:"띠 간격이 거의 없어 전자가 자유롭게 전도띠로 이동합니다."},
+  {num:16, text:"반도체의 에너지띠 구조에 대한 설명으로 옳은 것은?", opts:["띠 간격이 없다.","부도체보다 띠 간격이 좁다.","도체보다 띠 간격이 좁다.","원자가 띠에 전자가 하나도 없다."], ans:2, exp:"절연체보다는 좁은 띠 간격을 가져 조건에 따라 전류가 흐릅니다."},
+  {num:17, text:"원자가 띠의 전자가 전도띠로 전이하면서 남기는 (+) 전하 성질의 빈자리는?", opts:["전자","양공","중성자","음이온"], ans:2, exp:"전자가 빠져나간 빈자리는 상대적으로 (+)를 띠며 양공이라 부릅니다."},
+  {num:18, text:"반도체의 주요 재료인 실리콘(Si)의 최외각 전자 수는?", opts:["3개","4개","5개","6개"], ans:2, exp:"14족 원소인 실리콘은 최외각 전자가 4개입니다."},
+  {num:19, text:"불순물이 추가된 반도체에 대한 설명으로 옳은 것은?", opts:["n형 반도체는 양공이 주요 나르개이다.","p형 반도체는 자유 전자가 주요 나르개이다.","n형은 전자, p형은 양공이 주요 전하 나르개이다.","도핑을 하면 전기 전도성이 나빠진다."], ans:3, exp:"도핑을 통해 전자나 양공의 수를 늘려 전도성을 높입니다."},
+  {num:20, text:"띠 간격이 큰 물질부터 순서대로 나열한 것은?", opts:["절연체-반도체-도체","도체-반도체-절연체","반도체-절연체-도체","절연체-도체-반도체"], ans:1, exp:"전도성이 나쁠수록 에너지 띠 간격이 넓습니다."},
+  {num:21, text:"n형 반도체를 만들기 위해 도핑하는 원소(주개)의 최외각 전자 수는?", opts:["3개","4개","5개","6개"], ans:3, exp:"5족 원소를 넣으면 결합 후 전자 1개가 남아 전류에 기여합니다."},
+  {num:22, text:"p형 반도체를 만들기 위해 도핑하는 원소(받개)의 최외각 전자 수는?", opts:["3개","4개","5개","6개"], ans:1, exp:"3족 원소를 넣으면 전자 1개가 부족하여 양공이 생깁니다."},
+  {num:23, text:"n형 반도체에서 불순물에 의해 전도띠 바로 아래에 생성되는 준위는?", opts:["주개 준위","받개 준위","중간 준위","금지 준위"], ans:1, exp:"전자를 전도띠로 쉽게 보내주는(주는) 준위이므로 주개 준위입니다."},
+  {num:24, text:"p형 반도체에서 불순물에 의해 원자가 띠 바로 위에 생성되는 준위는?", opts:["주개 준위","받개 준위","공핍 준위","이온 준위"], ans:2, exp:"원자가 띠의 전자를 쉽게 받아들여 양공을 만드는 받개 준위입니다."},
+  {num:25, text:"pn 접합 다이오드에 순방향 전압을 거는 방법은?", opts:["p형에 (-), n형에 (+) 연결","p형에 (+), n형에 (-) 연결","양쪽 모두 (+) 연결","전지를 연결하지 않음"], ans:2, exp:"p(Positive)에 (+), n(Negative)에 (-)를 연결해야 순방향입니다."},
+  {num:26, text:"pn 접합 다이오드에 역방향 전압을 걸었을 때 일어나는 현상은?", opts:["결핍층(공핍층)이 좁아진다.","결핍층(공핍층)이 두꺼워진다.","전류가 매우 잘 흐른다.","전자와 양공이 접합면으로 모인다."], ans:2, exp:"전하 나르개들이 접합면에서 멀어져 결핍층이 넓어지고 전류가 차단됩니다."},
+  {num:27, text:"다이오드의 정류 작용에 대한 설명으로 옳은 것은?", opts:["빛을 전기로 바꾼다.","교류를 직류로 바꾼다.","전압을 높여준다.","에너지를 저장한다."], ans:2, exp:"한쪽 방향으로만 전류를 흐르게 하여 방향이 바뀌는 교류를 정류합니다."},
+  {num:28, text:"발광 다이오드(LED)가 빛을 내는 원리로 옳은 것은?", opts:["전자가 원자가 띠에서 전도띠로 올라갈 때","전자가 전도띠에서 원자가 띠의 양공으로 떨어질 때","양공이 n형 영역으로 이동할 때","반도체가 열을 받아서"], ans:2, exp:"전자가 에너지를 잃으며 떨어질 때 띠 간격만큼의 빛을 방출합니다."},
+  {num:29, text:"LED에서 나오는 빛의 색깔을 조절하는 방법은?", opts:["전지의 전압을 바꾼다.","반도체의 띠 간격 크기를 조절한다.","전류의 세기를 바꾼다.","다이오드의 크기를 바꾼다."], ans:2, exp:"에너지 차이(띠 간격)가 빛의 진동수(색깔)를 결정합니다."},
+  {num:30, text:"광다이오드(Photodiode)에 대한 설명으로 옳은 것은?", opts:["빛 에너지를 전기 에너지로 변환한다.","순방향으로 전기를 흘려 빛을 낸다.","정류 작용을 하지 못한다.","전류를 증폭시키는 장치이다."], ans:1, exp:"빛을 받으면 전자와 양공이 생겨 전류가 흐르는 원리를 이용합니다."},
+  {num:31, text:"LED와 광다이오드의 회로 연결 및 전류 방향에 대한 설명으로 옳은 것은?", opts:["LED는 역방향일 때 빛이 난다.","광다이오드는 순방향 전류만을 신호로 사용한다.","LED는 순방향일 때 작동하며 광다이오드는 주로 역방향 전류 흐름을 이용한다.","두 소자 모두 전류 방향에 상관없이 작동한다."], ans:3, exp:"LED는 순방향 전압이 필수이며 광다이오드는 역방향 시 발생하는 전류 변화를 감지합니다."},
+];
+
+// State
+const state = {}; // num -> {answered: bool, correct: bool}
+quizData.forEach(q => { state[q.num] = { answered: false, correct: false }; });
+
+let currentFilter = 'all';
+
+function getLabels() { return ['①','②','③','④']; }
+
+function renderCard(q) {
+  const s = state[q.num];
+  const statusClass = s.answered ? (s.correct ? 'answered-correct' : 'answered-wrong') : '';
+  const optLabels = getLabels();
+
+  const optsHtml = q.opts.map((opt, i) => {
+    let cls = '';
+    if (s.answered) {
+      if (i + 1 === q.ans) cls = s.correct ? 'correct' : 'reveal-correct';
+      else if (s.userAns === i + 1 && !s.correct) cls = 'wrong';
+    }
+    return `<button class="option-btn ${cls}" onclick="answer(${q.num}, ${i+1})" ${s.answered ? 'disabled' : ''}>
+      <span class="opt-label">${optLabels[i]}</span>
+      <span>${opt}</span>
+    </button>`;
+  }).join('');
+
+  const expHtml = s.answered ? `<div class="explanation show">
+    <div class="explanation-label">✦ 해설</div>
+    <p>${q.exp}</p>
+  </div>` : `<div class="explanation"></div>`;
+
+  const icon = s.answered ? (s.correct ? '✓' : '✗') : '';
+
+  const qTextFormatted = q.text.replace(/\n/g, '<br>');
+
+  return `<div class="q-card ${statusClass}" id="card-${q.num}">
+    <div class="q-header">
+      <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+      <span class="q-text">${qTextFormatted}</span>
+      <span class="result-icon">${icon}</span>
+    </div>
+    <div class="q-options">${optsHtml}</div>
+    ${expHtml}
+  </div>`;
+}
+
+function renderAll() {
+  const container = document.getElementById('quizContainer');
+  const empty = document.getElementById('emptyState');
+  const cards = getFilteredQuestions();
+
+  if (cards.length === 0) {
+    container.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    container.innerHTML = cards.map(renderCard).join('');
+  }
+  updateStats();
+}
+
+function getFilteredQuestions() {
+  if (currentFilter === 'all') return quizData;
+  if (currentFilter === 'unanswered') return quizData.filter(q => !state[q.num].answered);
+  if (currentFilter === 'correct') return quizData.filter(q => state[q.num].answered && state[q.num].correct);
+  if (currentFilter === 'wrong') return quizData.filter(q => state[q.num].answered && !state[q.num].correct);
+  return quizData;
+}
+
+function answer(num, chosen) {
+  const q = quizData.find(x => x.num === num);
+  state[num].answered = true;
+  state[num].correct = chosen === q.ans;
+  state[num].userAns = chosen;
+
+  // Re-render just this card
+  const cardEl = document.getElementById(`card-${num}`);
+  if (cardEl) {
+    const temp = document.createElement('div');
+    temp.innerHTML = renderCard(q);
+    cardEl.replaceWith(temp.firstElementChild);
+  }
+  updateStats();
+
+  // If filter active, re-render after brief delay
+  if (currentFilter !== 'all') {
+    setTimeout(() => renderAll(), 600);
+  }
+}
+
+function updateStats() {
+  const answered = quizData.filter(q => state[q.num].answered);
+  const correct = answered.filter(q => state[q.num].correct);
+  const wrong = answered.filter(q => !state[q.num].correct);
+  const unanswered = quizData.filter(q => !state[q.num].answered);
+
+  document.getElementById('scoreDisplay').textContent = `${correct.length} / ${quizData.length}`;
+  document.getElementById('unansweredCount').textContent = unanswered.length;
+  document.getElementById('correctCount').textContent = correct.length;
+  document.getElementById('wrongCount').textContent = wrong.length;
+
+  const pct = (answered.length / quizData.length) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function filterCards(type, btn) {
+  currentFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAll();
+}
+
+function resetAll() {
+  if (!confirm('모든 답변을 초기화하시겠습니까?')) return;
+  quizData.forEach(q => { state[q.num] = { answered: false, correct: false }; });
+  currentFilter = 'all';
+  document.querySelectorAll('.filter-btn').forEach((b,i) => {
+    b.classList.toggle('active', i === 0);
+  });
+  renderAll();
+}
+
+// Initial render
+renderAll();
+</script>
+</body>
+</html>
