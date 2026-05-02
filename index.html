@@ -3,359 +3,578 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>물리 퀴즈 — 원자모형 & 반도체</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<title>물리 퀴즈</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0d0f14;
-    --surface: #161a24;
-    --surface2: #1e2432;
-    --border: #2a3040;
-    --accent: #4af0c4;
-    --accent2: #f0c44a;
-    --wrong: #f05a4a;
-    --text: #e8ecf4;
-    --text-dim: #7a8499;
-    --correct-bg: rgba(74,240,196,0.08);
-    --wrong-bg: rgba(240,90,74,0.08);
-  }
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --border: #e2ddd6;
+  --text: #1a1714;
+  --text-dim: #8a8480;
+  --accent: #2d5a3d;
+  --accent-light: #e8f0eb;
+  --wrong: #c0392b;
+  --wrong-light: #fdf0ef;
+  --correct: #2d5a3d;
+  --correct-light: #e8f0eb;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --radius: 12px;
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Noto Serif KR', serif;
-    min-height: 100vh;
-    padding: 0 0 80px;
-  }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+  padding: 0 0 60px;
+}
 
-  /* Header */
-  header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 28px 40px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-  }
+/* ── 공통 ── */
+.screen { display: none; }
+.screen.active { display: block; }
 
-  .header-left h1 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--text);
-  }
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
 
-  .header-left p {
-    font-size: 0.78rem;
-    color: var(--text-dim);
-    margin-top: 3px;
-    font-family: 'JetBrains Mono', monospace;
-  }
+h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
 
-  .score-badge {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px 20px;
-    text-align: center;
-    min-width: 120px;
-  }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 14px 28px;
+  font-size: 0.95rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  width: 100%;
+}
 
-  .score-badge .score-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--accent);
-    line-height: 1;
-  }
+.btn:hover { opacity: 0.88; }
+.btn:active { transform: scale(0.98); }
 
-  .score-badge .score-label {
-    font-size: 0.7rem;
-    color: var(--text-dim);
-    margin-top: 3px;
-    font-family: 'JetBrains Mono', monospace;
-  }
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+}
 
-  /* Progress bar */
-  .progress-bar-wrap {
-    background: var(--surface2);
-    height: 3px;
-    width: 100%;
-  }
+.btn-ghost:hover { background: var(--accent-light); opacity: 1; }
 
-  .progress-bar-fill {
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    transition: width 0.4s ease;
-    width: 0%;
-  }
+/* ── SCREEN 1: 입력 ── */
+#screen-intro {
+  padding-top: 80px;
+}
 
-  /* Controls */
-  .controls {
-    padding: 20px 40px;
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    align-items: center;
-    border-bottom: 1px solid var(--border);
-  }
+.intro-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
 
-  .filter-btn {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    padding: 7px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.78rem;
-    font-family: 'JetBrains Mono', monospace;
-    transition: all 0.2s;
-  }
+.intro-header .tag {
+  display: inline-block;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: 0.08em;
+}
 
-  .filter-btn:hover, .filter-btn.active {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(74,240,196,0.06);
-  }
+.intro-header h1 { margin-bottom: 8px; }
+.intro-header p { color: var(--text-dim); font-size: 0.9rem; }
 
-  .reset-btn {
-    margin-left: auto;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    padding: 7px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.78rem;
-    font-family: 'JetBrains Mono', monospace;
-    transition: all 0.2s;
-  }
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: var(--shadow);
+}
 
-  .reset-btn:hover {
-    border-color: var(--wrong);
-    color: var(--wrong);
-  }
+.form-group {
+  margin-bottom: 20px;
+}
 
-  /* Quiz grid */
-  .quiz-container {
-    padding: 32px 40px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    max-width: 900px;
-    margin: 0 auto;
-  }
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+}
 
-  /* Question card */
-  .q-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    transition: border-color 0.3s;
-  }
+.form-group input {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 13px 16px;
+  font-size: 1rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
 
-  .q-card.answered-correct { border-color: var(--accent); }
-  .q-card.answered-wrong { border-color: var(--wrong); }
+.form-group input:focus { border-color: var(--accent); }
 
-  .q-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 20px 24px 16px;
-  }
+.form-info {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  background: var(--accent-light);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
 
-  .q-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: var(--accent);
-    background: rgba(74,240,196,0.1);
-    border: 1px solid rgba(74,240,196,0.25);
-    border-radius: 6px;
-    padding: 3px 8px;
-    white-space: nowrap;
-    margin-top: 2px;
-  }
+.form-info span {
+  font-size: 0.82rem;
+  color: var(--accent);
+}
 
-  .q-text {
-    font-size: 0.95rem;
-    line-height: 1.7;
-    color: var(--text);
-    flex: 1;
-  }
+/* ── SCREEN 2: 퀴즈 ── */
+#screen-quiz { padding-top: 0; }
 
-  /* Options */
-  .q-options {
-    padding: 0 24px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
+.quiz-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+}
 
-  .option-btn {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 16px;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.2s;
-    width: 100%;
-    color: var(--text);
-    font-family: 'Noto Serif KR', serif;
-    font-size: 0.88rem;
-    line-height: 1.5;
-  }
+.quiz-topbar-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
 
-  .option-btn:hover:not(:disabled) {
-    border-color: var(--accent);
-    background: rgba(74,240,196,0.05);
-  }
+.progress-wrap {
+  flex: 1;
+  background: var(--border);
+  border-radius: 99px;
+  height: 6px;
+  overflow: hidden;
+}
 
-  .option-btn:disabled { cursor: default; }
+.progress-fill {
+  height: 6px;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
 
-  .option-btn.correct {
-    border-color: var(--accent);
-    background: var(--correct-bg);
-    color: var(--accent);
-  }
+.quiz-meta {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-shrink: 0;
+}
 
-  .option-btn.wrong {
-    border-color: var(--wrong);
-    background: var(--wrong-bg);
-    color: var(--wrong);
-  }
+.meta-item {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
 
-  .option-btn.reveal-correct {
-    border-color: rgba(74,240,196,0.4);
-    background: rgba(74,240,196,0.04);
-    color: rgba(74,240,196,0.7);
-  }
+.meta-item span {
+  color: var(--text);
+  font-weight: 500;
+}
 
-  .opt-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    font-weight: 600;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    padding: 2px 7px;
-    min-width: 28px;
-    text-align: center;
-    margin-top: 1px;
-    flex-shrink: 0;
-    transition: all 0.2s;
-  }
+.quiz-body {
+  padding: 32px 20px;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
-  .option-btn.correct .opt-label {
-    background: rgba(74,240,196,0.15);
-    border-color: var(--accent);
-    color: var(--accent);
-  }
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: border-color 0.3s;
+}
 
-  .option-btn.wrong .opt-label {
-    background: rgba(240,90,74,0.15);
-    border-color: var(--wrong);
-    color: var(--wrong);
-  }
+.q-card.correct { border-color: var(--correct); }
+.q-card.wrong { border-color: var(--wrong); }
 
-  .option-btn.reveal-correct .opt-label {
-    background: rgba(74,240,196,0.08);
-    border-color: rgba(74,240,196,0.4);
-  }
+.q-head {
+  padding: 20px 24px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
 
-  /* Explanation */
-  .explanation {
-    padding: 14px 24px 20px;
-    border-top: 1px solid var(--border);
-    display: none;
-    background: rgba(0,0,0,0.2);
-  }
+.q-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
 
-  .explanation.show { display: block; }
+.q-text {
+  font-size: 0.93rem;
+  line-height: 1.75;
+  white-space: pre-line;
+}
 
-  .explanation-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.68rem;
-    color: var(--accent2);
-    margin-bottom: 6px;
-    letter-spacing: 0.08em;
-  }
+.q-options {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 
-  .explanation p {
-    font-size: 0.85rem;
-    color: var(--text-dim);
-    line-height: 1.7;
-  }
+.opt-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+  transition: all 0.15s;
+  width: 100%;
+}
 
-  /* Result indicator */
-  .result-icon {
-    font-size: 1rem;
-    margin-left: auto;
-    flex-shrink: 0;
-    display: none;
-  }
+.opt-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
 
-  .q-card.answered-correct .result-icon { display: block; color: var(--accent); }
-  .q-card.answered-wrong .result-icon { display: block; color: var(--wrong); }
+.opt-btn:disabled { cursor: default; }
 
-  /* Empty state */
-  .empty-state {
-    text-align: center;
-    padding: 80px 20px;
-    color: var(--text-dim);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem;
-    display: none;
-  }
+.opt-btn.correct {
+  border-color: var(--correct);
+  background: var(--correct-light);
+  color: var(--correct);
+}
 
-  /* Responsive */
-  @media (max-width: 600px) {
-    header { padding: 18px 20px; }
-    .controls { padding: 14px 20px; }
-    .quiz-container { padding: 20px; }
-  }
+.opt-btn.wrong {
+  border-color: var(--wrong);
+  background: var(--wrong-light);
+  color: var(--wrong);
+}
+
+.opt-btn.reveal {
+  border-color: rgba(45,90,61,0.35);
+  background: rgba(45,90,61,0.04);
+  color: rgba(45,90,61,0.6);
+}
+
+.opt-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 0.15s;
+}
+
+.opt-btn.correct .opt-label { background: var(--correct); border-color: var(--correct); color: #fff; }
+.opt-btn.wrong .opt-label { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+
+/* submit btn area */
+.submit-wrap {
+  padding: 0 20px 40px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ── SCREEN 3: 결과 ── */
+#screen-result { padding-top: 48px; }
+
+.result-hero {
+  text-align: center;
+  padding: 48px 20px 32px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.result-name {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  font-family: 'DM Mono', monospace;
+}
+
+.result-score {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin-bottom: 4px;
+}
+
+.result-score-sub {
+  font-size: 1rem;
+  color: var(--text-dim);
+  margin-bottom: 24px;
+}
+
+.result-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.result-section {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.result-section h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-wrong {
+  background: var(--wrong-light);
+  color: var(--wrong);
+  font-size: 0.72rem;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* review card */
+.review-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.review-card .q-head { padding-bottom: 12px; }
+
+.review-exp {
+  padding: 14px 24px 18px;
+  border-top: 1px solid var(--border);
+  background: var(--accent-light);
+}
+
+.review-exp-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--accent);
+  margin-bottom: 5px;
+  letter-spacing: 0.06em;
+}
+
+.review-exp p {
+  font-size: 0.84rem;
+  color: var(--accent);
+  line-height: 1.65;
+}
+
+.review-retry-wrap {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.result-actions {
+  max-width: 720px;
+  margin: 32px auto 0;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* saving overlay */
+.saving-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 99px;
+  font-size: 0.82rem;
+  font-family: 'DM Mono', monospace;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 999;
+  white-space: nowrap;
+}
+
+.saving-toast.show { opacity: 1; }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="header-left">
-    <h1>원자모형 &amp; 반도체 퀴즈</h1>
-    <p>PHYSICS · 31 QUESTIONS</p>
+<!-- ══════════════════════════════════════
+     SCREEN 1: 이름 / 학교 입력
+══════════════════════════════════════ -->
+<div id="screen-intro" class="screen active">
+  <div class="container">
+    <div class="intro-header">
+      <div class="tag">PHYSICS QUIZ</div>
+      <h1>원자모형 &amp; 반도체</h1>
+      <p>개정물리학 · 대단원3 · 소단원2 · 에너지 준위</p>
+    </div>
+
+    <div class="form-card">
+      <div class="form-info">
+        <span>📋 총 31문항 · 객관식 4지선다 · 시간 제한 없음</span>
+      </div>
+
+      <div class="form-group">
+        <label>이름</label>
+        <input type="text" id="input-name" placeholder="홍길동" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>학교</label>
+        <input type="text" id="input-school" placeholder="○○고등학교" autocomplete="off">
+      </div>
+
+      <button class="btn" onclick="startQuiz()">시작하기 →</button>
+    </div>
   </div>
-  <div class="score-badge">
-    <div class="score-num" id="scoreDisplay">0 / 0</div>
-    <div class="score-label">SCORE</div>
-  </div>
-</header>
-<div class="progress-bar-wrap">
-  <div class="progress-bar-fill" id="progressBar"></div>
 </div>
 
-<div class="controls">
-  <button class="filter-btn active" onclick="filterCards('all', this)">전체 (31)</button>
-  <button class="filter-btn" onclick="filterCards('unanswered', this)">미답 <span id="unansweredCount">31</span></button>
-  <button class="filter-btn" onclick="filterCards('correct', this)">정답 <span id="correctCount">0</span></button>
-  <button class="filter-btn" onclick="filterCards('wrong', this)">오답 <span id="wrongCount">0</span></button>
-  <button class="reset-btn" onclick="resetAll()">↺ 초기화</button>
+<!-- ══════════════════════════════════════
+     SCREEN 2: 퀴즈
+══════════════════════════════════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-topbar">
+    <div class="quiz-topbar-inner">
+      <div class="progress-wrap">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="quiz-meta">
+        <div class="meta-item" id="metaProgress">0 / 31</div>
+        <div class="meta-item">⏱ <span id="timerDisplay">00:00</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-body" id="quizBody"></div>
+
+  <div class="submit-wrap">
+    <button class="btn" onclick="submitQuiz()">제출하기</button>
+  </div>
 </div>
 
-<div class="quiz-container" id="quizContainer"></div>
-<div class="empty-state" id="emptyState">해당 항목이 없습니다.</div>
+<!-- ══════════════════════════════════════
+     SCREEN 3: 결과
+══════════════════════════════════════ -->
+<div id="screen-result" class="screen">
+  <div class="result-hero">
+    <div class="result-name" id="resultName"></div>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-score-sub" id="resultScoreSub"></div>
+    <div class="result-stats">
+      <div class="stat-item">
+        <div class="stat-val" id="statTime"></div>
+        <div class="stat-label">풀이 시간</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statCorrect"></div>
+        <div class="stat-label">정답</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statWrong"></div>
+        <div class="stat-label">오답</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-section" id="reviewSection"></div>
+
+  <div class="result-actions">
+    <button class="btn btn-ghost" onclick="resetQuiz()">↺ 새로 응시하기</button>
+  </div>
+</div>
+
+<div class="saving-toast" id="savingToast"></div>
 
 <script>
-const quizData = [
+// ══════════════════════════════════════
+// Airtable 설정
+// ══════════════════════════════════════
+const AT_TOKEN   = "patgMAkrcLMGdEdLb.41993b4dfac27201f404aaeb7afba407e4f1d68879de32a02adadba70a38ccac";
+const AT_BASE    = "appmCOjqp5xIJuPqt";
+const AT_SCORES  = "scores";
+
+// ══════════════════════════════════════
+// 퀴즈 데이터
+// ══════════════════════════════════════
+const QUIZ = [
   {num:1, text:"러더퍼드(Rutherford) 원자 모형의 한계점으로 옳은 것만을 보기에서 모두 고른 것은?\n[보기]\nㄱ. 원자핵의 존재를 발견하지 못했다.\nㄴ. 가속하는 전하가 에너지를 잃고 원자핵으로 추락하는 문제를 해결하지 못했다.\nㄷ. 선 스펙트럼의 불연속성을 설명하지 못했다.", opts:["ㄱ","ㄴ","ㄱ, ㄷ","ㄴ, ㄷ"], ans:4, exp:"러더퍼드는 원자핵을 발견했으나 원자의 안정성과 선 스펙트럼을 설명하지 못했습니다."},
   {num:2, text:"보어(Bohr)의 원자 모형에 대한 설명으로 옳은 것만을 보기에서 모두 고른 것은?\n[보기]\nㄱ. 전자는 특정한 궤도에서만 원운동 한다.\nㄴ. '에너지의 양자화'란 에너지가 불연속적인 값만을 가짐을 의미한다.\nㄷ. 높은 궤도에서 낮은 궤도로 전이할 때 광자를 흡수한다.", opts:["ㄱ","ㄴ","ㄱ, ㄴ","ㄴ, ㄷ"], ans:3, exp:"높은 곳에서 낮은 곳으로 전이할 때는 에너지를 방출해야 합니다."},
   {num:3, text:"수소 원자의 전자가 n=2에서 n=1로 전이할 때 방출되는 광자의 에너지는?", opts:["E₂ - E₁","E₁ - E₂","E₂ + E₁","E₁ / E₂"], ans:1, exp:"방출되는 광자의 에너지는 전이 전후 두 에너지 준위의 차와 같습니다."},
@@ -389,129 +608,238 @@ const quizData = [
   {num:31, text:"LED와 광다이오드의 회로 연결 및 전류 방향에 대한 설명으로 옳은 것은?", opts:["LED는 역방향일 때 빛이 난다.","광다이오드는 순방향 전류만을 신호로 사용한다.","LED는 순방향일 때 작동하며 광다이오드는 주로 역방향 전류 흐름을 이용한다.","두 소자 모두 전류 방향에 상관없이 작동한다."], ans:3, exp:"LED는 순방향 전압이 필수이며 광다이오드는 역방향 시 발생하는 전류 변화를 감지합니다."},
 ];
 
-// State
-const state = {}; // num -> {answered: bool, correct: bool}
-quizData.forEach(q => { state[q.num] = { answered: false, correct: false }; });
+// ══════════════════════════════════════
+// 상태
+// ══════════════════════════════════════
+let userName = '', userSchool = '';
+let userAnswers = {}; // num → chosen index (1~4)
+let timerInterval = null;
+let elapsedSec = 0;
+let quizStarted = false;
 
-let currentFilter = 'all';
+// ══════════════════════════════════════
+// 유틸
+// ══════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
 
-function getLabels() { return ['①','②','③','④']; }
+function fmtTime(sec) {
+  const m = String(Math.floor(sec / 60)).padStart(2, '0');
+  const s = String(sec % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
 
-function renderCard(q) {
-  const s = state[q.num];
-  const statusClass = s.answered ? (s.correct ? 'answered-correct' : 'answered-wrong') : '';
-  const optLabels = getLabels();
+function toast(msg, duration = 2500) {
+  const el = document.getElementById('savingToast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration);
+}
 
-  const optsHtml = q.opts.map((opt, i) => {
-    let cls = '';
-    if (s.answered) {
-      if (i + 1 === q.ans) cls = s.correct ? 'correct' : 'reveal-correct';
-      else if (s.userAns === i + 1 && !s.correct) cls = 'wrong';
-    }
-    return `<button class="option-btn ${cls}" onclick="answer(${q.num}, ${i+1})" ${s.answered ? 'disabled' : ''}>
-      <span class="opt-label">${optLabels[i]}</span>
-      <span>${opt}</span>
-    </button>`;
-  }).join('');
+// ══════════════════════════════════════
+// SCREEN 1 → 시작
+// ══════════════════════════════════════
+function startQuiz() {
+  const name = document.getElementById('input-name').value.trim();
+  const school = document.getElementById('input-school').value.trim();
+  if (!name) { alert('이름을 입력해주세요.'); return; }
+  if (!school) { alert('학교를 입력해주세요.'); return; }
 
-  const expHtml = s.answered ? `<div class="explanation show">
-    <div class="explanation-label">✦ 해설</div>
-    <p>${q.exp}</p>
-  </div>` : `<div class="explanation"></div>`;
+  userName = name;
+  userSchool = school;
+  userAnswers = {};
+  elapsedSec = 0;
 
-  const icon = s.answered ? (s.correct ? '✓' : '✗') : '';
+  renderQuiz();
+  showScreen('screen-quiz');
+  startTimer();
+}
 
-  const qTextFormatted = q.text.replace(/\n/g, '<br>');
+// ══════════════════════════════════════
+// 타이머
+// ══════════════════════════════════════
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    elapsedSec++;
+    document.getElementById('timerDisplay').textContent = fmtTime(elapsedSec);
+  }, 1000);
+}
 
-  return `<div class="q-card ${statusClass}" id="card-${q.num}">
-    <div class="q-header">
-      <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
-      <span class="q-text">${qTextFormatted}</span>
-      <span class="result-icon">${icon}</span>
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// ══════════════════════════════════════
+// 퀴즈 렌더
+// ══════════════════════════════════════
+const LABELS = ['①','②','③','④'];
+
+function renderQuiz() {
+  const body = document.getElementById('quizBody');
+  body.innerHTML = QUIZ.map(q => `
+    <div class="q-card" id="qcard-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="q-options">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="opt-${q.num}-${i+1}" onclick="selectOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
     </div>
-    <div class="q-options">${optsHtml}</div>
-    ${expHtml}
-  </div>`;
+  `).join('');
+  updateProgress();
 }
 
-function renderAll() {
-  const container = document.getElementById('quizContainer');
-  const empty = document.getElementById('emptyState');
-  const cards = getFilteredQuestions();
+function selectOpt(num, chosen) {
+  userAnswers[num] = chosen;
 
-  if (cards.length === 0) {
-    container.innerHTML = '';
-    empty.style.display = 'block';
+  // 선택 표시
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`opt-${num}-${i}`);
+    btn.style.borderColor = i === chosen ? 'var(--accent)' : '';
+    btn.style.background = i === chosen ? 'var(--accent-light)' : '';
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = Object.keys(userAnswers).length;
+  const total = QUIZ.length;
+  document.getElementById('metaProgress').textContent = `${answered} / ${total}`;
+  document.getElementById('progressFill').style.width = `${(answered / total) * 100}%`;
+}
+
+// ══════════════════════════════════════
+// 제출
+// ══════════════════════════════════════
+function submitQuiz() {
+  const answered = Object.keys(userAnswers).length;
+  if (answered < QUIZ.length) {
+    if (!confirm(`아직 ${QUIZ.length - answered}문제가 남아 있어요. 제출하시겠어요?`)) return;
+  }
+  stopTimer();
+  showResult();
+}
+
+// ══════════════════════════════════════
+// 결과
+// ══════════════════════════════════════
+function showResult() {
+  const correct = QUIZ.filter(q => userAnswers[q.num] === q.ans);
+  const wrong   = QUIZ.filter(q => userAnswers[q.num] !== q.ans);
+  const score   = correct.length;
+  const total   = QUIZ.length;
+
+  document.getElementById('resultName').textContent = `${userName} · ${userSchool}`;
+  document.getElementById('resultScore').textContent = score;
+  document.getElementById('resultScoreSub').textContent = `/ ${total} 문항`;
+  document.getElementById('statTime').textContent = fmtTime(elapsedSec);
+  document.getElementById('statCorrect').textContent = `${score}개`;
+  document.getElementById('statWrong').textContent = `${wrong.length}개`;
+
+  // 오답 리뷰
+  const reviewSection = document.getElementById('reviewSection');
+  if (wrong.length === 0) {
+    reviewSection.innerHTML = `<div style="text-align:center;padding:32px 0;color:var(--accent);font-weight:700;">🎉 전부 맞혔어요!</div>`;
   } else {
-    empty.style.display = 'none';
-    container.innerHTML = cards.map(renderCard).join('');
+    reviewSection.innerHTML = `
+      <h2>틀린 문제 <span class="badge-wrong">${wrong.length}문제</span></h2>
+      ${wrong.map(q => renderReviewCard(q)).join('')}
+    `;
   }
-  updateStats();
+
+  showScreen('screen-result');
+  saveScore(score, total);
 }
 
-function getFilteredQuestions() {
-  if (currentFilter === 'all') return quizData;
-  if (currentFilter === 'unanswered') return quizData.filter(q => !state[q.num].answered);
-  if (currentFilter === 'correct') return quizData.filter(q => state[q.num].answered && state[q.num].correct);
-  if (currentFilter === 'wrong') return quizData.filter(q => state[q.num].answered && !state[q.num].correct);
-  return quizData;
+function renderReviewCard(q) {
+  return `
+    <div class="review-card" id="review-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="review-retry-wrap" id="retry-opts-${q.num}">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="retry-opt-${q.num}-${i+1}" onclick="retryOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="review-exp">
+        <div class="review-exp-label">✦ 해설</div>
+        <p>${q.exp}</p>
+      </div>
+    </div>
+  `;
 }
 
-function answer(num, chosen) {
-  const q = quizData.find(x => x.num === num);
-  state[num].answered = true;
-  state[num].correct = chosen === q.ans;
-  state[num].userAns = chosen;
-
-  // Re-render just this card
-  const cardEl = document.getElementById(`card-${num}`);
-  if (cardEl) {
-    const temp = document.createElement('div');
-    temp.innerHTML = renderCard(q);
-    cardEl.replaceWith(temp.firstElementChild);
+function retryOpt(num, chosen) {
+  const q = QUIZ.find(x => x.num === num);
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`retry-opt-${num}-${i}`);
+    if (!btn) continue;
+    btn.disabled = true;
+    if (i === q.ans) btn.className = 'opt-btn correct';
+    else if (i === chosen && chosen !== q.ans) btn.className = 'opt-btn wrong';
+    else btn.className = 'opt-btn reveal';
   }
-  updateStats();
+}
 
-  // If filter active, re-render after brief delay
-  if (currentFilter !== 'all') {
-    setTimeout(() => renderAll(), 600);
+// ══════════════════════════════════════
+// Airtable 저장
+// ══════════════════════════════════════
+async function saveScore(score, total) {
+  toast('점수 저장 중...');
+  try {
+    const res = await fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_SCORES}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${AT_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        fields: {
+          '이름': userName,
+          '학교': userSchool,
+          '날짜': new Date().toISOString().split('T')[0],
+          '섹션명': '에너지 준위',
+          '총점': score,
+          '총문항수': total,
+          '풀이시간': fmtTime(elapsedSec)
+        }
+      })
+    });
+    if (res.ok) toast('✓ 점수가 저장되었습니다.');
+    else toast('저장 실패 — 네트워크를 확인해주세요.');
+  } catch(e) {
+    toast('저장 실패 — 네트워크를 확인해주세요.');
   }
 }
 
-function updateStats() {
-  const answered = quizData.filter(q => state[q.num].answered);
-  const correct = answered.filter(q => state[q.num].correct);
-  const wrong = answered.filter(q => !state[q.num].correct);
-  const unanswered = quizData.filter(q => !state[q.num].answered);
-
-  document.getElementById('scoreDisplay').textContent = `${correct.length} / ${quizData.length}`;
-  document.getElementById('unansweredCount').textContent = unanswered.length;
-  document.getElementById('correctCount').textContent = correct.length;
-  document.getElementById('wrongCount').textContent = wrong.length;
-
-  const pct = (answered.length / quizData.length) * 100;
-  document.getElementById('progressBar').style.width = pct + '%';
+// ══════════════════════════════════════
+// 리셋
+// ══════════════════════════════════════
+function resetQuiz() {
+  userName = '';
+  userSchool = '';
+  userAnswers = {};
+  elapsedSec = 0;
+  document.getElementById('input-name').value = '';
+  document.getElementById('input-school').value = '';
+  document.getElementById('timerDisplay').textContent = '00:00';
+  showScreen('screen-intro');
 }
-
-function filterCards(type, btn) {
-  currentFilter = type;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderAll();
-}
-
-function resetAll() {
-  if (!confirm('모든 답변을 초기화하시겠습니까?')) return;
-  quizData.forEach(q => { state[q.num] = { answered: false, correct: false }; });
-  currentFilter = 'all';
-  document.querySelectorAll('.filter-btn').forEach((b,i) => {
-    b.classList.toggle('active', i === 0);
-  });
-  renderAll();
-}
-
-// Initial render
-renderAll();
 </script>
 </body>
 </html>
