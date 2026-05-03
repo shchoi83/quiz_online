@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>특수상대성 · 물리 퀴즈</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --border: #e2ddd6;
+  --text: #1a1714;
+  --text-dim: #8a8480;
+  --accent: #2d5a3d;
+  --accent-light: #e8f0eb;
+  --wrong: #c0392b;
+  --wrong-light: #fdf0ef;
+  --correct: #2d5a3d;
+  --correct-light: #e8f0eb;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+  padding: 0 0 60px;
+}
+
+/* ── 공통 ── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 14px 28px;
+  font-size: 0.95rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  width: 100%;
+}
+
+.btn:hover { opacity: 0.88; }
+.btn:active { transform: scale(0.98); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+}
+
+.btn-ghost:hover { background: var(--accent-light); opacity: 1; }
+
+/* ── SCREEN 1: 입력 ── */
+#screen-intro {
+  padding-top: 80px;
+}
+
+.intro-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.intro-header .tag {
+  display: inline-block;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: 0.08em;
+}
+
+.intro-header h1 { margin-bottom: 8px; }
+.intro-header p { color: var(--text-dim); font-size: 0.9rem; }
+
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: var(--shadow);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+}
+
+.form-group input {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 13px 16px;
+  font-size: 1rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus { border-color: var(--accent); }
+
+.form-info {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  background: var(--accent-light);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.form-info span {
+  font-size: 0.82rem;
+  color: var(--accent);
+}
+
+/* ── SCREEN 2: 퀴즈 ── */
+#screen-quiz { padding-top: 0; }
+
+.quiz-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+}
+
+.quiz-topbar-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.progress-wrap {
+  flex: 1;
+  background: var(--border);
+  border-radius: 99px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 6px;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.quiz-meta {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.meta-item {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.meta-item span {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.quiz-body {
+  padding: 32px 20px;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: border-color 0.3s;
+}
+
+.q-card.correct { border-color: var(--correct); }
+.q-card.wrong { border-color: var(--wrong); }
+
+.q-head {
+  padding: 20px 24px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.q-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.q-text {
+  font-size: 0.93rem;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+
+.q-options {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.opt-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+  transition: all 0.15s;
+  width: 100%;
+}
+
+.opt-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.opt-btn:disabled { cursor: default; }
+
+.opt-btn.correct {
+  border-color: var(--correct);
+  background: var(--correct-light);
+  color: var(--correct);
+}
+
+.opt-btn.wrong {
+  border-color: var(--wrong);
+  background: var(--wrong-light);
+  color: var(--wrong);
+}
+
+.opt-btn.reveal {
+  border-color: rgba(45,90,61,0.35);
+  background: rgba(45,90,61,0.04);
+  color: rgba(45,90,61,0.6);
+}
+
+.opt-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 0.15s;
+}
+
+.opt-btn.correct .opt-label { background: var(--correct); border-color: var(--correct); color: #fff; }
+.opt-btn.wrong .opt-label { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+
+/* submit btn area */
+.submit-wrap {
+  padding: 0 20px 40px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ── SCREEN 3: 결과 ── */
+#screen-result { padding-top: 48px; }
+
+.result-hero {
+  text-align: center;
+  padding: 48px 20px 32px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.result-name {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  font-family: 'DM Mono', monospace;
+}
+
+.result-score {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin-bottom: 4px;
+}
+
+.result-score-sub {
+  font-size: 1rem;
+  color: var(--text-dim);
+  margin-bottom: 24px;
+}
+
+.result-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.result-section {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.result-section h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-wrong {
+  background: var(--wrong-light);
+  color: var(--wrong);
+  font-size: 0.72rem;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* review card */
+.review-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.review-card .q-head { padding-bottom: 12px; }
+
+.review-exp {
+  padding: 14px 24px 18px;
+  border-top: 1px solid var(--border);
+  background: var(--accent-light);
+}
+
+.review-exp-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--accent);
+  margin-bottom: 5px;
+  letter-spacing: 0.06em;
+}
+
+.review-exp p {
+  font-size: 0.84rem;
+  color: var(--accent);
+  line-height: 1.65;
+}
+
+.review-retry-wrap {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.result-actions {
+  max-width: 720px;
+  margin: 32px auto 0;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* saving overlay */
+.saving-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 99px;
+  font-size: 0.82rem;
+  font-family: 'DM Mono', monospace;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 999;
+  white-space: nowrap;
+}
+
+.saving-toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1: 이름 / 학교 입력
+══════════════════════════════════════ -->
+<div id="screen-intro" class="screen active">
+  <div class="container">
+    <div class="intro-header">
+      <div class="tag">PHYSICS QUIZ</div>
+      <h1>특수상대성</h1>
+      <p>개정물리학 · 대단원3 · 소단원2 · 섹션3</p>
+    </div>
+
+    <div class="form-card">
+      <div class="form-info">
+        <span>📋 총 20문항 · 객관식 4지선다 · 시간 제한 없음</span>
+      </div>
+
+      <div class="form-group">
+        <label>이름</label>
+        <input type="text" id="input-name" placeholder="홍길동" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>학교</label>
+        <input type="text" id="input-school" placeholder="○○고등학교" autocomplete="off">
+      </div>
+
+      <button class="btn" onclick="startQuiz()">시작하기 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2: 퀴즈
+══════════════════════════════════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-topbar">
+    <div class="quiz-topbar-inner">
+      <div class="progress-wrap">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="quiz-meta">
+        <div class="meta-item" id="metaProgress">0 / 20</div>
+        <div class="meta-item">⏱ <span id="timerDisplay">00:00</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-body" id="quizBody"></div>
+
+  <div class="submit-wrap">
+    <button class="btn" onclick="submitQuiz()">제출하기</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 3: 결과
+══════════════════════════════════════ -->
+<div id="screen-result" class="screen">
+  <div class="result-hero">
+    <div class="result-name" id="resultName"></div>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-score-sub" id="resultScoreSub"></div>
+    <div class="result-stats">
+      <div class="stat-item">
+        <div class="stat-val" id="statTime"></div>
+        <div class="stat-label">풀이 시간</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statCorrect"></div>
+        <div class="stat-label">정답</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statWrong"></div>
+        <div class="stat-label">오답</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-section" id="reviewSection"></div>
+
+  <div class="result-actions">
+    <button class="btn btn-ghost" onclick="resetQuiz()">↺ 새로 응시하기</button>
+  </div>
+</div>
+
+<div class="saving-toast" id="savingToast"></div>
+
+<script>
+// ══════════════════════════════════════
+// Airtable 설정
+// ══════════════════════════════════════
+const AT_TOKEN   = "patBcLElKAr7fPbgS.0f288a25e39501f27d9d33569371fc819acb54173cf44daa68fc028f16e479f9";
+const AT_BASE    = "appmCOjqp5xIJuPqt";
+const AT_SCORES  = "scores";
+
+// ══════════════════════════════════════
+// 퀴즈 메타
+// ══════════════════════════════════════
+const QUIZ_META = {
+  subject: "개정물리학",
+  unit: 3,
+  subunit: 2,
+  section: 3,
+  sectionName: "특수상대성"
+};
+
+// ══════════════════════════════════════
+// 퀴즈 데이터
+// ══════════════════════════════════════
+const QUIZ = [
+  {num:1, text:"특수 상대성 이론의 두 가설 중 '광속 불변의 원리'에 대한 설명으로 옳은 것은?", opts:["빛의 속력은 광원의 속력에 따라 달라진다.", "모든 관성계에서 진공 중 빛의 속력은 동일하다.", "정지한 관찰자가 본 빛이 더 빠르다.", "관찰자가 빛을 향해 달려가면 빛의 속력이 더 빠르게 측정된다."], ans:2, exp:"광속 불변은 관찰자나 광원의 운동 상태와 무관하게 진공에서 빛의 속력 c가 일정함을 의미합니다."},
+  {num:2, text:"시속 30km로 달리는 킥보드 위에서 진행 방향으로 시속 100km의 야구공을 던졌다. 지면에 정지한 관찰자가 측정하는 야구공의 속력은? (고전역학 관점)", opts:["70 km/h", "100 km/h", "130 km/h", "알 수 없다"], ans:3, exp:"일반 물체는 갈릴레이 속도 덧셈이 적용되어 30+100=130 km/h가 됩니다."},
+  {num:3, text:"0.5c의 속력으로 달리는 우주선에서 진행 방향으로 빛을 쏘았다. 지면 관찰자가 측정하는 빛의 속력은?", opts:["0.5c", "c", "1.5c", "2c"], ans:2, exp:"광속 불변에 의해 어떤 관성계에서 측정해도 빛의 속력은 항상 c입니다."},
+  {num:4, text:"특수 상대성 이론의 '상대성 원리'에 대한 설명으로 옳은 것은?", opts:["정지한 관성계에서만 물리 법칙이 성립한다.", "모든 관성계에서 물리 법칙은 동일하게 성립한다.", "관찰자에 따라 물리 법칙이 다르다.", "빛의 속력만이 모든 관성계에서 같다."], ans:2, exp:"상대성 원리는 모든 관성 좌표계에서 동일한 물리 법칙이 적용된다는 가설입니다."},
+  {num:5, text:"다음 중 '관성계'에 해당하는 것은?", opts:["가속하는 자동차 안", "회전하는 회전목마 위", "등속도로 직선 운동하는 우주선 안", "자유낙하 직전 멈춰 있던 엘리베이터가 떨어지기 시작하는 순간"], ans:3, exp:"관성계는 가속하지 않는 좌표계, 즉 정지 또는 등속 직선 운동하는 좌표계입니다."},
+  {num:6, text:"'고유시간(proper time)'의 정의로 옳은 것은?", opts:["가장 길게 측정되는 시간", "한 관성계에서 같은 위치에서 일어난 두 사건 사이의 시간", "빛이 한 점에서 다른 점까지 이동하는 시간", "모든 관찰자가 측정하는 평균 시간"], ans:2, exp:"고유시간은 동일 관성계에서 같은 장소에서 발생한 두 사건의 시간 간격입니다."},
+  {num:7, text:"시간 지연 현상에 대한 설명으로 옳은 것은?", opts:["운동하는 관성계의 시계가 정지한 관성계보다 빠르게 간다.", "운동하는 관성계의 시계가 정지한 관성계에서 보았을 때 느리게 간다.", "모든 관성계의 시간은 똑같이 흐른다.", "빛의 속력보다 빠르게 움직여야만 시간이 느려진다."], ans:2, exp:"외부 관찰자는 빠르게 움직이는 관성계의 시계가 자신의 시계보다 느리게 가는 것으로 측정합니다."},
+  {num:8, text:"우주선 안에 정지한 광원에서 빛이 출발하여 거울에 반사된 후 광원으로 돌아왔다. 이 두 사건(출발-도착) 사이의 시간을 고유시간으로 측정하는 사람은?", opts:["우주선 안의 사람", "외부의 정지한 관찰자", "두 사람이 같은 시간을 측정한다", "누구도 고유시간을 측정할 수 없다"], ans:1, exp:"두 사건이 같은 위치(광원 자리)에서 일어났으므로, 그 위치와 함께 움직이는 우주선 안 관찰자가 고유시간을 측정합니다."},
+  {num:9, text:"'고유길이(proper length)'의 정의로 옳은 것은?", opts:["모든 관찰자가 측정하는 평균 길이", "물체에 대해 정지한 관성계에서 측정한 길이", "가장 짧게 측정되는 길이", "빛이 물체의 한 끝에서 다른 끝까지 이동하는 거리"], ans:2, exp:"고유길이는 측정 대상 물체에 대해 정지해 있는 관찰자가 측정한 길이입니다."},
+  {num:10, text:"길이 수축 현상에 대한 설명으로 옳은 것은?", opts:["운동하는 물체는 운동 방향으로 길이가 늘어난다.", "운동하는 물체는 운동 방향으로 길이가 줄어든 것으로 측정된다.", "운동하는 물체는 운동 방향과 수직 방향으로 길이가 줄어든다.", "길이는 관찰자에 관계없이 일정하다."], ans:2, exp:"외부 관찰자는 운동 방향에 평행한 방향에서 물체의 길이가 줄어든 것으로 측정합니다."},
+  {num:11, text:"길이 수축은 어느 방향으로 일어나는가?", opts:["운동 방향에 수직한 방향", "운동 방향에 평행한 방향", "모든 방향", "임의의 방향"], ans:2, exp:"길이 수축은 상대 운동 방향과 같은 방향(평행 성분)에서만 발생합니다."},
+  {num:12, text:"행성 P에서 행성 Q까지 우주선이 0.6c로 등속 운동한다. 두 행성 사이의 거리를 고유길이로 측정하는 사람은?", opts:["우주선 안의 우주인", "행성에 정지한 관찰자", "두 사람이 같은 길이를 측정한다", "빛 자신"], ans:2, exp:"두 행성에 대해 정지해 있는 관찰자가 두 행성 사이의 거리에 대한 고유길이를 측정합니다."},
+  {num:13, text:"정지 상태일 때 길이가 100m인 우주선이 0.8c로 날아간다. 외부의 정지한 관찰자가 측정하는 우주선의 길이는 100m와 비교해 어떠한가?", opts:["100m보다 길다", "100m와 같다", "100m보다 짧다", "측정할 수 없다"], ans:3, exp:"외부 관찰자에게는 운동 방향으로 길이 수축이 일어나 100m보다 짧게 측정됩니다."},
+  {num:14, text:"우주선 안에 탄 사람이 자신이 탄 우주선의 길이를 측정하면, 우주선 정지 시의 길이와 비교해 어떠한가?", opts:["더 길다", "같다", "더 짧다", "측정 불가능하다"], ans:2, exp:"우주선 안 사람은 우주선과 함께 움직이므로 자신에 대해 우주선이 정지해 있어 고유길이를 측정합니다."},
+  {num:15, text:"우주선이 0.6c로 등속 운동한다. 우주선 안 광원에서 천장 거울로 빛이 갔다가 다시 광원으로 돌아오는 두 사건에 대해 옳은 것은?", opts:["외부 관찰자가 측정한 시간이 고유시간이다.", "우주선 안 관찰자가 측정한 시간이 고유시간이다.", "두 사람이 측정한 시간은 항상 같다.", "외부 관찰자가 측정한 시간이 더 짧다."], ans:2, exp:"출발과 도착이 우주선 안 같은 위치에서 일어났으므로, 같이 움직이는 우주선 내부 관찰자가 고유시간을 측정합니다."},
+  {num:16, text:"행성 P에서 행성 Q까지 우주선이 등속 운동한다. 우주선이 P를 출발하는 사건과 Q에 도착하는 사건에 대해 고유시간을 측정하는 사람은?", opts:["우주선 안의 우주인", "두 행성에 정지한 관찰자", "빛 자신", "두 사람 모두 고유시간을 측정한다"], ans:1, exp:"출발과 도착 사건이 우주선 안 같은 위치(우주선)에서 일어나므로 우주선과 함께 움직이는 우주인이 고유시간을 측정합니다."},
+  {num:17, text:"우주선 안에서 광원에서 출발한 빛이 우주선 앞쪽 검출기에 도달했다. 이 두 사건의 고유시간을 측정하는 사람은?", opts:["우주선 안의 사람", "외부의 정지한 관찰자", "둘 다 측정 가능", "둘 다 측정 불가능"], ans:4, exp:"두 사건이 우주선 안에서도 서로 다른 위치(광원과 검출기)에서 일어나므로, 어떤 관성계의 단일 시계로도 같은 위치에서 측정할 수 없어 고유시간이 정의되지 않습니다."},
+  {num:18, text:"우주선이 +x 방향으로 0.8c의 빠른 속력으로 날아간다. 외부의 정지한 관찰자가 우주선의 가로(운동 방향, x축)와 세로(운동 방향에 수직, y축) 길이를 측정할 때 옳은 설명은?", opts:["가로와 세로 모두 짧아진 것으로 측정된다.", "가로(운동 방향)는 짧아지지만, 세로(수직 방향)는 변하지 않는다.", "세로는 짧아지지만 가로는 변하지 않는다.", "가로와 세로 모두 변하지 않는다."], ans:2, exp:"길이 수축은 상대 운동 방향에 평행한 성분에서만 일어나며, 운동 방향에 수직한 길이는 변하지 않습니다."},
+  {num:19, text:"우주선 A와 우주선 B가 서로에 대해 0.6c의 빠른 속력으로 등속 운동하고 있다. 각자 자신의 우주선 안에 동일한 시계를 가지고 있다. 이때 옳은 설명은?", opts:["A에서 본 B의 시계만 느리게 가고, B에서 본 A의 시계는 정상이다.", "B에서 본 A의 시계만 느리게 가고, A에서 본 B의 시계는 정상이다.", "A와 B 모두 상대방의 시계가 자신의 시계보다 느리게 가는 것으로 측정한다.", "두 우주선의 시계는 서로 같은 빠르기로 측정된다."], ans:3, exp:"시간 지연은 상호적입니다. 모든 관성계는 동등하므로, 각 관찰자는 자신에 대해 운동하는 상대방의 시계가 느리게 가는 것으로 측정합니다."},
+  {num:20, text:"우주선 안 우주인은 행성 P에서 Q까지 거리가 60광년이라고 측정했고, 행성에 정지한 관찰자는 100광년이라고 측정했다. 이 상황에 대한 설명으로 옳은 것은?", opts:["우주인이 측정한 60광년이 고유길이다.", "행성 관찰자가 측정한 100광년이 고유길이이며, 우주인은 길이 수축으로 더 짧게 측정한다.", "두 측정값 모두 고유길이다.", "우주인의 측정이 잘못된 것이다."], ans:2, exp:"두 행성에 대해 정지한 관찰자가 측정한 거리가 고유길이이며, 두 행성에 대해 운동하는 우주인은 길이 수축으로 더 짧게 측정합니다."},
+];
+
+// ══════════════════════════════════════
+// 상태
+// ══════════════════════════════════════
+let userName = '', userSchool = '';
+let userAnswers = {}; // num → chosen index (1~4)
+let timerInterval = null;
+let elapsedSec = 0;
+let quizStarted = false;
+
+// ══════════════════════════════════════
+// 유틸
+// ══════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function fmtTime(sec) {
+  const m = String(Math.floor(sec / 60)).padStart(2, '0');
+  const s = String(sec % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function toast(msg, duration = 2500) {
+  const el = document.getElementById('savingToast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration);
+}
+
+// ══════════════════════════════════════
+// SCREEN 1 → 시작
+// ══════════════════════════════════════
+function startQuiz() {
+  const name = document.getElementById('input-name').value.trim();
+  const school = document.getElementById('input-school').value.trim();
+  if (!name) { alert('이름을 입력해주세요.'); return; }
+  if (!school) { alert('학교를 입력해주세요.'); return; }
+
+  userName = name;
+  userSchool = school;
+  userAnswers = {};
+  elapsedSec = 0;
+
+  renderQuiz();
+  showScreen('screen-quiz');
+  startTimer();
+}
+
+// ══════════════════════════════════════
+// 타이머
+// ══════════════════════════════════════
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    elapsedSec++;
+    document.getElementById('timerDisplay').textContent = fmtTime(elapsedSec);
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// ══════════════════════════════════════
+// 퀴즈 렌더
+// ══════════════════════════════════════
+const LABELS = ['①','②','③','④'];
+
+function renderQuiz() {
+  const body = document.getElementById('quizBody');
+  body.innerHTML = QUIZ.map(q => `
+    <div class="q-card" id="qcard-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="q-options">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="opt-${q.num}-${i+1}" onclick="selectOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  updateProgress();
+}
+
+function selectOpt(num, chosen) {
+  userAnswers[num] = chosen;
+
+  // 선택 표시
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`opt-${num}-${i}`);
+    btn.style.borderColor = i === chosen ? 'var(--accent)' : '';
+    btn.style.background = i === chosen ? 'var(--accent-light)' : '';
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = Object.keys(userAnswers).length;
+  const total = QUIZ.length;
+  document.getElementById('metaProgress').textContent = `${answered} / ${total}`;
+  document.getElementById('progressFill').style.width = `${(answered / total) * 100}%`;
+}
+
+// ══════════════════════════════════════
+// 제출
+// ══════════════════════════════════════
+function submitQuiz() {
+  const answered = Object.keys(userAnswers).length;
+  if (answered < QUIZ.length) {
+    if (!confirm(`아직 ${QUIZ.length - answered}문제가 남아 있어요. 제출하시겠어요?`)) return;
+  }
+  stopTimer();
+  showResult();
+}
+
+// ══════════════════════════════════════
+// 결과
+// ══════════════════════════════════════
+function showResult() {
+  const correct = QUIZ.filter(q => userAnswers[q.num] === q.ans);
+  const wrong   = QUIZ.filter(q => userAnswers[q.num] !== q.ans);
+  const score   = correct.length;
+  const total   = QUIZ.length;
+
+  document.getElementById('resultName').textContent = `${userName} · ${userSchool}`;
+  document.getElementById('resultScore').textContent = score;
+  document.getElementById('resultScoreSub').textContent = `/ ${total} 문항`;
+  document.getElementById('statTime').textContent = fmtTime(elapsedSec);
+  document.getElementById('statCorrect').textContent = `${score}개`;
+  document.getElementById('statWrong').textContent = `${wrong.length}개`;
+
+  // 오답 리뷰
+  const reviewSection = document.getElementById('reviewSection');
+  if (wrong.length === 0) {
+    reviewSection.innerHTML = `<div style="text-align:center;padding:32px 0;color:var(--accent);font-weight:700;">🎉 전부 맞혔어요!</div>`;
+  } else {
+    reviewSection.innerHTML = `
+      <h2>틀린 문제 <span class="badge-wrong">${wrong.length}문제</span></h2>
+      ${wrong.map(q => renderReviewCard(q)).join('')}
+    `;
+  }
+
+  showScreen('screen-result');
+  saveScore(score, total);
+}
+
+function renderReviewCard(q) {
+  return `
+    <div class="review-card" id="review-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="review-retry-wrap" id="retry-opts-${q.num}">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="retry-opt-${q.num}-${i+1}" onclick="retryOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="review-exp">
+        <div class="review-exp-label">✦ 해설</div>
+        <p>${q.exp}</p>
+      </div>
+    </div>
+  `;
+}
+
+function retryOpt(num, chosen) {
+  const q = QUIZ.find(x => x.num === num);
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`retry-opt-${num}-${i}`);
+    if (!btn) continue;
+    btn.disabled = true;
+    if (i === q.ans) btn.className = 'opt-btn correct';
+    else if (i === chosen && chosen !== q.ans) btn.className = 'opt-btn wrong';
+    else btn.className = 'opt-btn reveal';
+  }
+}
+
+// ══════════════════════════════════════
+// Airtable 저장
+// ══════════════════════════════════════
+async function saveScore(score, total) {
+  toast('점수 저장 중...');
+  try {
+    const res = await fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_SCORES}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${AT_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        fields: {
+          '이름': userName,
+          '학교': userSchool,
+          '날짜': new Date().toISOString().split('T')[0],
+          '과목': QUIZ_META.subject,
+          '대단원': QUIZ_META.unit,
+          '소단원': QUIZ_META.subunit,
+          '섹션': QUIZ_META.section,
+          '섹션명': QUIZ_META.sectionName,
+          '총점': score,
+          '총문항수': total,
+          '풀이시간': fmtTime(elapsedSec)
+        }
+      })
+    });
+    if (res.ok) toast('✓ 점수가 저장되었습니다.');
+    else toast('저장 실패 — 네트워크를 확인해주세요.');
+  } catch(e) {
+    toast('저장 실패 — 네트워크를 확인해주세요.');
+  }
+}
+
+// ══════════════════════════════════════
+// 리셋
+// ══════════════════════════════════════
+function resetQuiz() {
+  userName = '';
+  userSchool = '';
+  userAnswers = {};
+  elapsedSec = 0;
+  document.getElementById('input-name').value = '';
+  document.getElementById('input-school').value = '';
+  document.getElementById('timerDisplay').textContent = '00:00';
+  showScreen('screen-intro');
+}
+</script>
+</body>
+</html>
