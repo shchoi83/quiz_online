@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>에너지띠와 반도체 · 물리 퀴즈</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --border: #e2ddd6;
+  --text: #1a1714;
+  --text-dim: #8a8480;
+  --accent: #2d5a3d;
+  --accent-light: #e8f0eb;
+  --wrong: #c0392b;
+  --wrong-light: #fdf0ef;
+  --correct: #2d5a3d;
+  --correct-light: #e8f0eb;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+  padding: 0 0 60px;
+}
+
+/* ── 공통 ── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 14px 28px;
+  font-size: 0.95rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  width: 100%;
+}
+
+.btn:hover { opacity: 0.88; }
+.btn:active { transform: scale(0.98); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+}
+
+.btn-ghost:hover { background: var(--accent-light); opacity: 1; }
+
+/* ── SCREEN 1: 입력 ── */
+#screen-intro {
+  padding-top: 80px;
+}
+
+.intro-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.intro-header .tag {
+  display: inline-block;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: 0.08em;
+}
+
+.intro-header h1 { margin-bottom: 8px; }
+.intro-header p { color: var(--text-dim); font-size: 0.9rem; }
+
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: var(--shadow);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+}
+
+.form-group input {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 13px 16px;
+  font-size: 1rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus { border-color: var(--accent); }
+
+.form-info {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  background: var(--accent-light);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.form-info span {
+  font-size: 0.82rem;
+  color: var(--accent);
+}
+
+/* ── SCREEN 2: 퀴즈 ── */
+#screen-quiz { padding-top: 0; }
+
+.quiz-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+}
+
+.quiz-topbar-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.progress-wrap {
+  flex: 1;
+  background: var(--border);
+  border-radius: 99px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 6px;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.quiz-meta {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.meta-item {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.meta-item span {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.quiz-body {
+  padding: 32px 20px;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: border-color 0.3s;
+}
+
+.q-card.correct { border-color: var(--correct); }
+.q-card.wrong { border-color: var(--wrong); }
+
+.q-head {
+  padding: 20px 24px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.q-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.q-text {
+  font-size: 0.93rem;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+
+.q-options {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.opt-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+  transition: all 0.15s;
+  width: 100%;
+}
+
+.opt-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.opt-btn:disabled { cursor: default; }
+
+.opt-btn.correct {
+  border-color: var(--correct);
+  background: var(--correct-light);
+  color: var(--correct);
+}
+
+.opt-btn.wrong {
+  border-color: var(--wrong);
+  background: var(--wrong-light);
+  color: var(--wrong);
+}
+
+.opt-btn.reveal {
+  border-color: rgba(45,90,61,0.35);
+  background: rgba(45,90,61,0.04);
+  color: rgba(45,90,61,0.6);
+}
+
+.opt-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 0.15s;
+}
+
+.opt-btn.correct .opt-label { background: var(--correct); border-color: var(--correct); color: #fff; }
+.opt-btn.wrong .opt-label { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+
+/* submit btn area */
+.submit-wrap {
+  padding: 0 20px 40px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ── SCREEN 3: 결과 ── */
+#screen-result { padding-top: 48px; }
+
+.result-hero {
+  text-align: center;
+  padding: 48px 20px 32px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.result-name {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  font-family: 'DM Mono', monospace;
+}
+
+.result-score {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin-bottom: 4px;
+}
+
+.result-score-sub {
+  font-size: 1rem;
+  color: var(--text-dim);
+  margin-bottom: 24px;
+}
+
+.result-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.result-section {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.result-section h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-wrong {
+  background: var(--wrong-light);
+  color: var(--wrong);
+  font-size: 0.72rem;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* review card */
+.review-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.review-card .q-head { padding-bottom: 12px; }
+
+.review-exp {
+  padding: 14px 24px 18px;
+  border-top: 1px solid var(--border);
+  background: var(--accent-light);
+}
+
+.review-exp-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--accent);
+  margin-bottom: 5px;
+  letter-spacing: 0.06em;
+}
+
+.review-exp p {
+  font-size: 0.84rem;
+  color: var(--accent);
+  line-height: 1.65;
+}
+
+.review-retry-wrap {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.result-actions {
+  max-width: 720px;
+  margin: 32px auto 0;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* saving overlay */
+.saving-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 99px;
+  font-size: 0.82rem;
+  font-family: 'DM Mono', monospace;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 999;
+  white-space: nowrap;
+}
+
+.saving-toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1: 이름 / 학교 입력
+══════════════════════════════════════ -->
+<div id="screen-intro" class="screen active">
+  <div class="container">
+    <div class="intro-header">
+      <div class="tag">PHYSICS QUIZ</div>
+      <h1>에너지띠와 반도체</h1>
+      <p>물리학 · 3단원 빛과 물질 · 2중단원 물질의 이해 · 2섹션</p>
+    </div>
+
+    <div class="form-card">
+      <div class="form-info">
+        <span>📋 총 21문항 · 객관식 4지선다 · 시간 제한 없음</span>
+      </div>
+
+      <div class="form-group">
+        <label>이름</label>
+        <input type="text" id="input-name" placeholder="홍길동" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>학교</label>
+        <input type="text" id="input-school" placeholder="○○고등학교" autocomplete="off">
+      </div>
+
+      <button class="btn" onclick="startQuiz()">시작하기 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2: 퀴즈
+══════════════════════════════════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-topbar">
+    <div class="quiz-topbar-inner">
+      <div class="progress-wrap">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="quiz-meta">
+        <div class="meta-item" id="metaProgress">0 / 21</div>
+        <div class="meta-item">⏱ <span id="timerDisplay">00:00</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-body" id="quizBody"></div>
+
+  <div class="submit-wrap">
+    <button class="btn" onclick="submitQuiz()">제출하기</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 3: 결과
+══════════════════════════════════════ -->
+<div id="screen-result" class="screen">
+  <div class="result-hero">
+    <div class="result-name" id="resultName"></div>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-score-sub" id="resultScoreSub"></div>
+    <div class="result-stats">
+      <div class="stat-item">
+        <div class="stat-val" id="statTime"></div>
+        <div class="stat-label">풀이 시간</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statCorrect"></div>
+        <div class="stat-label">정답</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statWrong"></div>
+        <div class="stat-label">오답</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-section" id="reviewSection"></div>
+
+  <div class="result-actions">
+    <button class="btn btn-ghost" onclick="resetQuiz()">↺ 새로 응시하기</button>
+  </div>
+</div>
+
+<div class="saving-toast" id="savingToast"></div>
+
+<script>
+// ══════════════════════════════════════
+// Airtable 설정
+// ══════════════════════════════════════
+const AT_TOKEN   = "patBcLElKAr7fPbgS.0f288a25e39501f27d9d33569371fc819acb54173cf44daa68fc028f16e479f9";
+const AT_BASE    = "appmCOjqp5xIJuPqt";
+const AT_SCORES  = "scores";
+
+// ══════════════════════════════════════
+// 퀴즈 메타
+// ══════════════════════════════════════
+const QUIZ_META = {
+  subjectCode: "PHY",
+  subjectName: "물리학",
+  mainNo:      3,
+  mainName:    "빛과 물질",
+  subNo:       2,
+  subName:     "물질의 이해",
+  sectionNo:   2,
+  sectionName: "에너지띠와 반도체"
+};
+
+// ══════════════════════════════════════
+// 퀴즈 데이터
+// ══════════════════════════════════════
+const QUIZ = [
+  {num:1, text:"고체에서 에너지 준위가 미세하게 갈라져 '에너지띠'를 형성하는 원리는?", opts:["원자의 핵융합", "인접한 원자들 간의 에너지 준위 겹침", "전자의 질량 변화", "고체의 온도 변화"], ans:2, exp:"원자들이 가까워지면 에너지 준위가 겹치지 않게 미세하게 갈라집니다."},
+  {num:2, text:"0K에서 전자가 채워져 있는 에너지띠 중 가장 높은 띠의 명칭은?", opts:["전도띠", "원자가 띠", "띠 간격", "허용된 띠"], ans:2, exp:"전자가 채워진 마지막 에너지띠를 원자가 띠라고 합니다."},
+  {num:3, text:"원자가 띠 위에 있는 비어 있는 에너지띠의 명칭은?", opts:["금지띠", "전도띠", "원자가 띠", "준위띠"], ans:2, exp:"전자가 에너지를 얻어 올라가면 자유롭게 이동할 수 있는 띠입니다."},
+  {num:4, text:"부도체(절연체)의 전기 전도성이 매우 낮은 이유는?", opts:["전도띠에 전자가 너무 많아서", "띠 간격(띠 틈)이 매우 넓어서", "원자가 띠가 비어 있어서", "전자가 원자핵과 결합하지 않아서"], ans:2, exp:"띠 간격이 넓어 전자가 전도띠로 올라가기 매우 어렵기 때문입니다."},
+  {num:5, text:"도체(금속)의 에너지 구조상 특징은?", opts:["띠 간격이 매우 넓다.", "원자가 띠와 전도띠가 겹쳐 있거나 매우 가깝다.", "전도띠가 완전히 비어 있다.", "원자가 띠에 전자가 없다."], ans:2, exp:"띠 간격이 거의 없어 전자가 자유롭게 전도띠로 이동합니다."},
+  {num:6, text:"반도체의 에너지띠 구조에 대한 설명으로 옳은 것은?", opts:["띠 간격이 없다.", "부도체보다 띠 간격이 좁다.", "도체보다 띠 간격이 좁다.", "원자가 띠에 전자가 하나도 없다."], ans:2, exp:"절연체보다는 좁은 띠 간격을 가져 조건에 따라 전류가 흐릅니다."},
+  {num:7, text:"원자가 띠의 전자가 전도띠로 전이하면서 남기는 (+) 전하 성질의 빈자리는?", opts:["전자", "양공", "중성자", "음이온"], ans:2, exp:"전자가 빠져나간 빈자리는 상대적으로 (+)를 띠며 양공이라 부릅니다."},
+  {num:8, text:"반도체의 주요 재료인 실리콘(Si)의 최외각 전자 수는?", opts:["3개", "4개", "5개", "6개"], ans:2, exp:"14족 원소인 실리콘은 최외각 전자가 4개입니다."},
+  {num:9, text:"불순물이 추가된 반도체에 대한 설명으로 옳은 것은?", opts:["n형 반도체는 양공이 주요 나르개이다.", "p형 반도체는 자유 전자가 주요 나르개이다.", "n형은 전자, p형은 양공이 주요 전하 나르개이다.", "도핑을 하면 전기 전도성이 나빠진다."], ans:3, exp:"도핑을 통해 전자나 양공의 수를 늘려 전도성을 높입니다."},
+  {num:10, text:"띠 간격이 큰 물질부터 순서대로 나열한 것은?", opts:["절연체-반도체-도체", "도체-반도체-절연체", "반도체-절연체-도체", "절연체-도체-반도체"], ans:1, exp:"전도성이 나쁠수록 에너지 띠 간격이 넓습니다."},
+  {num:11, text:"n형 반도체를 만들기 위해 도핑하는 원소(주개)의 최외각 전자 수는?", opts:["3개", "4개", "5개", "6개"], ans:3, exp:"5족 원소를 넣으면 결합 후 전자 1개가 남아 전류에 기여합니다."},
+  {num:12, text:"p형 반도체를 만들기 위해 도핑하는 원소(받개)의 최외각 전자 수는?", opts:["3개", "4개", "5개", "6개"], ans:1, exp:"3족 원소를 넣으면 전자 1개가 부족하여 양공이 생깁니다."},
+  {num:13, text:"n형 반도체에서 불순물에 의해 전도띠 바로 아래에 생성되는 준위는?", opts:["주개 준위", "받개 준위", "중간 준위", "금지 준위"], ans:1, exp:"전자를 전도띠로 쉽게 보내주는(주는) 준위이므로 주개 준위입니다."},
+  {num:14, text:"p형 반도체에서 불순물에 의해 원자가 띠 바로 위에 생성되는 준위는?", opts:["주개 준위", "받개 준위", "공핍 준위", "이온 준위"], ans:2, exp:"원자가 띠의 전자를 쉽게 받아들여 양공을 만드는 받개 준위입니다."},
+  {num:15, text:"pn 접합 다이오드에 순방향 전압을 거는 방법은?", opts:["p형에 (-), n형에 (+) 연결", "p형에 (+), n형에 (-) 연결", "양쪽 모두 (+) 연결", "전지를 연결하지 않음"], ans:2, exp:"p(Positive)에 (+), n(Negative)에 (-)를 연결해야 순방향입니다."},
+  {num:16, text:"pn 접합 다이오드에 역방향 전압을 걸었을 때 일어나는 현상은?", opts:["결핍층(공핍층)이 좁아진다.", "결핍층(공핍층)이 두꺼워진다.", "전류가 매우 잘 흐른다.", "전자와 양공이 접합면으로 모인다."], ans:2, exp:"전하 나르개들이 접합면에서 멀어져 결핍층이 넓어지고 전류가 차단됩니다."},
+  {num:17, text:"다이오드의 정류 작용에 대한 설명으로 옳은 것은?", opts:["빛을 전기로 바꾼다.", "교류를 직류로 바꾼다.", "전압을 높여준다.", "에너지를 저장한다."], ans:2, exp:"한쪽 방향으로만 전류를 흐르게 하여 방향이 바뀌는 교류를 정류합니다."},
+  {num:18, text:"발광 다이오드(LED)가 빛을 내는 원리로 옳은 것은?", opts:["전자가 원자가 띠에서 전도띠로 올라갈 때", "전자가 전도띠에서 원자가 띠의 양공으로 떨어질 때", "양공이 n형 영역으로 이동할 때", "반도체가 열을 받아서"], ans:2, exp:"전자가 에너지를 잃으며 떨어질 때 띠 간격만큼의 빛을 방출합니다."},
+  {num:19, text:"LED에서 나오는 빛의 색깔을 조절하는 방법은?", opts:["전지의 전압을 바꾼다.", "반도체의 띠 간격 크기를 조절한다.", "전류의 세기를 바꾼다.", "다이오드의 크기를 바꾼다."], ans:2, exp:"에너지 차이(띠 간격)가 빛의 진동수(색깔)를 결정합니다."},
+  {num:20, text:"광다이오드(Photodiode)에 대한 설명으로 옳은 것은?", opts:["빛 에너지를 전기 에너지로 변환한다.", "순방향으로 전기를 흘려 빛을 낸다.", "정류 작용을 하지 못한다.", "전류를 증폭시키는 장치이다."], ans:1, exp:"빛을 받으면 전자와 양공이 생겨 전류가 흐르는 원리를 이용합니다."},
+  {num:21, text:"LED와 광다이오드의 회로 연결 및 전류 방향에 대한 설명으로 옳은 것은?", opts:["LED는 역방향일 때 빛이 난다.", "광다이오드는 순방향 전류만을 신호로 사용한다.", "LED는 순방향일 때 작동하며 광다이오드는 주로 역방향 전류 흐름을 이용한다.", "두 소자 모두 전류 방향에 상관없이 작동한다."], ans:3, exp:"LED는 순방향 전압이 필수이며 광다이오드는 역방향 시 발생하는 전류 변화를 감지합니다."},
+];
+
+// ══════════════════════════════════════
+// 상태
+// ══════════════════════════════════════
+let userName = '', userSchool = '';
+let userAnswers = {}; // num → chosen index (1~4)
+let timerInterval = null;
+let elapsedSec = 0;
+let quizStarted = false;
+
+// ══════════════════════════════════════
+// 유틸
+// ══════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function fmtTime(sec) {
+  const m = String(Math.floor(sec / 60)).padStart(2, '0');
+  const s = String(sec % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function toast(msg, duration = 2500) {
+  const el = document.getElementById('savingToast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration);
+}
+
+// ══════════════════════════════════════
+// SCREEN 1 → 시작
+// ══════════════════════════════════════
+function startQuiz() {
+  const name = document.getElementById('input-name').value.trim();
+  const school = document.getElementById('input-school').value.trim();
+  if (!name) { alert('이름을 입력해주세요.'); return; }
+  if (!school) { alert('학교를 입력해주세요.'); return; }
+
+  userName = name;
+  userSchool = school;
+  userAnswers = {};
+  elapsedSec = 0;
+
+  renderQuiz();
+  showScreen('screen-quiz');
+  startTimer();
+}
+
+// ══════════════════════════════════════
+// 타이머
+// ══════════════════════════════════════
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    elapsedSec++;
+    document.getElementById('timerDisplay').textContent = fmtTime(elapsedSec);
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// ══════════════════════════════════════
+// 퀴즈 렌더
+// ══════════════════════════════════════
+const LABELS = ['①','②','③','④'];
+
+function renderQuiz() {
+  const body = document.getElementById('quizBody');
+  body.innerHTML = QUIZ.map(q => `
+    <div class="q-card" id="qcard-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="q-options">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="opt-${q.num}-${i+1}" onclick="selectOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  updateProgress();
+}
+
+function selectOpt(num, chosen) {
+  userAnswers[num] = chosen;
+
+  // 선택 표시
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`opt-${num}-${i}`);
+    btn.style.borderColor = i === chosen ? 'var(--accent)' : '';
+    btn.style.background = i === chosen ? 'var(--accent-light)' : '';
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = Object.keys(userAnswers).length;
+  const total = QUIZ.length;
+  document.getElementById('metaProgress').textContent = `${answered} / ${total}`;
+  document.getElementById('progressFill').style.width = `${(answered / total) * 100}%`;
+}
+
+// ══════════════════════════════════════
+// 제출
+// ══════════════════════════════════════
+function submitQuiz() {
+  const answered = Object.keys(userAnswers).length;
+  if (answered < QUIZ.length) {
+    if (!confirm(`아직 ${QUIZ.length - answered}문제가 남아 있어요. 제출하시겠어요?`)) return;
+  }
+  stopTimer();
+  showResult();
+}
+
+// ══════════════════════════════════════
+// 결과
+// ══════════════════════════════════════
+function showResult() {
+  const correct = QUIZ.filter(q => userAnswers[q.num] === q.ans);
+  const wrong   = QUIZ.filter(q => userAnswers[q.num] !== q.ans);
+  const score   = correct.length;
+  const total   = QUIZ.length;
+
+  document.getElementById('resultName').textContent = `${userName} · ${userSchool}`;
+  document.getElementById('resultScore').textContent = score;
+  document.getElementById('resultScoreSub').textContent = `/ ${total} 문항`;
+  document.getElementById('statTime').textContent = fmtTime(elapsedSec);
+  document.getElementById('statCorrect').textContent = `${score}개`;
+  document.getElementById('statWrong').textContent = `${wrong.length}개`;
+
+  // 오답 리뷰
+  const reviewSection = document.getElementById('reviewSection');
+  if (wrong.length === 0) {
+    reviewSection.innerHTML = `<div style="text-align:center;padding:32px 0;color:var(--accent);font-weight:700;">🎉 전부 맞혔어요!</div>`;
+  } else {
+    reviewSection.innerHTML = `
+      <h2>틀린 문제 <span class="badge-wrong">${wrong.length}문제</span></h2>
+      ${wrong.map(q => renderReviewCard(q)).join('')}
+    `;
+  }
+
+  showScreen('screen-result');
+  saveScore(score, total);
+}
+
+function renderReviewCard(q) {
+  return `
+    <div class="review-card" id="review-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="review-retry-wrap" id="retry-opts-${q.num}">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="retry-opt-${q.num}-${i+1}" onclick="retryOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="review-exp">
+        <div class="review-exp-label">✦ 해설</div>
+        <p>${q.exp}</p>
+      </div>
+    </div>
+  `;
+}
+
+function retryOpt(num, chosen) {
+  const q = QUIZ.find(x => x.num === num);
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`retry-opt-${num}-${i}`);
+    if (!btn) continue;
+    btn.disabled = true;
+    if (i === q.ans) btn.className = 'opt-btn correct';
+    else if (i === chosen && chosen !== q.ans) btn.className = 'opt-btn wrong';
+    else btn.className = 'opt-btn reveal';
+  }
+}
+
+// ══════════════════════════════════════
+// Airtable 저장
+// ══════════════════════════════════════
+async function saveScore(score, total) {
+  toast('점수 저장 중...');
+  try {
+    const res = await fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_SCORES}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${AT_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        fields: {
+          '이름': userName,
+          '학교': userSchool,
+          '날짜': new Date().toISOString().split('T')[0],
+          '과목코드': QUIZ_META.subjectCode,
+          '과목명': QUIZ_META.subjectName,
+          '대단원번호': QUIZ_META.mainNo,
+          '대단원명': QUIZ_META.mainName,
+          '중단원번호': QUIZ_META.subNo,
+          '중단원명': QUIZ_META.subName,
+          '섹션번호': QUIZ_META.sectionNo,
+          '섹션명': QUIZ_META.sectionName,
+          '총점': score,
+          '총문항수': total,
+          '풀이시간': fmtTime(elapsedSec)
+        }
+      })
+    });
+    if (res.ok) toast('✓ 점수가 저장되었습니다.');
+    else toast('저장 실패 — 네트워크를 확인해주세요.');
+  } catch(e) {
+    toast('저장 실패 — 네트워크를 확인해주세요.');
+  }
+}
+
+// ══════════════════════════════════════
+// 리셋
+// ══════════════════════════════════════
+function resetQuiz() {
+  userName = '';
+  userSchool = '';
+  userAnswers = {};
+  elapsedSec = 0;
+  document.getElementById('input-name').value = '';
+  document.getElementById('input-school').value = '';
+  document.getElementById('timerDisplay').textContent = '00:00';
+  showScreen('screen-intro');
+}
+</script>
+</body>
+</html>

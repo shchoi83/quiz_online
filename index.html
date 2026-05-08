@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>물리 퀴즈 · 섹션 선택</title>
+<title>물리 퀴즈</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -28,15 +28,9 @@ body {
   padding: 60px 20px;
 }
 
-.container {
-  max-width: 720px;
-  margin: 0 auto;
-}
+.container { max-width: 720px; margin: 0 auto; }
 
-.header {
-  text-align: center;
-  margin-bottom: 48px;
-}
+.header { text-align: center; margin-bottom: 48px; }
 
 .tag {
   display: inline-block;
@@ -57,15 +51,81 @@ h1 {
   margin-bottom: 8px;
 }
 
-.header p {
+.header p { color: var(--text-dim); font-size: 0.92rem; }
+
+/* 화면 전환 */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* 뒤로가기 */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
   color: var(--text-dim);
-  font-size: 0.92rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 20px;
+  letter-spacing: 0.04em;
+  transition: color 0.2s;
+}
+.back-btn:hover { color: var(--text); }
+
+/* 과목 카드 */
+.subject-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 26px 26px;
+  margin-bottom: 14px;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.2s;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+.subject-card:hover:not(.disabled) {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+.subject-card.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.subject-code {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.82rem;
+  background: var(--accent-light);
+  color: var(--accent);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 500;
+  flex-shrink: 0;
+  letter-spacing: 0.06em;
+}
+.subject-info { flex: 1; min-width: 0; }
+.subject-name {
+  font-size: 1.18rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.subject-desc {
+  font-size: 0.84rem;
+  color: var(--text-dim);
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.02em;
 }
 
-.unit-section {
-  margin-bottom: 32px;
-}
-
+/* 섹션(퀴즈) 카드 */
+.unit-section { margin-bottom: 32px; }
 .unit-label {
   font-family: 'DM Mono', monospace;
   font-size: 0.78rem;
@@ -74,7 +134,6 @@ h1 {
   margin-bottom: 12px;
   padding-left: 4px;
 }
-
 .quiz-card {
   display: flex;
   align-items: center;
@@ -89,19 +148,11 @@ h1 {
   transition: all 0.2s;
   box-shadow: var(--shadow);
 }
-
 .quiz-card:hover {
   border-color: var(--accent);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0,0,0,0.08);
 }
-
-.quiz-card.disabled {
-  opacity: 0.5;
-  pointer-events: none;
-  cursor: not-allowed;
-}
-
 .quiz-num {
   font-family: 'DM Mono', monospace;
   font-size: 0.78rem;
@@ -113,33 +164,26 @@ h1 {
   flex-shrink: 0;
   letter-spacing: 0.04em;
 }
-
-.quiz-info {
-  flex: 1;
-  min-width: 0;
-}
-
+.quiz-info { flex: 1; min-width: 0; }
 .quiz-title {
   font-size: 1.05rem;
   font-weight: 500;
   margin-bottom: 4px;
 }
-
 .quiz-meta {
   font-size: 0.8rem;
   color: var(--text-dim);
   font-family: 'DM Mono', monospace;
   letter-spacing: 0.02em;
 }
-
 .quiz-arrow {
   color: var(--text-dim);
   font-size: 1.2rem;
   flex-shrink: 0;
   transition: transform 0.2s;
 }
-
-.quiz-card:hover .quiz-arrow {
+.quiz-card:hover .quiz-arrow,
+.subject-card:hover:not(.disabled) .quiz-arrow {
   color: var(--accent);
   transform: translateX(4px);
 }
@@ -157,46 +201,138 @@ h1 {
 <body>
 
 <div class="container">
-  <div class="header">
-    <div class="tag">PHYSICS QUIZ</div>
-    <h1>퀴즈 섹션 선택</h1>
-    <p>물리학 · 응시할 섹션을 선택하세요</p>
+
+  <!-- ══════════════════════════════════════
+       SCREEN 1: 과목 선택
+  ══════════════════════════════════════ -->
+  <div class="screen active" id="screen-subjects">
+    <div class="header">
+      <div class="tag">PHYSICS QUIZ</div>
+      <h1>과목 선택</h1>
+      <p>응시할 과목을 선택하세요</p>
+    </div>
+
+    <div class="subject-card" onclick="showSubject('PHY')">
+      <div class="subject-code">PHY</div>
+      <div class="subject-info">
+        <div class="subject-name">물리학</div>
+        <div class="subject-desc">22개정 일반선택 · 3섹션</div>
+      </div>
+      <div class="quiz-arrow">→</div>
+    </div>
+
+    <div class="subject-card" onclick="showSubject('MEC')">
+      <div class="subject-code">MEC</div>
+      <div class="subject-info">
+        <div class="subject-name">역학과 에너지</div>
+        <div class="subject-desc">22개정 진로선택 · 2섹션</div>
+      </div>
+      <div class="quiz-arrow">→</div>
+    </div>
+
+    <div class="subject-card disabled">
+      <div class="subject-code">EMQ</div>
+      <div class="subject-info">
+        <div class="subject-name">전자기와 양자</div>
+        <div class="subject-desc">22개정 진로선택 · 준비 중</div>
+      </div>
+      <div class="quiz-arrow">→</div>
+    </div>
   </div>
 
-  <!-- 대단원 3 빛과 물질 / 중단원 2 물질의 이해 -->
-  <div class="unit-section">
-    <div class="unit-label">3단원 빛과 물질 · 2중단원 물질의 이해</div>
+  <!-- ══════════════════════════════════════
+       SCREEN 2: PHY 섹션 목록
+  ══════════════════════════════════════ -->
+  <div class="screen" id="screen-PHY">
+    <button class="back-btn" onclick="showSubjects()">← 과목 선택으로</button>
+    <div class="header" style="margin-bottom:32px;">
+      <div class="tag">PHY · 물리학</div>
+      <h1>물리학</h1>
+      <p>22개정 일반선택 · 응시할 섹션을 선택하세요</p>
+    </div>
 
-    <a class="quiz-card" href="quiz-3_2_1_에너지_준위.html">
-      <div class="quiz-num">3-2-1</div>
-      <div class="quiz-info">
-        <div class="quiz-title">에너지 준위</div>
-        <div class="quiz-meta">20문항 · Basic</div>
-      </div>
-      <div class="quiz-arrow">→</div>
-    </a>
+    <div class="unit-section">
+      <div class="unit-label">3단원 빛과 물질 · 2중단원 물질의 이해</div>
 
-    <a class="quiz-card" href="quiz-3_2_2_에너지띠와_반도체.html">
-      <div class="quiz-num">3-2-2</div>
-      <div class="quiz-info">
-        <div class="quiz-title">에너지띠와 반도체</div>
-        <div class="quiz-meta">21문항 · Basic</div>
-      </div>
-      <div class="quiz-arrow">→</div>
-    </a>
+      <a class="quiz-card" href="phy-quiz-3_2_1_에너지_준위.html">
+        <div class="quiz-num">3-2-1</div>
+        <div class="quiz-info">
+          <div class="quiz-title">에너지 준위</div>
+          <div class="quiz-meta">20문항 · Basic</div>
+        </div>
+        <div class="quiz-arrow">→</div>
+      </a>
 
-    <a class="quiz-card" href="quiz-3_2_3_특수상대성.html">
-      <div class="quiz-num">3-2-3</div>
-      <div class="quiz-info">
-        <div class="quiz-title">특수 상대성 이론</div>
-        <div class="quiz-meta">20문항 · Basic + Advanced</div>
-      </div>
-      <div class="quiz-arrow">→</div>
-    </a>
+      <a class="quiz-card" href="phy-quiz-3_2_2_에너지띠와_반도체.html">
+        <div class="quiz-num">3-2-2</div>
+        <div class="quiz-info">
+          <div class="quiz-title">에너지띠와 반도체</div>
+          <div class="quiz-meta">21문항 · Basic</div>
+        </div>
+        <div class="quiz-arrow">→</div>
+      </a>
+
+      <a class="quiz-card" href="phy-quiz-3_2_3_특수_상대성_이론.html">
+        <div class="quiz-num">3-2-3</div>
+        <div class="quiz-info">
+          <div class="quiz-title">특수 상대성 이론</div>
+          <div class="quiz-meta">20문항 · Basic + Advanced</div>
+        </div>
+        <div class="quiz-arrow">→</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SCREEN 3: MEC 섹션 목록
+  ══════════════════════════════════════ -->
+  <div class="screen" id="screen-MEC">
+    <button class="back-btn" onclick="showSubjects()">← 과목 선택으로</button>
+    <div class="header" style="margin-bottom:32px;">
+      <div class="tag">MEC · 역학과 에너지</div>
+      <h1>역학과 에너지</h1>
+      <p>22개정 진로선택 · 응시할 섹션을 선택하세요</p>
+    </div>
+
+    <div class="unit-section">
+      <div class="unit-label">2단원 열과에너지 · 1중단원 열과 일</div>
+
+      <a class="quiz-card" href="mec-quiz-2_1_1_열역학_기초(열전도).html">
+        <div class="quiz-num">2-1-1</div>
+        <div class="quiz-info">
+          <div class="quiz-title">열역학 기초(열전도)</div>
+          <div class="quiz-meta">36문항 · Basic</div>
+        </div>
+        <div class="quiz-arrow">→</div>
+      </a>
+
+      <a class="quiz-card" href="mec-quiz-2_1_2_열역학_1법칙(일과_열기관).html">
+        <div class="quiz-num">2-1-2</div>
+        <div class="quiz-info">
+          <div class="quiz-title">열역학 1법칙(일과 열기관)</div>
+          <div class="quiz-meta">33문항 · Basic + Advanced</div>
+        </div>
+        <div class="quiz-arrow">→</div>
+      </a>
+    </div>
   </div>
 
   <div class="footer-note">궁극의 물리 · 최성훈T</div>
 </div>
+
+<script>
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+function showSubject(code) {
+  showScreen('screen-' + code);
+}
+function showSubjects() {
+  showScreen('screen-subjects');
+}
+</script>
 
 </body>
 </html>
