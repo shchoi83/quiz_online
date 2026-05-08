@@ -485,7 +485,7 @@ h1 {
     <div class="intro-header">
       <div class="tag">PHYSICS QUIZ</div>
       <h1>에너지 준위</h1>
-      <p>개정물리학 · 대단원3 · 소단원2 · 섹션1</p>
+      <p>물리학 · 3단원 빛과 물질 · 2중단원 물질의 이해 · 1섹션</p>
     </div>
 
     <div class="form-card">
@@ -575,10 +575,13 @@ const AT_SCORES  = "scores";
 // 퀴즈 메타
 // ══════════════════════════════════════
 const QUIZ_META = {
-  subject: "개정물리학",
-  unit: 3,
-  subunit: 2,
-  section: 1,
+  subjectCode: "PHY",
+  subjectName: "물리학",
+  mainNo:      3,
+  mainName:    "빛과 물질",
+  subNo:       2,
+  subName:     "물질의 이해",
+  sectionNo:   1,
   sectionName: "에너지 준위"
 };
 
@@ -813,10 +816,13 @@ async function saveScore(score, total) {
           '이름': userName,
           '학교': userSchool,
           '날짜': new Date().toISOString().split('T')[0],
-          '과목': QUIZ_META.subject,
-          '대단원': QUIZ_META.unit,
-          '소단원': QUIZ_META.subunit,
-          '섹션': QUIZ_META.section,
+          '과목코드': QUIZ_META.subjectCode,
+          '과목명': QUIZ_META.subjectName,
+          '대단원번호': QUIZ_META.mainNo,
+          '대단원명': QUIZ_META.mainName,
+          '중단원번호': QUIZ_META.subNo,
+          '중단원명': QUIZ_META.subName,
+          '섹션번호': QUIZ_META.sectionNo,
           '섹션명': QUIZ_META.sectionName,
           '총점': score,
           '총문항수': total,
