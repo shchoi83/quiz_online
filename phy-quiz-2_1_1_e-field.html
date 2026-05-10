@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>전기장과 전위차 · 물리 퀴즈</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --border: #e2ddd6;
+  --text: #1a1714;
+  --text-dim: #8a8480;
+  --accent: #2d5a3d;
+  --accent-light: #e8f0eb;
+  --wrong: #c0392b;
+  --wrong-light: #fdf0ef;
+  --correct: #2d5a3d;
+  --correct-light: #e8f0eb;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+  padding: 0 0 60px;
+}
+
+/* ── 공통 ── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 14px 28px;
+  font-size: 0.95rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  width: 100%;
+}
+
+.btn:hover { opacity: 0.88; }
+.btn:active { transform: scale(0.98); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+}
+
+.btn-ghost:hover { background: var(--accent-light); opacity: 1; }
+
+/* ── SCREEN 1: 입력 ── */
+#screen-intro {
+  padding-top: 80px;
+}
+
+.intro-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.intro-header .tag {
+  display: inline-block;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: 0.08em;
+}
+
+.intro-header h1 { margin-bottom: 8px; }
+.intro-header p { color: var(--text-dim); font-size: 0.9rem; }
+
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: var(--shadow);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+}
+
+.form-group input {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 13px 16px;
+  font-size: 1rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus { border-color: var(--accent); }
+
+.form-info {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  background: var(--accent-light);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.form-info span {
+  font-size: 0.82rem;
+  color: var(--accent);
+}
+
+/* ── SCREEN 2: 퀴즈 ── */
+#screen-quiz { padding-top: 0; }
+
+.quiz-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+}
+
+.quiz-topbar-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.progress-wrap {
+  flex: 1;
+  background: var(--border);
+  border-radius: 99px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 6px;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.quiz-meta {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.meta-item {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.meta-item span {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.quiz-body {
+  padding: 32px 20px;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: border-color 0.3s;
+}
+
+.q-card.correct { border-color: var(--correct); }
+.q-card.wrong { border-color: var(--wrong); }
+
+.q-head {
+  padding: 20px 24px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.q-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.q-text {
+  font-size: 0.93rem;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+
+.q-options {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.opt-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+  transition: all 0.15s;
+  width: 100%;
+}
+
+.opt-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.opt-btn:disabled { cursor: default; }
+
+.opt-btn.correct {
+  border-color: var(--correct);
+  background: var(--correct-light);
+  color: var(--correct);
+}
+
+.opt-btn.wrong {
+  border-color: var(--wrong);
+  background: var(--wrong-light);
+  color: var(--wrong);
+}
+
+.opt-btn.reveal {
+  border-color: rgba(45,90,61,0.35);
+  background: rgba(45,90,61,0.04);
+  color: rgba(45,90,61,0.6);
+}
+
+.opt-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 0.15s;
+}
+
+.opt-btn.correct .opt-label { background: var(--correct); border-color: var(--correct); color: #fff; }
+.opt-btn.wrong .opt-label { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+
+/* submit btn area */
+.submit-wrap {
+  padding: 0 20px 40px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ── SCREEN 3: 결과 ── */
+#screen-result { padding-top: 48px; }
+
+.result-hero {
+  text-align: center;
+  padding: 48px 20px 32px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.result-name {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  font-family: 'DM Mono', monospace;
+}
+
+.result-score {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin-bottom: 4px;
+}
+
+.result-score-sub {
+  font-size: 1rem;
+  color: var(--text-dim);
+  margin-bottom: 24px;
+}
+
+.result-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.result-section {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.result-section h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-wrong {
+  background: var(--wrong-light);
+  color: var(--wrong);
+  font-size: 0.72rem;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* review card */
+.review-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.review-card .q-head { padding-bottom: 12px; }
+
+.review-exp {
+  padding: 14px 24px 18px;
+  border-top: 1px solid var(--border);
+  background: var(--accent-light);
+}
+
+.review-exp-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--accent);
+  margin-bottom: 5px;
+  letter-spacing: 0.06em;
+}
+
+.review-exp p {
+  font-size: 0.84rem;
+  color: var(--accent);
+  line-height: 1.65;
+}
+
+.review-retry-wrap {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.result-actions {
+  max-width: 720px;
+  margin: 32px auto 0;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* saving overlay */
+.saving-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 99px;
+  font-size: 0.82rem;
+  font-family: 'DM Mono', monospace;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 999;
+  white-space: nowrap;
+}
+
+.saving-toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1: 이름 / 학교 입력
+══════════════════════════════════════ -->
+<div id="screen-intro" class="screen active">
+  <div class="container">
+    <div class="intro-header">
+      <div class="tag">PHYSICS QUIZ</div>
+      <h1>전기장과 전위차</h1>
+      <p>물리학 · 2단원 전기와 자기 · 1중단원 전기 · 1섹션</p>
+    </div>
+
+    <div class="form-card">
+      <div class="form-info">
+        <span>📋 총 30문항 · 객관식 4지선다 · 시간 제한 없음</span>
+      </div>
+
+      <div class="form-group">
+        <label>이름</label>
+        <input type="text" id="input-name" placeholder="홍길동" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>학교</label>
+        <input type="text" id="input-school" placeholder="○○고등학교" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>전화번호 뒷자리 4자리 <span style="color:var(--text-dim);font-weight:300;">(동명이인 구별용)</span></label>
+        <input type="tel" id="input-phone" placeholder="1234" autocomplete="off" maxlength="4" inputmode="numeric" pattern="[0-9]{4}">
+      </div>
+
+      <button class="btn" onclick="startQuiz()">시작하기 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2: 퀴즈
+══════════════════════════════════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-topbar">
+    <div class="quiz-topbar-inner">
+      <div class="progress-wrap">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="quiz-meta">
+        <div class="meta-item" id="metaProgress">0 / 30</div>
+        <div class="meta-item">⏱ <span id="timerDisplay">00:00</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-body" id="quizBody"></div>
+
+  <div class="submit-wrap">
+    <button class="btn" onclick="submitQuiz()">제출하기</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 3: 결과
+══════════════════════════════════════ -->
+<div id="screen-result" class="screen">
+  <div class="result-hero">
+    <div class="result-name" id="resultName"></div>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-score-sub" id="resultScoreSub"></div>
+    <div class="result-stats">
+      <div class="stat-item">
+        <div class="stat-val" id="statTime"></div>
+        <div class="stat-label">풀이 시간</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statCorrect"></div>
+        <div class="stat-label">정답</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statWrong"></div>
+        <div class="stat-label">오답</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-section" id="reviewSection"></div>
+
+  <div class="result-actions">
+    <button class="btn btn-ghost" onclick="resetQuiz()">↺ 새로 응시하기</button>
+  </div>
+</div>
+
+<div class="saving-toast" id="savingToast"></div>
+
+<script>
+// ══════════════════════════════════════
+// Airtable 설정
+// ══════════════════════════════════════
+const AT_TOKEN   = "patBcLElKAr7fPbgS.0f288a25e39501f27d9d33569371fc819acb54173cf44daa68fc028f16e479f9";
+const AT_BASE    = "appmCOjqp5xIJuPqt";
+const AT_SCORES  = "scores";
+
+// ══════════════════════════════════════
+// 퀴즈 메타
+// ══════════════════════════════════════
+const QUIZ_META = {
+  subjectCode: "PHY",
+  subjectName: "물리학",
+  mainNo:      2,
+  mainName:    "전기와 자기",
+  subNo:       1,
+  subName:     "전기",
+  sectionNo:   1,
+  sectionName: "전기장과 전위차"
+};
+
+// ══════════════════════════════════════
+// 퀴즈 데이터
+// ══════════════════════════════════════
+const QUIZ = [
+  // ── 전하와 전기력 (1~6) ──
+  {num:1, text:"마찰 전기에 대한 설명으로 옳은 것은?", opts:["서로 다른 두 물체를 마찰하면 두 물체가 모두 같은 종류의 전하를 띤다.", "서로 다른 두 물체를 마찰하면 두 물체가 대전되어 사이에 전기력이 작용한다.", "마찰 시 한쪽 물체만 전하를 잃고 다른 쪽은 변화가 없다.", "전기력은 마찰이 없으면 절대 작용하지 않는다."], ans:2, exp:"서로 다른 두 물체를 마찰하면 한쪽은 전자를 잃고 다른 쪽은 전자를 얻어 두 물체 모두 대전됩니다. 그 결과 두 물체 사이에 전기력이 작용합니다."},
+  {num:2, text:"전기력의 종류와 작용에 대한 설명으로 옳은 것은?", opts:["같은 종류의 전하 사이에는 인력만 작용한다.", "다른 종류의 전하 사이에는 척력만 작용한다.", "같은 종류의 전하 사이에는 척력, 다른 종류의 전하 사이에는 인력이 작용한다.", "전기력의 종류는 전하의 종류와 무관하다."], ans:3, exp:"전기력은 같은 종류의 전하 사이에서는 서로 밀어내는 척력, 다른 종류의 전하 사이에서는 서로 끌어당기는 인력으로 작용합니다."},
+  {num:3, text:"전하의 종류에 대한 설명으로 옳은 것은?", opts:["양(+)전하 한 종류만 존재한다.", "음(-)전하 한 종류만 존재한다.", "양(+)전하와 음(-)전하 두 종류가 있다.", "전하의 종류는 무한히 많다."], ans:3, exp:"물체가 띠는 전하는 양(+)전하와 음(-)전하 두 종류가 있습니다."},
+  {num:4, text:"두 점전하 사이에 작용하는 전기력의 크기를 나타내는 쿨롱 법칙으로 옳은 것은? (q₁, q₂: 전하량, r: 두 전하 사이의 거리, k: 비례 상수)", opts:["F = k q₁q₂ / r", "F = k q₁q₂ / r²", "F = k (q₁ + q₂) / r²", "F = k q₁q₂ × r²"], ans:2, exp:"쿨롱 법칙: 두 전하 사이에 작용하는 전기력의 크기는 두 전하의 전하량의 곱에 비례하고, 두 전하 사이의 거리의 제곱에 반비례합니다. F = k q₁q₂ / r²"},
+  {num:5, text:"두 점전하 사이의 거리를 2배로 늘리면, 두 전하 사이에 작용하는 전기력의 크기는 어떻게 되는가? (전하량은 그대로)", opts:["1/2배", "1/4배", "2배", "4배"], ans:2, exp:"쿨롱 법칙에서 F ∝ 1/r² 이므로, 거리가 2배가 되면 전기력은 1/2² = 1/4배가 됩니다."},
+  {num:6, text:"두 점전하의 전하량을 각각 2배로 늘리고 거리는 그대로 둘 때, 두 전하 사이에 작용하는 전기력의 크기는 몇 배가 되는가?", opts:["2배", "4배", "8배", "1/4배"], ans:2, exp:"F ∝ q₁q₂ 이므로 두 전하량이 각각 2배가 되면 곱은 4배가 됩니다. 따라서 전기력은 4배가 됩니다."},
+
+  // ── 전기장 (7~14) ──
+  {num:7, text:"전기장의 정의로 가장 옳은 것은?", opts:["전하 주위에 전기력이 미치는 공간", "전하가 직접 닿아야만 힘을 주고받는 영역", "전류가 흐르는 도선 내부의 전기적 영역", "전위가 0인 등전위면"], ans:1, exp:"전하 주위에는 다른 전하가 있을 때 전기력이 작용할 수 있는 공간이 형성되며, 이를 전기장이라고 합니다."},
+  {num:8, text:"어떤 점에서의 전기장 E는 다음 중 어떻게 정의되는가? (단위 양(+)전하: 전하량 1 C인 양전하)", opts:["그 점에 놓인 단위 음(-)전하가 받는 전기력", "그 점에서의 전류", "그 점에서의 전위", "그 점에 놓인 단위 양(+)전하가 받는 전기력"], ans:4, exp:"전기장은 그 점에 놓인 단위 양(+)전하(1 C)가 받는 전기력으로 정의됩니다. 단위는 N/C입니다."},
+  {num:9, text:"전기장의 단위로 옳은 것은?", opts:["J", "V", "N/C", "C"], ans:3, exp:"전기장은 단위 양(+)전하가 받는 힘이므로 단위는 N/C 입니다."},
+  {num:10, text:"양(+)전하 주위의 전기장 방향에 대한 설명으로 옳은 것은?", opts:["양전하 쪽으로 향한다.", "전기장이 형성되지 않는다.", "방향이 정해지지 않는다.", "양전하에서 멀어지는 방향(밖으로 뻗어 나간다)."], ans:4, exp:"양(+)전하 주위의 전기장은 양전하에서 바깥으로 뻗어 나가는 방향입니다. 단위 양전하를 갖다 두면 척력에 의해 멀어지기 때문입니다."},
+  {num:11, text:"음(-)전하 주위의 전기장 방향에 대한 설명으로 옳은 것은?", opts:["음전하에서 바깥으로 뻗어 나간다.", "전기장이 형성되지 않는다.", "방향이 정해지지 않는다.", "음전하 쪽으로 향한다(안으로 들어간다)."], ans:4, exp:"음(-)전하 주위의 전기장은 음전하 쪽으로 향하는 방향입니다. 단위 양전하를 갖다 두면 인력에 의해 음전하 쪽으로 끌리기 때문입니다."},
+  {num:12, text:"양(+)전하 Q 주위에 양(+)전하 q를 놓을 때, q가 받는 전기력의 방향과 그 위치에서의 전기장 방향의 관계는?", opts:["서로 같은 방향이다.", "서로 반대 방향이다.", "서로 수직이다.", "관계가 없다."], ans:1, exp:"양전하가 받는 전기력의 방향은 그 위치에서의 전기장 방향과 같습니다. (F = qE, q > 0)"},
+  {num:13, text:"양(+)전하 Q 주위에 음(-)전하 q를 놓을 때, q가 받는 전기력의 방향과 그 위치에서의 전기장 방향의 관계는?", opts:["서로 같은 방향이다.", "서로 반대 방향이다.", "서로 수직이다.", "관계가 없다."], ans:2, exp:"음전하가 받는 전기력은 전기장과 반대 방향입니다. (F = qE에서 q < 0이므로 부호가 뒤집힘)"},
+  {num:14, text:"전자(음전하)가 어떤 전기장 속에서 받는 전기력의 방향과 그 위치에서의 전기장의 방향의 관계는?", opts:["반대 방향", "같은 방향", "수직", "무관"], ans:1, exp:"전자는 음전하이므로 전기력의 방향이 전기장의 방향과 반대입니다."},
+
+  // ── 전위와 전위차 (15~22) ──
+  {num:15, text:"중력장과 전기장을 비교한 설명으로 옳지 않은 것은?", opts:["중력장에서 물체를 중력 반대 방향으로 들어올리면 중력에 의한 위치 에너지가 증가한다.", "전기장에서 양(+)전하를 전기력 반대 방향으로 움직이면 전기적 위치 에너지가 증가한다.", "기준점을 어디로 잡든 위치 에너지의 절대값은 항상 같다.", "전기적 위치 에너지는 일을 통해 증가하거나 감소한다."], ans:3, exp:"위치 에너지(중력적이든 전기적이든)는 기준점을 어디로 잡느냐에 따라 값이 달라집니다. 기준점에 의존하지 않는 것은 두 점 사이의 위치 에너지 '차'입니다."},
+  {num:16, text:"전기장 안에서 기준점에 대해 단위 양(+)전하가 가지는 전기적 위치 에너지를 무엇이라고 하는가?", opts:["전류", "전기장", "전위", "전기력"], ans:3, exp:"전기장 안에서 기준점에 대해 단위 양(+)전하가 가지는 전기적 위치 에너지를 전위(V)라고 하며, 단위는 V(볼트) 또는 J/C입니다."},
+  {num:17, text:"전위 V의 정의식으로 옳은 것은? (W: 전하 q를 기준점에서 어떤 위치까지 옮기는 데 한 일)", opts:["V = W × q", "V = W + q", "V = q / W", "V = W / q"], ans:4, exp:"전위는 단위 양전하당의 전기적 위치 에너지이므로 V = W / q 입니다. 단위는 V 또는 J/C."},
+  {num:18, text:"전위의 단위로 옳지 않은 것은?", opts:["V (볼트)", "J/C", "N/C", "1 V = 1 J/C"], ans:3, exp:"V(볼트) = J/C 가 전위의 단위입니다. N/C는 전기장의 단위입니다."},
+  {num:19, text:"양(+)전하 주위에서 전위가 변하는 양상으로 옳은 것은?", opts:["양전하에 가까워질수록 전위가 낮다.", "양전하에 가까워질수록 전위가 높다.", "양전하 주위 전위는 어디서나 같다.", "양전하 주위 전위는 0이다."], ans:2, exp:"양(+)전하에 가까울수록 전위가 높고, 음(-)전하에 가까울수록 전위가 낮습니다."},
+  {num:20, text:"전위차(또는 전압)의 정의로 옳은 것은?", opts:["두 점 사이의 전위의 차이", "한 점에서의 전위", "단위 양전하가 받는 전기력", "전류의 흐르는 양"], ans:1, exp:"두 지점 사이의 전위의 차이를 전위차 또는 전압이라고 합니다."},
+  {num:21, text:"전하량 +2 C의 양전하를 기준점에서 어떤 위치 P까지 옮기는 데 외력이 한 일이 10 J이었다면, 점 P의 전위는?", opts:["5 V", "2 V", "10 V", "20 V"], ans:1, exp:"V = W / q = 10 J / 2 C = 5 V."},
+  {num:22, text:"점 A의 전위가 8 V, 점 B의 전위가 3 V일 때, A와 B 사이의 전위차(A 기준 B의 전압)는?", opts:["3 V", "5 V", "8 V", "11 V"], ans:2, exp:"두 점 사이의 전위차는 두 전위의 차이입니다. V_AB = V_A - V_B = 8 - 3 = 5 V."},
+
+  // ── 종합 / 응용 (23~30) ──
+  {num:23, text:"전하 q가 전기장 E를 받을 때 q에 작용하는 전기력의 크기는?", opts:["F = q + E", "F = E / q", "F = q / E", "F = qE"], ans:4, exp:"전기장의 정의에서 단위 양전하가 받는 힘이 E이므로, 전하량 q인 전하가 받는 전기력의 크기는 F = qE 입니다."},
+  {num:24, text:"두 점전하 사이의 거리를 그대로 두고 한쪽 전하만 -3배로 바꿨다(부호도 바뀜). 두 전하 사이에 작용하는 전기력의 크기와 종류 변화는?", opts:["크기 1/3배, 종류 그대로", "크기 3배, 종류 반대(척↔인)로 바뀜", "크기 9배, 종류 그대로", "크기 변화 없음"], ans:2, exp:"F ∝ q₁q₂. 한쪽이 -3배가 되면 곱이 -3배가 되므로 크기는 3배, 부호가 반대이므로 인력↔척력이 뒤바뀝니다."},
+  {num:25, text:"[심화] 두 점전하 q₁ = +2 μC, q₂ = +3 μC이 거리 r = 0.1 m 떨어져 있을 때, 두 전하 사이에 작용하는 전기력의 크기는? (k ≈ 9 × 10⁹ N·m²/C²)", opts:["약 5.4 N", "약 0.54 N", "약 54 N", "약 0.054 N"], ans:1, exp:"F = k q₁q₂ / r² = 9×10⁹ × (2×10⁻⁶)(3×10⁻⁶) / (0.1)² = 9×10⁹ × 6×10⁻¹² / 0.01 = 54×10⁻³ / 0.01 = 5.4 N."},
+  {num:26, text:"[심화] 어떤 균일한 전기장 E = 100 N/C 안에 전하량 +0.5 C인 양전하를 놓았다. 이 전하가 받는 전기력의 크기와 방향은?", opts:["크기 50 N, 전기장과 같은 방향", "크기 50 N, 전기장과 반대 방향", "크기 200 N, 전기장과 같은 방향", "크기 0.005 N, 전기장과 반대 방향"], ans:1, exp:"F = qE = 0.5 × 100 = 50 N. 양전하이므로 전기력의 방향은 전기장과 같은 방향입니다."},
+  {num:27, text:"전위차가 큰 두 지점 사이에서 양(+)전하가 자유롭게 움직일 수 있다면, 이 전하는 어떤 방향으로 움직이는 경향이 있는가?", opts:["전위가 낮은 곳에서 높은 곳으로", "전위차와 무관하게 임의로", "전위가 같은 곳에서 다른 곳으로", "전위가 높은 곳에서 낮은 곳으로"], ans:4, exp:"양전하는 전기력에 의해 전위가 높은 곳에서 낮은 곳으로 자발적으로 이동하려는 경향이 있습니다. (중력장에서 물체가 높은 곳에서 낮은 곳으로 떨어지는 것과 유사)"},
+  {num:28, text:"같은 거리에서 비교할 때, 전하량이 큰 양(+)전하 주위의 전기장과 전하량이 작은 양(+)전하 주위의 전기장의 차이로 옳은 것은?", opts:["전하량이 클수록 같은 거리에서 전기장이 약하다.", "전하량이 클수록 같은 거리에서 전기장이 강하다.", "전하량과 전기장의 세기는 무관하다.", "전기장은 거리에만 의존한다."], ans:2, exp:"점전하 Q가 만드는 전기장은 E = kQ/r²이므로, 같은 거리(r)라면 전하량 Q가 클수록 전기장이 강해집니다."},
+  {num:29, text:"[심화] 양(+)전하 +q를 점 A에서 점 B로 옮기는 데 외력이 한 일이 양수(+)였다면, 두 점의 전위 관계는? (단, 다른 힘은 무시)", opts:["V_A > V_B", "V_A = V_B", "V_A < V_B", "전위와 일은 무관하다."], ans:3, exp:"V = W/q에서 양전하 q에 양의 일을 했다는 것은 그 전하의 전기적 위치 에너지를 키운 것이므로, B 지점의 전위가 더 높습니다. 즉 V_A < V_B."},
+  {num:30, text:"전기장과 전위차에 대한 설명으로 옳지 않은 것은?", opts:["전하 주위의 공간에 전기장이 형성된다.", "양(+)전하에서 멀어질수록 전위는 낮아진다.", "전위차는 두 지점 사이의 전위의 차이이며, '전압'이라고도 한다.", "단위 양(+)전하에 작용하는 전기력의 크기는 전위와 같다."], ans:4, exp:"단위 양(+)전하에 작용하는 전기력의 크기는 '전기장'(E, 단위 N/C)이지 전위가 아닙니다. 전위(V, 단위 V)는 단위 양전하의 전기적 위치 에너지입니다."},
+];
+
+// ══════════════════════════════════════
+// 상태
+// ══════════════════════════════════════
+let userName = '', userSchool = '', userPhone = '';
+let userAnswers = {}; // num → chosen index (1~4)
+let timerInterval = null;
+let elapsedSec = 0;
+let quizStarted = false;
+
+// ══════════════════════════════════════
+// 유틸
+// ══════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function fmtTime(sec) {
+  const m = String(Math.floor(sec / 60)).padStart(2, '0');
+  const s = String(sec % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function toast(msg, duration = 2500) {
+  const el = document.getElementById('savingToast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration);
+}
+
+// ══════════════════════════════════════
+// SCREEN 1 → 시작
+// ══════════════════════════════════════
+function startQuiz() {
+  const name = document.getElementById('input-name').value.trim();
+  const school = document.getElementById('input-school').value.trim();
+  const phone = document.getElementById('input-phone').value.trim();
+  if (!name) { alert('이름을 입력해주세요.'); return; }
+  if (!school) { alert('학교를 입력해주세요.'); return; }
+  if (!/^[0-9]{4}$/.test(phone)) { alert('전화번호 뒷자리 4자리(숫자)를 입력해주세요.'); return; }
+
+  userName = name;
+  userSchool = school;
+  userPhone = phone;
+  userAnswers = {};
+  elapsedSec = 0;
+
+  renderQuiz();
+  showScreen('screen-quiz');
+  startTimer();
+}
+
+// ══════════════════════════════════════
+// 타이머
+// ══════════════════════════════════════
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    elapsedSec++;
+    document.getElementById('timerDisplay').textContent = fmtTime(elapsedSec);
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// ══════════════════════════════════════
+// 퀴즈 렌더
+// ══════════════════════════════════════
+const LABELS = ['①','②','③','④'];
+
+function renderQuiz() {
+  const body = document.getElementById('quizBody');
+  body.innerHTML = QUIZ.map(q => `
+    <div class="q-card" id="qcard-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="q-options">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="opt-${q.num}-${i+1}" onclick="selectOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  updateProgress();
+}
+
+function selectOpt(num, chosen) {
+  userAnswers[num] = chosen;
+
+  // 선택 표시
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`opt-${num}-${i}`);
+    btn.style.borderColor = i === chosen ? 'var(--accent)' : '';
+    btn.style.background = i === chosen ? 'var(--accent-light)' : '';
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = Object.keys(userAnswers).length;
+  const total = QUIZ.length;
+  document.getElementById('metaProgress').textContent = `${answered} / ${total}`;
+  document.getElementById('progressFill').style.width = `${(answered / total) * 100}%`;
+}
+
+// ══════════════════════════════════════
+// 제출
+// ══════════════════════════════════════
+function submitQuiz() {
+  const answered = Object.keys(userAnswers).length;
+  if (answered < QUIZ.length) {
+    if (!confirm(`아직 ${QUIZ.length - answered}문제가 남아 있어요. 제출하시겠어요?`)) return;
+  }
+  stopTimer();
+  showResult();
+}
+
+// ══════════════════════════════════════
+// 결과
+// ══════════════════════════════════════
+function showResult() {
+  const correct = QUIZ.filter(q => userAnswers[q.num] === q.ans);
+  const wrong   = QUIZ.filter(q => userAnswers[q.num] !== q.ans);
+  const score   = correct.length;
+  const total   = QUIZ.length;
+
+  document.getElementById('resultName').textContent = `${userName} · ${userSchool} · ${userPhone}`;
+  document.getElementById('resultScore').textContent = score;
+  document.getElementById('resultScoreSub').textContent = `/ ${total} 문항`;
+  document.getElementById('statTime').textContent = fmtTime(elapsedSec);
+  document.getElementById('statCorrect').textContent = `${score}개`;
+  document.getElementById('statWrong').textContent = `${wrong.length}개`;
+
+  // 오답 리뷰
+  const reviewSection = document.getElementById('reviewSection');
+  if (wrong.length === 0) {
+    reviewSection.innerHTML = `<div style="text-align:center;padding:32px 0;color:var(--accent);font-weight:700;">🎉 전부 맞혔어요!</div>`;
+  } else {
+    reviewSection.innerHTML = `
+      <h2>틀린 문제 <span class="badge-wrong">${wrong.length}문제</span></h2>
+      ${wrong.map(q => renderReviewCard(q)).join('')}
+    `;
+  }
+
+  showScreen('screen-result');
+  saveScore(score, total);
+}
+
+function renderReviewCard(q) {
+  return `
+    <div class="review-card" id="review-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="review-retry-wrap" id="retry-opts-${q.num}">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="retry-opt-${q.num}-${i+1}" onclick="retryOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="review-exp">
+        <div class="review-exp-label">✦ 해설</div>
+        <p>${q.exp}</p>
+      </div>
+    </div>
+  `;
+}
+
+function retryOpt(num, chosen) {
+  const q = QUIZ.find(x => x.num === num);
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`retry-opt-${num}-${i}`);
+    if (!btn) continue;
+    btn.disabled = true;
+    if (i === q.ans) btn.className = 'opt-btn correct';
+    else if (i === chosen && chosen !== q.ans) btn.className = 'opt-btn wrong';
+    else btn.className = 'opt-btn reveal';
+  }
+}
+
+// ══════════════════════════════════════
+// Airtable 저장
+// ══════════════════════════════════════
+async function saveScore(score, total) {
+  toast('점수 저장 중...');
+  try {
+    const res = await fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_SCORES}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${AT_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        fields: {
+          '이름': userName,
+          '학교': userSchool,
+          'phone_last4': userPhone,
+          '날짜': new Date().toISOString().split('T')[0],
+          '과목코드': QUIZ_META.subjectCode,
+          '과목명': QUIZ_META.subjectName,
+          '대단원번호': QUIZ_META.mainNo,
+          '대단원명': QUIZ_META.mainName,
+          '중단원번호': QUIZ_META.subNo,
+          '중단원명': QUIZ_META.subName,
+          '섹션번호': QUIZ_META.sectionNo,
+          '섹션명': QUIZ_META.sectionName,
+          '총점': score,
+          '총문항수': total,
+          '풀이시간': fmtTime(elapsedSec)
+        }
+      })
+    });
+    if (res.ok) toast('✓ 점수가 저장되었습니다.');
+    else toast('저장 실패 — 네트워크를 확인해주세요.');
+  } catch(e) {
+    toast('저장 실패 — 네트워크를 확인해주세요.');
+  }
+}
+
+// ══════════════════════════════════════
+// 리셋
+// ══════════════════════════════════════
+function resetQuiz() {
+  userName = '';
+  userSchool = '';
+  userPhone = '';
+  userAnswers = {};
+  elapsedSec = 0;
+  document.getElementById('input-name').value = '';
+  document.getElementById('input-school').value = '';
+  document.getElementById('input-phone').value = '';
+  document.getElementById('timerDisplay').textContent = '00:00';
+  showScreen('screen-intro');
+}
+</script>
+</body>
+</html>

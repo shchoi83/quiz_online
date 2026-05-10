@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>축전기와 센서 · 물리 퀴즈</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --border: #e2ddd6;
+  --text: #1a1714;
+  --text-dim: #8a8480;
+  --accent: #2d5a3d;
+  --accent-light: #e8f0eb;
+  --wrong: #c0392b;
+  --wrong-light: #fdf0ef;
+  --correct: #2d5a3d;
+  --correct-light: #e8f0eb;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+  padding: 0 0 60px;
+}
+
+/* ── 공통 ── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 14px 28px;
+  font-size: 0.95rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  width: 100%;
+}
+
+.btn:hover { opacity: 0.88; }
+.btn:active { transform: scale(0.98); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+}
+
+.btn-ghost:hover { background: var(--accent-light); opacity: 1; }
+
+/* ── SCREEN 1: 입력 ── */
+#screen-intro {
+  padding-top: 80px;
+}
+
+.intro-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.intro-header .tag {
+  display: inline-block;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: 0.08em;
+}
+
+.intro-header h1 { margin-bottom: 8px; }
+.intro-header p { color: var(--text-dim); font-size: 0.9rem; }
+
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: var(--shadow);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+}
+
+.form-group input {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 13px 16px;
+  font-size: 1rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus { border-color: var(--accent); }
+
+.form-info {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  background: var(--accent-light);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.form-info span {
+  font-size: 0.82rem;
+  color: var(--accent);
+}
+
+/* ── SCREEN 2: 퀴즈 ── */
+#screen-quiz { padding-top: 0; }
+
+.quiz-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+}
+
+.quiz-topbar-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.progress-wrap {
+  flex: 1;
+  background: var(--border);
+  border-radius: 99px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 6px;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.quiz-meta {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.meta-item {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.meta-item span {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.quiz-body {
+  padding: 32px 20px;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: border-color 0.3s;
+}
+
+.q-card.correct { border-color: var(--correct); }
+.q-card.wrong { border-color: var(--wrong); }
+
+.q-head {
+  padding: 20px 24px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.q-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.q-text {
+  font-size: 0.93rem;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+
+.q-options {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.opt-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+  transition: all 0.15s;
+  width: 100%;
+}
+
+.opt-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.opt-btn:disabled { cursor: default; }
+
+.opt-btn.correct {
+  border-color: var(--correct);
+  background: var(--correct-light);
+  color: var(--correct);
+}
+
+.opt-btn.wrong {
+  border-color: var(--wrong);
+  background: var(--wrong-light);
+  color: var(--wrong);
+}
+
+.opt-btn.reveal {
+  border-color: rgba(45,90,61,0.35);
+  background: rgba(45,90,61,0.04);
+  color: rgba(45,90,61,0.6);
+}
+
+.opt-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 0.15s;
+}
+
+.opt-btn.correct .opt-label { background: var(--correct); border-color: var(--correct); color: #fff; }
+.opt-btn.wrong .opt-label { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+
+/* submit btn area */
+.submit-wrap {
+  padding: 0 20px 40px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ── SCREEN 3: 결과 ── */
+#screen-result { padding-top: 48px; }
+
+.result-hero {
+  text-align: center;
+  padding: 48px 20px 32px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.result-name {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  font-family: 'DM Mono', monospace;
+}
+
+.result-score {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin-bottom: 4px;
+}
+
+.result-score-sub {
+  font-size: 1rem;
+  color: var(--text-dim);
+  margin-bottom: 24px;
+}
+
+.result-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.result-section {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.result-section h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-wrong {
+  background: var(--wrong-light);
+  color: var(--wrong);
+  font-size: 0.72rem;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* review card */
+.review-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.review-card .q-head { padding-bottom: 12px; }
+
+.review-exp {
+  padding: 14px 24px 18px;
+  border-top: 1px solid var(--border);
+  background: var(--accent-light);
+}
+
+.review-exp-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--accent);
+  margin-bottom: 5px;
+  letter-spacing: 0.06em;
+}
+
+.review-exp p {
+  font-size: 0.84rem;
+  color: var(--accent);
+  line-height: 1.65;
+}
+
+.review-retry-wrap {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.result-actions {
+  max-width: 720px;
+  margin: 32px auto 0;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* saving overlay */
+.saving-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 99px;
+  font-size: 0.82rem;
+  font-family: 'DM Mono', monospace;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 999;
+  white-space: nowrap;
+}
+
+.saving-toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1: 이름 / 학교 입력
+══════════════════════════════════════ -->
+<div id="screen-intro" class="screen active">
+  <div class="container">
+    <div class="intro-header">
+      <div class="tag">PHYSICS QUIZ</div>
+      <h1>축전기와 센서</h1>
+      <p>물리학 · 2단원 전기와 자기 · 1중단원 전기 · 3섹션</p>
+    </div>
+
+    <div class="form-card">
+      <div class="form-info">
+        <span>📋 총 30문항 · 객관식 4지선다 · 시간 제한 없음</span>
+      </div>
+
+      <div class="form-group">
+        <label>이름</label>
+        <input type="text" id="input-name" placeholder="홍길동" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>학교</label>
+        <input type="text" id="input-school" placeholder="○○고등학교" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>전화번호 뒷자리 4자리 <span style="color:var(--text-dim);font-weight:300;">(동명이인 구별용)</span></label>
+        <input type="tel" id="input-phone" placeholder="1234" autocomplete="off" maxlength="4" inputmode="numeric" pattern="[0-9]{4}">
+      </div>
+
+      <button class="btn" onclick="startQuiz()">시작하기 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2: 퀴즈
+══════════════════════════════════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-topbar">
+    <div class="quiz-topbar-inner">
+      <div class="progress-wrap">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="quiz-meta">
+        <div class="meta-item" id="metaProgress">0 / 30</div>
+        <div class="meta-item">⏱ <span id="timerDisplay">00:00</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-body" id="quizBody"></div>
+
+  <div class="submit-wrap">
+    <button class="btn" onclick="submitQuiz()">제출하기</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 3: 결과
+══════════════════════════════════════ -->
+<div id="screen-result" class="screen">
+  <div class="result-hero">
+    <div class="result-name" id="resultName"></div>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-score-sub" id="resultScoreSub"></div>
+    <div class="result-stats">
+      <div class="stat-item">
+        <div class="stat-val" id="statTime"></div>
+        <div class="stat-label">풀이 시간</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statCorrect"></div>
+        <div class="stat-label">정답</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statWrong"></div>
+        <div class="stat-label">오답</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-section" id="reviewSection"></div>
+
+  <div class="result-actions">
+    <button class="btn btn-ghost" onclick="resetQuiz()">↺ 새로 응시하기</button>
+  </div>
+</div>
+
+<div class="saving-toast" id="savingToast"></div>
+
+<script>
+// ══════════════════════════════════════
+// Airtable 설정
+// ══════════════════════════════════════
+const AT_TOKEN   = "patBcLElKAr7fPbgS.0f288a25e39501f27d9d33569371fc819acb54173cf44daa68fc028f16e479f9";
+const AT_BASE    = "appmCOjqp5xIJuPqt";
+const AT_SCORES  = "scores";
+
+// ══════════════════════════════════════
+// 퀴즈 메타
+// ══════════════════════════════════════
+const QUIZ_META = {
+  subjectCode: "PHY",
+  subjectName: "물리학",
+  mainNo:      2,
+  mainName:    "전기와 자기",
+  subNo:       1,
+  subName:     "전기",
+  sectionNo:   3,
+  sectionName: "축전기와 센서"
+};
+
+// ══════════════════════════════════════
+// 퀴즈 데이터
+// ══════════════════════════════════════
+const QUIZ = [
+  // ── 축전기의 정의와 원리 (1~6) ──
+  {num:1, text:"축전기에 대한 정의로 가장 옳은 것은?", opts:["저항을 거쳐 전기 에너지를 모두 열로 바꾸는 장치", "두 전선 사이에 전류를 끊는 안전장치", "전류의 방향을 한쪽으로만 흐르게 하는 장치", "같은 종류의 전하를 모아 전기적 위치 에너지의 형태로 전기 에너지를 저장하는 장치"], ans:4, exp:"축전기는 같은 종류의 전하를 모아 전기적 위치 에너지의 형태로 전기 에너지를 저장하는 장치입니다."},
+  {num:2, text:"평행판 축전기의 구조에 대한 설명으로 옳은 것은?", opts:["두 개의 평평한 금속판을 서로 평행하게 마주 보도록 놓은 구조이다.", "하나의 평평한 금속판으로 이루어져 있다.", "두 금속판이 서로 직각으로 놓여 있다.", "금속판 한 개와 절연체로만 이루어진다."], ans:1, exp:"평행판 축전기는 두 개의 평평한 금속판을 서로 평행하게 마주 보도록 만든 구조입니다."},
+  {num:3, text:"평행판 축전기의 한 금속판만 있을 때 많은 전하를 모으기 어려운 까닭으로 옳은 것은?", opts:["전하 사이의 인력 때문에 전하가 모두 도망간다.", "같은 종류의 전하들이 모여 있어 척력이 작용해 많은 전하가 모이지 못한다.", "금속판 위에서는 원래 전하가 발생하지 않는다.", "한 금속판으로는 전류가 흐르지 않기 때문이다."], ans:2, exp:"한 금속판에는 같은 종류의 전하만 모이게 되는데, 같은 종류 전하 사이에는 척력이 작용하여 많은 전하가 모이지 못합니다. 그래서 두 금속판을 마주 보게 놓아 인력으로 더 많은 전하를 모읍니다."},
+  {num:4, text:"평행판 축전기에서 두 금속판을 마주 보게 놓으면 더 많은 전하를 모을 수 있는 이유로 옳은 것은?", opts:["두 판 사이에 자기력이 작용하기 때문", "두 판 사이에 절연체가 없기 때문", "두 판이 같은 전하로 대전되기 때문", "두 판에 있는 서로 다른 전하 사이에 인력이 작용하기 때문"], ans:4, exp:"두 금속판을 마주 보게 놓으면 한쪽은 양(+)전하, 반대쪽은 음(-)전하로 대전되어 두 판의 전하 사이에 인력이 작용하기 때문에 같은 종류의 전하 사이의 척력을 이기고 더 많은 전하를 모을 수 있습니다."},
+  {num:5, text:"평행판 축전기가 더 많은 전기 에너지를 저장하기 위한 설계 조건으로 옳은 것은?", opts:["두 금속판 사이의 거리는 멀게, 면적은 작게 만든다.", "두 금속판 사이의 거리와 면적 모두 작게 만든다.", "두 금속판 사이의 거리는 가깝게, 면적은 크게 만든다.", "두 금속판 사이의 거리와 면적 모두 크게 만든다."], ans:3, exp:"평행판 축전기는 두 판 사이가 가까울수록 인접한 금속판의 다른 전하들이 끌어당기는 전기력이 커지고, 면적이 클수록 같은 종류의 전하들이 밀어내는 전기력이 작아져 더 많은 전하를 모을 수 있습니다."},
+  {num:6, text:"원통형 축전기의 특징으로 옳은 것은?", opts:["두 금속판이 평평하게 마주 본다.", "두 금속판이 동그랗게 말린 구조로 되어 있어 부피가 작아도 금속판의 면적을 크게 할 수 있다.", "원통형은 부피가 항상 평행판보다 크다.", "원통형은 절연체 없이 금속판만으로 이루어진다."], ans:2, exp:"원통형 축전기는 두 금속판이 동그랗게 말린 구조로 되어 있어 작은 부피로도 금속판의 면적을 크게 만들 수 있어 많은 전하를 저장할 수 있습니다."},
+
+  // ── 충전과 방전 (7~13) ──
+  {num:7, text:"축전기의 충전(充電)을 옳게 설명한 것은?", opts:["축전기를 전원 장치에 연결하여 두 금속판에 전하를 모으는 과정", "축전기에 모인 전하가 모두 빠져나가는 과정", "축전기 내부에서 화학 반응이 일어나는 과정", "축전기에 흐르는 전류를 일정하게 유지하는 과정"], ans:1, exp:"축전기를 전원 장치에 연결하여 두 금속판에 양(+)전하와 음(-)전하를 모으는 과정을 충전이라고 합니다."},
+  {num:8, text:"평행판 축전기를 전지에 연결하여 충전하는 과정에서 두 금속판의 전위차가 어떻게 변하는가?", opts:["계속해서 무한히 증가한다.", "처음에는 증가하다가 0으로 돌아간다.", "전혀 변하지 않는다.", "전지의 전위차와 같아질 때까지 증가한다."], ans:4, exp:"두 금속판 사이의 전위차가 전원 장치(전지)의 전위차와 같아질 때까지 한쪽 금속판에는 양(+)전하, 반대쪽 금속판에는 음(-)전하가 모입니다."},
+  {num:9, text:"축전기의 방전(放電)을 옳게 설명한 것은?", opts:["축전기에 더 많은 전하를 모으는 과정", "축전기 내부의 절연체가 두꺼워지는 과정", "축전기에 전류가 흐르지 않도록 분리하는 과정", "충전된 축전기를 전구 등에 연결하여 전위차가 0이 될 때까지 전하가 빠져나가는 과정"], ans:4, exp:"충전된 축전기는 전위차를 가지므로 전구 등에 연결하면 전위차가 0이 될 때까지 전하가 빠져나가는데, 이 과정을 방전이라고 합니다."},
+  {num:10, text:"충전된 축전기를 전구에 연결했을 때 일어나는 현상으로 옳은 것은?", opts:["방전이 일어나며 전구에 불이 켜졌다가, 전위차가 0이 되면 꺼진다.", "전구에 불이 켜지지 않는다.", "전구에 영원히 불이 켜진다.", "축전기의 전압이 계속 증가한다."], ans:1, exp:"충전된 축전기와 전구를 연결하면 축전기의 전하가 전구를 거쳐 빠져나가는 방전이 일어나 전구에 불이 켜집니다. 전위차가 0이 되면 전류가 흐르지 않아 불이 꺼집니다."},
+  {num:11, text:"축전기, 9 V 전지, 발광 다이오드(LED), 스위치를 연결한 회로에서 스위치를 닫아 충전한 후, 전지를 빼고 LED를 축전기에 연결했을 때 일어나는 현상으로 옳은 것은?", opts:["LED는 전혀 불이 들어오지 않는다.", "LED가 영원히 켜진 채로 유지된다.", "축전기에서 방전이 일어나 LED에 짧은 시간 동안 불이 켜졌다가 꺼진다.", "축전기가 다시 충전되어 전압이 9 V를 넘는다."], ans:3, exp:"충전된 축전기를 LED에 연결하면 축전기에 모인 전하가 LED를 통해 빠져나가는 방전이 일어나 LED에 잠시 불이 켜졌다가, 전하가 다 빠지면 꺼집니다."},
+  {num:12, text:"충전 중인 축전기에 흐르는 전류의 변화로 옳은 것은?", opts:["일정한 값으로 계속 유지된다.", "처음에는 0이고 시간이 지나면 점점 커진다.", "처음에는 흐르지만 두 판의 전위차가 전원의 전위차와 같아지면 0이 된다.", "방향이 계속 바뀐다."], ans:3, exp:"충전 과정에서 두 금속판 사이의 전위차가 전원의 전위차와 같아지면 더 이상 전하가 이동하지 않으므로 전류가 0이 됩니다."},
+  {num:13, text:"방전 중인 축전기에 대한 설명으로 옳은 것은?", opts:["전위차가 0이 될 때까지 전하가 빠져나간다.", "전위차가 점점 커진다.", "전류가 흐르지 않는다.", "전류가 처음부터 끝까지 일정하다."], ans:1, exp:"방전 과정에서는 충전된 축전기의 전위차가 0이 될 때까지 전하가 회로를 통해 빠져나갑니다."},
+
+  // ── 축전기의 실생활 활용 (14~20) ──
+  {num:14, text:"축전기가 활용되는 기기 중 충전과 방전의 기능을 모두 이용하는 것으로 옳지 않은 것은?", opts:["자동 심장 충격기(AED)", "카메라 플래시", "어댑터", "단순 저항기"], ans:4, exp:"자동 심장 충격기, 카메라 플래시, 어댑터 등은 모두 축전기의 충·방전 기능을 이용합니다. 단순 저항기는 전기 에너지를 열로 소모하는 부품으로 축전기와는 다릅니다."},
+  {num:15, text:"자동 심장 충격기(AED)에 축전기가 활용되는 까닭으로 가장 옳은 것은?", opts:["전기 신호의 잡음을 제거하기 위해", "심장에 많은 양의 전기 에너지를 짧은 시간에 공급해야 하기 때문", "심장에 일정한 전류를 천천히 지속적으로 흘려야 하기 때문", "환자의 체온을 유지하기 위해"], ans:2, exp:"자동 심장 충격기는 심장에 많은 양의 전기 에너지를 매우 짧은 시간에 공급해야 하므로, 작은 공간에 많은 에너지를 저장하고 방전 시 빠르게 방출할 수 있는 충전 용량이 큰 축전기가 활용됩니다."},
+  {num:16, text:"카메라 플래시에 축전기가 사용되는 원리로 가장 옳은 것은?", opts:["축전기의 저항이 빛을 만든다.", "축전기에 미리 전기 에너지를 저장해 두었다가 짧은 시간에 방전시켜 큰 빛을 낸다.", "축전기가 직접 빛을 발생시키는 부품이다.", "축전기는 카메라의 초점을 조절한다."], ans:2, exp:"플래시는 미리 축전기에 전기 에너지를 저장해 두었다가, 셔터를 누르는 순간 짧은 시간에 방전시켜 강한 빛을 만들어 냅니다."},
+  {num:17, text:"축전기가 다음과 같이 활용되는 공통적인 까닭으로 옳은 것은?\n예: 자동 심장 충격기, 카메라 플래시", opts:["전류를 한쪽 방향으로만 흐르게 한다.", "작은 공간에 많은 전기 에너지를 저장하고 방전 시 에너지를 빠르게 방출할 수 있다.", "전류의 세기를 항상 일정하게 유지한다.", "전압을 단계적으로 낮춘다."], ans:2, exp:"축전기는 작은 공간에 많은 전기 에너지를 저장할 수 있고, 방전 시 빠르게 에너지를 방출할 수 있는 특성을 갖기 때문에 짧은 시간에 큰 에너지가 필요한 기기에 사용됩니다."},
+  {num:18, text:"축전기에 물리적 변화가 생겼을 때 충전된 전하가 변하는 원리를 이용한 기기에 해당하지 않는 것은?", opts:["전기 용량식 터치스크린", "전기 용량식 습도 센서", "전기 용량식 가속도 센서", "백열 전구"], ans:4, exp:"전기 용량식 터치스크린, 습도 센서, 가속도 센서는 외부의 물리적 변화(접촉, 습도, 가속도 등)에 따라 축전기의 전기 용량(전하량)이 바뀌는 원리를 이용합니다. 백열 전구는 필라멘트의 저항으로 빛을 내는 기기로 축전기 원리와 무관합니다."},
+  {num:19, text:"전기 용량식 터치스크린의 구조에 대한 설명으로 옳은 것은?", opts:["하나의 두꺼운 금속판만으로 이루어진다.", "두 개의 얇은 투명 전극 위에 전도성을 높인 유리가 코팅된 구조이다.", "절연체만으로 이루어져 있다.", "한 개의 자석과 한 개의 전선만으로 이루어진다."], ans:2, exp:"전기 용량식 터치스크린은 두 개의 얇은 투명 전극 위에 전도성을 높인 유리가 코팅된 구조로, 두 투명 전극이 평행판 축전기의 역할을 합니다."},
+  {num:20, text:"전기 용량식 터치스크린에서 손가락이 접촉했을 때 위치를 인식하는 원리로 옳은 것은?", opts:["접촉 지점의 전자가 손가락을 타고 빠져나가 전하량 변화를 감지하여 위치를 알아낸다.", "손가락의 온도 변화를 감지한다.", "손가락에서 발생하는 빛을 카메라가 인식한다.", "손가락의 무게를 압력 센서로 측정한다."], ans:1, exp:"손가락처럼 전도성을 가진 물체가 스크린에 접촉하면 그 지점의 전자가 손가락을 타고 빠져나가는데, 센서가 이때의 전하량 변화를 감지하여 접촉 위치를 알아냅니다."},
+
+  // ── 센서의 역할 / 종합 (21~30) ──
+  {num:21, text:"센서의 일반적인 역할로 가장 옳은 것은?", opts:["전기 에너지를 빛으로만 변환한다.", "기기의 온도를 항상 일정하게 유지시킨다.", "스마트 기기 외부의 환경 변화를 감지하고 전기 신호로 변환하여 컴퓨터에 정보를 전달한다.", "전류의 방향을 바꾸는 역할만 한다."], ans:3, exp:"센서는 스마트 기기 외부의 환경 변화(접촉, 습도, 가속도 등)를 감지하고, 이를 전기적 신호로 변환하여 컴퓨터(기기)에 해당 정보를 전달해 주는 역할을 합니다."},
+  {num:22, text:"전기 용량식 습도 센서가 작동하는 원리로 가장 옳은 것은?", opts:["습도가 변하면 자석의 세기가 바뀌어 신호가 발생한다.", "습도가 변하면 저항선이 끊어진다.", "습도가 변하면 축전기의 전기 용량(저장되는 전하량)이 변하는 원리를 이용해 신호로 변환한다.", "습도가 변하면 전구의 밝기가 강해진다."], ans:3, exp:"전기 용량식 습도 센서는 습도(공기 중 수분량)가 변할 때 축전기의 전기 용량이 달라지는 원리를 이용하여, 그 변화를 전기 신호로 변환해 습도를 측정합니다."},
+  {num:23, text:"바나나로 스마트폰의 정전식(전기 용량식) 터치스크린을 작동시킬 수 있는 까닭으로 옳은 것은?", opts:["바나나가 빛을 내기 때문", "바나나가 무겁기 때문", "바나나의 색이 노랗기 때문", "바나나가 수분을 많이 포함하여 전도성이 있기 때문"], ans:4, exp:"전기 용량식 터치스크린은 전도성이 있는 물체가 닿을 때만 작동합니다. 바나나는 수분이 많아 전도성이 있어 손가락처럼 전하의 이동을 일으킬 수 있기 때문에 작동시킬 수 있습니다."},
+  {num:24, text:"두꺼운 고무장갑을 낀 채로 정전식 터치스크린을 만지면 작동하지 않는 까닭으로 가장 옳은 것은?", opts:["고무장갑은 전도성이 없어 전하의 이동이 일어나지 않기 때문", "고무장갑이 너무 무겁기 때문", "고무장갑이 화면의 빛을 가리기 때문", "고무장갑이 자성을 띠기 때문"], ans:1, exp:"정전식 터치스크린은 전도성 물체와의 접촉으로 전하량 변화를 감지하는데, 고무장갑은 절연체(전도성이 없음)이므로 전하의 이동이 일어나지 않아 스크린이 작동하지 않습니다."},
+  {num:25, text:"평행판 축전기에서 두 금속판 사이의 거리를 그대로 두고, 금속판의 면적만 2배로 늘렸을 때 저장할 수 있는 전하량의 변화로 가장 옳은 것은?", opts:["저장할 수 있는 전하량이 줄어든다.", "변화 없다.", "저장할 수 있는 전하량이 늘어난다.", "전하가 모두 사라진다."], ans:3, exp:"금속판의 면적이 클수록 같은 종류의 전하들이 서로 밀어내는 전기력이 작아져 더 많은 전하를 모을 수 있습니다. 따라서 저장할 수 있는 전하량이 늘어납니다."},
+  {num:26, text:"평행판 축전기에서 금속판의 면적을 그대로 두고, 두 금속판 사이의 거리를 늘렸을 때 저장할 수 있는 전하량의 변화로 가장 옳은 것은?", opts:["저장할 수 있는 전하량이 줄어든다.", "저장할 수 있는 전하량이 늘어난다.", "변화 없다.", "전하가 모두 음(-)전하로 바뀐다."], ans:1, exp:"두 금속판 사이의 거리가 가까울수록 두 판의 다른 전하 사이의 인력이 강해져 더 많은 전하를 모을 수 있습니다. 거리를 늘리면 인력이 약해져 저장할 수 있는 전하량이 줄어듭니다."},
+  {num:27, text:"같은 부피일 때 평행판 축전기에 비해 원통형 축전기가 갖는 장점으로 옳은 것은?", opts:["전하를 더 많이 저장할 수 있도록 금속판의 면적을 크게 할 수 있다.", "절연체가 필요 없어진다.", "충전 시간이 항상 더 짧다.", "방전이 일어나지 않는다."], ans:1, exp:"원통형 축전기는 두 금속판이 말려 있는 구조이므로 같은 부피라도 금속판을 길게 만들어 면적을 크게 할 수 있고, 따라서 더 많은 전하를 저장할 수 있습니다."},
+  {num:28, text:"[심화] 자동 심장 충격기(AED)에 축전기를 사용할 때 갖춰야 할 핵심 특성을 가장 잘 짝지은 것은?", opts:["저장 용량이 작고 방전 시간이 길다.", "저장 용량이 크고 방전 시간이 길다.", "저장 용량이 크고 방전 시간이 짧다(빠르게 방출).", "저장 용량이 작고 방전 시간이 짧다."], ans:3, exp:"AED는 심장에 짧은 시간에 많은 전기 에너지를 공급해야 하므로 첫째, 충전 용량이 커야 하고, 둘째, 방전 시 에너지를 빠르게 방출(짧은 방전 시간)해야 합니다."},
+  {num:29, text:"[심화] 다음 중 축전기의 충전 또는 방전 원리를 직접 이용한 기기끼리 짝지은 것은?", opts:["자동 심장 충격기, 카메라 플래시", "백열 전구, 형광등", "건전지, 태양전지", "전기 주전자, 전기 밥솥"], ans:1, exp:"자동 심장 충격기와 카메라 플래시는 모두 축전기의 충전·방전 기능을 직접 이용합니다. 백열 전구·형광등은 저항·방전 등을 이용한 발광 기기이고, 건전지·태양전지는 전원 장치이며, 주전자·밥솥은 저항(전열선)을 이용한 발열 기기입니다."},
+  {num:30, text:"축전기에 대한 설명으로 옳지 않은 것은?", opts:["전기 에너지를 전기적 위치 에너지의 형태로 저장한다.", "두 금속판 사이의 거리가 가깝고 면적이 클수록 더 많은 전하를 저장할 수 있다.", "충전된 축전기는 전위차를 가지며, 전구에 연결하면 방전이 일어난다.", "축전기는 저장된 전하를 시간이 아무리 지나도 절대로 잃지 않으므로 영구적인 전원 장치로 사용된다."], ans:4, exp:"축전기는 전기 에너지를 저장하는 장치이지 영구적인 전원 장치가 아닙니다. 충전된 축전기를 회로에 연결하면 방전을 통해 전하가 빠져나가며, 일정 시간이 지나면 사용한 에너지를 다 잃습니다. 영구적으로 전기를 공급하려면 전지 같은 별도의 전원 장치가 필요합니다."},
+];
+
+// ══════════════════════════════════════
+// 상태
+// ══════════════════════════════════════
+let userName = '', userSchool = '', userPhone = '';
+let userAnswers = {}; // num → chosen index (1~4)
+let timerInterval = null;
+let elapsedSec = 0;
+let quizStarted = false;
+
+// ══════════════════════════════════════
+// 유틸
+// ══════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function fmtTime(sec) {
+  const m = String(Math.floor(sec / 60)).padStart(2, '0');
+  const s = String(sec % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function toast(msg, duration = 2500) {
+  const el = document.getElementById('savingToast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration);
+}
+
+// ══════════════════════════════════════
+// SCREEN 1 → 시작
+// ══════════════════════════════════════
+function startQuiz() {
+  const name = document.getElementById('input-name').value.trim();
+  const school = document.getElementById('input-school').value.trim();
+  const phone = document.getElementById('input-phone').value.trim();
+  if (!name) { alert('이름을 입력해주세요.'); return; }
+  if (!school) { alert('학교를 입력해주세요.'); return; }
+  if (!/^[0-9]{4}$/.test(phone)) { alert('전화번호 뒷자리 4자리(숫자)를 입력해주세요.'); return; }
+
+  userName = name;
+  userSchool = school;
+  userPhone = phone;
+  userAnswers = {};
+  elapsedSec = 0;
+
+  renderQuiz();
+  showScreen('screen-quiz');
+  startTimer();
+}
+
+// ══════════════════════════════════════
+// 타이머
+// ══════════════════════════════════════
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    elapsedSec++;
+    document.getElementById('timerDisplay').textContent = fmtTime(elapsedSec);
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// ══════════════════════════════════════
+// 퀴즈 렌더
+// ══════════════════════════════════════
+const LABELS = ['①','②','③','④'];
+
+function renderQuiz() {
+  const body = document.getElementById('quizBody');
+  body.innerHTML = QUIZ.map(q => `
+    <div class="q-card" id="qcard-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="q-options">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="opt-${q.num}-${i+1}" onclick="selectOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  updateProgress();
+}
+
+function selectOpt(num, chosen) {
+  userAnswers[num] = chosen;
+
+  // 선택 표시
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`opt-${num}-${i}`);
+    btn.style.borderColor = i === chosen ? 'var(--accent)' : '';
+    btn.style.background = i === chosen ? 'var(--accent-light)' : '';
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = Object.keys(userAnswers).length;
+  const total = QUIZ.length;
+  document.getElementById('metaProgress').textContent = `${answered} / ${total}`;
+  document.getElementById('progressFill').style.width = `${(answered / total) * 100}%`;
+}
+
+// ══════════════════════════════════════
+// 제출
+// ══════════════════════════════════════
+function submitQuiz() {
+  const answered = Object.keys(userAnswers).length;
+  if (answered < QUIZ.length) {
+    if (!confirm(`아직 ${QUIZ.length - answered}문제가 남아 있어요. 제출하시겠어요?`)) return;
+  }
+  stopTimer();
+  showResult();
+}
+
+// ══════════════════════════════════════
+// 결과
+// ══════════════════════════════════════
+function showResult() {
+  const correct = QUIZ.filter(q => userAnswers[q.num] === q.ans);
+  const wrong   = QUIZ.filter(q => userAnswers[q.num] !== q.ans);
+  const score   = correct.length;
+  const total   = QUIZ.length;
+
+  document.getElementById('resultName').textContent = `${userName} · ${userSchool} · ${userPhone}`;
+  document.getElementById('resultScore').textContent = score;
+  document.getElementById('resultScoreSub').textContent = `/ ${total} 문항`;
+  document.getElementById('statTime').textContent = fmtTime(elapsedSec);
+  document.getElementById('statCorrect').textContent = `${score}개`;
+  document.getElementById('statWrong').textContent = `${wrong.length}개`;
+
+  // 오답 리뷰
+  const reviewSection = document.getElementById('reviewSection');
+  if (wrong.length === 0) {
+    reviewSection.innerHTML = `<div style="text-align:center;padding:32px 0;color:var(--accent);font-weight:700;">🎉 전부 맞혔어요!</div>`;
+  } else {
+    reviewSection.innerHTML = `
+      <h2>틀린 문제 <span class="badge-wrong">${wrong.length}문제</span></h2>
+      ${wrong.map(q => renderReviewCard(q)).join('')}
+    `;
+  }
+
+  showScreen('screen-result');
+  saveScore(score, total);
+}
+
+function renderReviewCard(q) {
+  return `
+    <div class="review-card" id="review-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="review-retry-wrap" id="retry-opts-${q.num}">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="retry-opt-${q.num}-${i+1}" onclick="retryOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="review-exp">
+        <div class="review-exp-label">✦ 해설</div>
+        <p>${q.exp}</p>
+      </div>
+    </div>
+  `;
+}
+
+function retryOpt(num, chosen) {
+  const q = QUIZ.find(x => x.num === num);
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`retry-opt-${num}-${i}`);
+    if (!btn) continue;
+    btn.disabled = true;
+    if (i === q.ans) btn.className = 'opt-btn correct';
+    else if (i === chosen && chosen !== q.ans) btn.className = 'opt-btn wrong';
+    else btn.className = 'opt-btn reveal';
+  }
+}
+
+// ══════════════════════════════════════
+// Airtable 저장
+// ══════════════════════════════════════
+async function saveScore(score, total) {
+  toast('점수 저장 중...');
+  try {
+    const res = await fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_SCORES}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${AT_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        fields: {
+          '이름': userName,
+          '학교': userSchool,
+          'phone_last4': userPhone,
+          '날짜': new Date().toISOString().split('T')[0],
+          '과목코드': QUIZ_META.subjectCode,
+          '과목명': QUIZ_META.subjectName,
+          '대단원번호': QUIZ_META.mainNo,
+          '대단원명': QUIZ_META.mainName,
+          '중단원번호': QUIZ_META.subNo,
+          '중단원명': QUIZ_META.subName,
+          '섹션번호': QUIZ_META.sectionNo,
+          '섹션명': QUIZ_META.sectionName,
+          '총점': score,
+          '총문항수': total,
+          '풀이시간': fmtTime(elapsedSec)
+        }
+      })
+    });
+    if (res.ok) toast('✓ 점수가 저장되었습니다.');
+    else toast('저장 실패 — 네트워크를 확인해주세요.');
+  } catch(e) {
+    toast('저장 실패 — 네트워크를 확인해주세요.');
+  }
+}
+
+// ══════════════════════════════════════
+// 리셋
+// ══════════════════════════════════════
+function resetQuiz() {
+  userName = '';
+  userSchool = '';
+  userPhone = '';
+  userAnswers = {};
+  elapsedSec = 0;
+  document.getElementById('input-name').value = '';
+  document.getElementById('input-school').value = '';
+  document.getElementById('input-phone').value = '';
+  document.getElementById('timerDisplay').textContent = '00:00';
+  showScreen('screen-intro');
+}
+</script>
+</body>
+</html>
