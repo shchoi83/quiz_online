@@ -32,7 +32,6 @@ body {
   padding: 0 0 60px;
 }
 
-/* ── 공통 ── */
 .screen { display: none; }
 .screen.active { display: block; }
 
@@ -77,7 +76,6 @@ h1 {
 
 .btn-ghost:hover { background: var(--accent-light); opacity: 1; }
 
-/* ── SCREEN 1: 입력 ── */
 #screen-intro {
   padding-top: 80px;
 }
@@ -99,14 +97,21 @@ h1 {
   letter-spacing: 0.08em;
 }
 
-.intro-header h1 { margin-bottom: 8px; }
-.intro-header p { color: var(--text-dim); font-size: 0.9rem; }
+.intro-header h1 {
+  margin-bottom: 12px;
+}
 
-.form-card {
+.intro-header p {
+  color: var(--text-dim);
+  font-size: 0.92rem;
+}
+
+.intro-form {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 32px;
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 20px;
   box-shadow: var(--shadow);
 }
 
@@ -114,767 +119,450 @@ h1 {
   margin-bottom: 20px;
 }
 
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
 .form-group label {
   display: block;
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   font-weight: 500;
-  color: var(--text-dim);
   margin-bottom: 8px;
-  letter-spacing: 0.04em;
-}
-
-.form-group input {
-  width: 100%;
-  background: var(--bg);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  padding: 13px 16px;
-  font-size: 1rem;
-  font-family: 'Noto Sans KR', sans-serif;
   color: var(--text);
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.95rem;
+}
+
+.form-group input:focus,
+.form-group select:focus {
   outline: none;
-  transition: border-color 0.2s;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
 }
 
-.form-group input:focus { border-color: var(--accent); }
+#screen-quiz {
+  padding-top: 40px;
+}
 
-.form-info {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
+.quiz-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.quiz-header .tag {
+  display: inline-block;
   background: var(--accent-light);
-  border-radius: 10px;
-  padding: 14px 16px;
-}
-
-.form-info span {
-  font-size: 0.82rem;
   color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  letter-spacing: 0.08em;
 }
 
-/* ── SCREEN 2: 퀴즈 ── */
-#screen-quiz { padding-top: 0; }
-
-.quiz-topbar {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 14px 20px;
+.quiz-header h1 {
+  margin-bottom: 8px;
 }
 
-.quiz-topbar-inner {
-  max-width: 720px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 16px;
+.quiz-header p {
+  color: var(--text-dim);
+  font-size: 0.88rem;
 }
 
-.progress-wrap {
-  flex: 1;
+.progress-bar {
+  width: 100%;
+  height: 4px;
   background: var(--border);
-  border-radius: 99px;
-  height: 6px;
+  border-radius: 2px;
+  margin-bottom: 32px;
   overflow: hidden;
 }
 
 .progress-fill {
-  height: 6px;
+  height: 100%;
   background: var(--accent);
-  border-radius: 99px;
-  transition: width 0.4s ease;
+  transition: width 0.3s ease;
 }
 
-.quiz-meta {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.meta-item {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.78rem;
-  color: var(--text-dim);
-}
-
-.meta-item span {
-  color: var(--text);
-  font-weight: 500;
-}
-
-.quiz-body {
-  padding: 32px 20px;
-  max-width: 720px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.q-card {
+.question-box {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
+  border-radius: var(--radius);
+  padding: 28px;
+  margin-bottom: 24px;
   box-shadow: var(--shadow);
-  transition: border-color 0.3s;
 }
 
-.q-card.correct { border-color: var(--correct); }
-.q-card.wrong { border-color: var(--wrong); }
-
-.q-head {
-  padding: 20px 24px 16px;
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-}
-
-.q-num {
+.question-number {
   font-family: 'DM Mono', monospace;
-  font-size: 0.68rem;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 3px 8px;
+  font-size: 0.8rem;
   color: var(--text-dim);
-  white-space: nowrap;
-  margin-top: 3px;
-  flex-shrink: 0;
+  margin-bottom: 12px;
+  letter-spacing: 0.04em;
 }
 
-.q-text {
-  font-size: 0.93rem;
-  line-height: 1.75;
-  white-space: pre-line;
+.question-text {
+  font-size: 1.15rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+  line-height: 1.5;
 }
 
-.q-options {
-  padding: 0 24px 20px;
+.options {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
-.opt-btn {
+.option {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  background: var(--bg);
+  align-items: center;
+  padding: 16px;
   border: 1.5px solid var(--border);
   border-radius: 10px;
-  padding: 12px 14px;
   cursor: pointer;
-  text-align: left;
-  font-family: 'Noto Sans KR', sans-serif;
-  font-size: 0.88rem;
-  line-height: 1.5;
-  color: var(--text);
-  transition: all 0.15s;
-  width: 100%;
+  transition: all 0.2s;
+  background: var(--surface);
 }
 
-.opt-btn:hover:not(:disabled) {
+.option:hover {
   border-color: var(--accent);
   background: var(--accent-light);
 }
 
-.opt-btn:disabled { cursor: default; }
-
-.opt-btn.correct {
-  border-color: var(--correct);
-  background: var(--correct-light);
-  color: var(--correct);
+.option input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  margin-right: 16px;
+  cursor: pointer;
 }
 
-.opt-btn.wrong {
-  border-color: var(--wrong);
-  background: var(--wrong-light);
-  color: var(--wrong);
+.option label {
+  flex: 1;
+  cursor: pointer;
+  font-size: 0.95rem;
 }
 
-.opt-btn.reveal {
-  border-color: rgba(45,90,61,0.35);
-  background: rgba(45,90,61,0.04);
-  color: rgba(45,90,61,0.6);
-}
-
-.opt-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.7rem;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  flex-shrink: 0;
-  margin-top: 1px;
-  transition: all 0.15s;
-}
-
-.opt-btn.correct .opt-label { background: var(--correct); border-color: var(--correct); color: #fff; }
-.opt-btn.wrong .opt-label { background: var(--wrong); border-color: var(--wrong); color: #fff; }
-
-/* submit btn area */
-.submit-wrap {
-  padding: 0 20px 40px;
-  max-width: 720px;
-  margin: 0 auto;
-}
-
-/* ── SCREEN 3: 결과 ── */
-#screen-result { padding-top: 48px; }
-
-.result-hero {
-  text-align: center;
-  padding: 48px 20px 32px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 32px;
-}
-
-.result-name {
-  font-size: 0.82rem;
-  color: var(--text-dim);
-  margin-bottom: 6px;
-  font-family: 'DM Mono', monospace;
-}
-
-.result-score {
-  font-size: 4rem;
-  font-weight: 700;
-  color: var(--accent);
-  line-height: 1;
-  letter-spacing: -0.04em;
-  margin-bottom: 4px;
-}
-
-.result-score-sub {
-  font-size: 1rem;
-  color: var(--text-dim);
-  margin-bottom: 24px;
-}
-
-.result-stats {
-  display: flex;
-  justify-content: center;
-  gap: 32px;
-  flex-wrap: wrap;
-}
-
-.stat-item {
-  text-align: center;
-}
-
-.stat-val {
-  font-family: 'DM Mono', monospace;
-  font-size: 1.3rem;
-  font-weight: 500;
-  color: var(--text);
-}
-
-.stat-label {
-  font-size: 0.75rem;
-  color: var(--text-dim);
-  margin-top: 2px;
-}
-
-.result-section {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-.result-section h2 {
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.badge-wrong {
-  background: var(--wrong-light);
-  color: var(--wrong);
-  font-size: 0.72rem;
-  padding: 2px 10px;
-  border-radius: 20px;
-  font-family: 'DM Mono', monospace;
-}
-
-/* review card */
-.review-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  margin-bottom: 16px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-}
-
-.review-card .q-head { padding-bottom: 12px; }
-
-.review-exp {
-  padding: 14px 24px 18px;
-  border-top: 1px solid var(--border);
+.option.selected {
+  border-color: var(--accent);
   background: var(--accent-light);
 }
 
-.review-exp-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.68rem;
+.option.correct {
+  border-color: var(--correct);
+  background: var(--correct-light);
+}
+
+.option.wrong {
+  border-color: var(--wrong);
+  background: var(--wrong-light);
+}
+
+.explanation {
+  background: #f0f4f8;
+  border-left: 4px solid var(--accent);
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 20px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.explanation-label {
+  font-weight: 600;
   color: var(--accent);
-  margin-bottom: 5px;
-  letter-spacing: 0.06em;
+  margin-bottom: 8px;
 }
 
-.review-exp p {
-  font-size: 0.84rem;
-  color: var(--accent);
-  line-height: 1.65;
-}
-
-.review-retry-wrap {
-  padding: 0 24px 20px;
+.quiz-controls {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.result-actions {
-  max-width: 720px;
-  margin: 32px auto 0;
-  padding: 0 20px;
-  display: flex;
-  flex-direction: column;
   gap: 12px;
+  margin-top: 32px;
 }
 
-/* saving overlay */
-.saving-toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--text);
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 99px;
-  font-size: 0.82rem;
+.quiz-controls button {
+  flex: 1;
+}
+
+#screen-result {
+  padding-top: 60px;
+  text-align: center;
+}
+
+.result-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.result-score {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.result-text {
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+  color: var(--text-dim);
+}
+
+.result-details {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow);
+  text-align: left;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-weight: 500;
+}
+
+.detail-value {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.footer-note {
+  text-align: center;
+  margin-top: 48px;
+  font-size: 0.78rem;
+  color: var(--text-dim);
   font-family: 'DM Mono', monospace;
-  opacity: 0;
-  transition: opacity 0.3s;
-  pointer-events: none;
-  z-index: 999;
-  white-space: nowrap;
+  letter-spacing: 0.04em;
 }
-
-.saving-toast.show { opacity: 1; }
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════
-     SCREEN 1: 이름 / 학교 입력
-══════════════════════════════════════ -->
-<div id="screen-intro" class="screen active">
-  <div class="container">
+<div class="container">
+
+  <!-- SCREEN 1: 입력 -->
+  <div class="screen active" id="screen-intro">
     <div class="intro-header">
-      <div class="tag">PHYSICS QUIZ</div>
+      <div class="tag">MEC · 3-1-2</div>
       <h1>탄성파</h1>
       <p>역학과 에너지 · 3단원 탄성파와소리 · 1중단원 탄성파와 성질 · 2섹션</p>
     </div>
 
-    <div class="form-card">
-      <div class="form-info">
-        <span>📋 총 33문항 · 객관식 4지선다 · 시간 제한 없음</span>
-      </div>
-
+    <div class="intro-form">
       <div class="form-group">
-        <label>이름</label>
-        <input type="text" id="input-name" placeholder="홍길동" autocomplete="off">
+        <label for="name">이름</label>
+        <input type="text" id="name" placeholder="학생 이름을 입력하세요">
       </div>
       <div class="form-group">
-        <label>학교</label>
-        <input type="text" id="input-school" placeholder="○○고등학교" autocomplete="off">
+        <label for="mode">모드 선택</label>
+        <select id="mode">
+          <option value="all">전체 문제 (40개)</option>
+          <option value="ba">Basic만 (32개)</option>
+          <option value="all">Advanced 포함 (40개)</option>
+        </select>
       </div>
       <div class="form-group">
-        <label>전화번호 뒷자리 4자리 <span style="color:var(--text-dim);font-weight:300;">(동명이인 구별용)</span></label>
-        <input type="tel" id="input-phone" placeholder="1234" autocomplete="off" maxlength="4" inputmode="numeric" pattern="[0-9]{4}">
-      </div>
-
-      <button class="btn" onclick="startQuiz()">시작하기 →</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     SCREEN 2: 퀴즈
-══════════════════════════════════════ -->
-<div id="screen-quiz" class="screen">
-  <div class="quiz-topbar">
-    <div class="quiz-topbar-inner">
-      <div class="progress-wrap">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-      <div class="quiz-meta">
-        <div class="meta-item" id="metaProgress">0 / 33</div>
-        <div class="meta-item">⏱ <span id="timerDisplay">00:00</span></div>
+        <button class="btn" onclick="startQuiz()">퀴즈 시작</button>
       </div>
     </div>
   </div>
 
-  <div class="quiz-body" id="quizBody"></div>
+  <!-- SCREEN 2: 퀴즈 -->
+  <div class="screen" id="screen-quiz">
+    <div class="quiz-header">
+      <div class="tag">MEC · 3-1-2 탄성파</div>
+      <h1>탄성파</h1>
+      <p id="headerText"></p>
+    </div>
 
-  <div class="submit-wrap">
-    <button class="btn" onclick="submitQuiz()">제출하기</button>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="question-box">
+      <div class="question-number">문제 <span id="qNum"></span> / <span id="qTotal"></span></div>
+      <div class="question-text" id="questionText"></div>
+      
+      <div class="options" id="optionsContainer"></div>
+
+      <div class="explanation" id="explanationBox" style="display:none;">
+        <div class="explanation-label">해설</div>
+        <div id="explanationText"></div>
+      </div>
+
+      <div class="quiz-controls">
+        <button class="btn btn-ghost" id="prevBtn" onclick="prevQuestion()">이전</button>
+        <button class="btn" id="nextBtn" onclick="nextQuestion()">다음</button>
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- ══════════════════════════════════════
-     SCREEN 3: 결과
-══════════════════════════════════════ -->
-<div id="screen-result" class="screen">
-  <div class="result-hero">
-    <div class="result-name" id="resultName"></div>
+  <!-- SCREEN 3: 결과 -->
+  <div class="screen" id="screen-result">
+    <div class="result-icon" id="resultIcon"></div>
     <div class="result-score" id="resultScore"></div>
-    <div class="result-score-sub" id="resultScoreSub"></div>
-    <div class="result-stats">
-      <div class="stat-item">
-        <div class="stat-val" id="statTime"></div>
-        <div class="stat-label">풀이 시간</div>
+    <div class="result-text" id="resultText"></div>
+    
+    <div class="result-details">
+      <div class="detail-item">
+        <span class="detail-label">푼 문제</span>
+        <span class="detail-value" id="answeredCount">0 / 40</span>
       </div>
-      <div class="stat-item">
-        <div class="stat-val" id="statCorrect"></div>
-        <div class="stat-label">정답</div>
+      <div class="detail-item">
+        <span class="detail-label">정답</span>
+        <span class="detail-value" id="correctCount">0개</span>
       </div>
-      <div class="stat-item">
-        <div class="stat-val" id="statWrong"></div>
-        <div class="stat-label">오답</div>
+      <div class="detail-item">
+        <span class="detail-label">정답률</span>
+        <span class="detail-value" id="correctRate">0%</span>
       </div>
     </div>
+
+    <button class="btn" onclick="location.reload()">다시 시작</button>
   </div>
 
-  <div class="result-section" id="reviewSection"></div>
-
-  <div class="result-actions">
-    <button class="btn btn-ghost" onclick="resetQuiz()">↺ 새로 응시하기</button>
-  </div>
+  <div class="footer-note">궁극의 물리 · 최성훈T</div>
 </div>
-
-<div class="saving-toast" id="savingToast"></div>
 
 <script>
-// ══════════════════════════════════════
-// Airtable 설정
-// ══════════════════════════════════════
-const AT_TOKEN   = "patBcLElKAr7fPbgS.0f288a25e39501f27d9d33569371fc819acb54173cf44daa68fc028f16e479f9";
-const AT_BASE    = "appmCOjqp5xIJuPqt";
-const AT_SCORES  = "scores";
+const quizData = {"quizCode": "mec-3-1-2-wave", "subjectCode": "MEC", "subjectName": "\uc5ed\ud559\uacfc \uc5d0\ub108\uc9c0", "mainNo": "3", "mainName": "\ud0c4\uc131\ud30c\uc640\uc18c\ub9ac", "subNo": "1", "subName": "\ud0c4\uc131\ud30c\uc640 \uc131\uc9c8", "sectionNo": "2", "sectionName": "\ud0c4\uc131\ud30c", "totalQuestions": 40, "questions": [{"num": 138, "text": "\ud30c\ub3d9\uc758 \uc815\uc758\ub85c \uac00\uc7a5 \uc801\uc808\ud55c \uac83\uc740?", "opts": ["\ubb3c\uc9c8\uc774 \ud55c \uc9c0\uc810\uc5d0\uc11c \ub2e4\ub978 \uc9c0\uc810\uc73c\ub85c \uc774\ub3d9\ud558\ub294 \ud604\uc0c1", "\ub9e4\uc9c8\uc758 \uac01 \ubd80\ubd84\uc774 \uc81c\uc790\ub9ac\uc5d0\uc11c \uc9c4\ub3d9\ud558\uba74\uc11c \uc5d0\ub108\uc9c0\ub9cc \uc804\ub2ec\ub418\ub294 \ud604\uc0c1", "\uc5d0\ub108\uc9c0\uac00 \ub9e4\uc9c8\uc744 \ud1b5\ud574 \ud769\uc5b4\uc9c0\uba74\uc11c \uac10\uc18c\ud558\ub294 \ud604\uc0c1", "\ub9e4\uc9c8\uc758 \ubc00\ub3c4 \ubcc0\ud654\ub85c \uc778\ud574 \ubc1c\uc0dd\ud558\ub294 \ud604\uc0c1"], "ans": 2, "exp": "\ud30c\ub3d9\uc740 \ub9e4\uc9c8\uc758 \uac01 \ubd80\ubd84\uc774 \uc81c\uc790\ub9ac\uc5d0\uc11c \uc9c4\ub3d9(\ub5a8\ub9bc)\ud558\uba74\uc11c \uc5d0\ub108\uc9c0\uc640 \uc6b4\ub3d9\ub7c9\ub9cc \uc804\ub2ec\ub418\ub294 \ud604\uc0c1\uc785\ub2c8\ub2e4. \ub9e4\uc9c8 \uc790\uc2e0\uc740 \uc774\ub3d9\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4."}, {"num": 139, "text": "\ud0c4\uc131\ud30c\uc758 \uc815\uc758\ub85c \uc633\uc740 \uac83\uc740?", "opts": ["\uc5d0\ub108\uc9c0\uac00 \uad11\uc18d\uc73c\ub85c \uc804\ud30c\ub418\ub294 \ud30c\ub3d9", "\ud0c4\uc131\uc744 \uc9c0\ub2cc \ub9e4\uc9c8\uc744 \ud1b5\ud574 \uc804\ub2ec\ub418\ub294 \ud30c\ub3d9", "\uc9c4\uacf5\uc5d0\uc11c\ub3c4 \uc804\ud30c\ub420 \uc218 \uc788\ub294 \ud30c\ub3d9", "\ube5b\uc758 \uc18d\ub3c4\ub85c \ubaa8\ub4e0 \ubb3c\uc9c8\uc744 \ud1b5\uacfc\ud558\ub294 \ud30c\ub3d9"], "ans": 2, "exp": "\ud0c4\uc131\ud30c\ub294 \ud0c4\uc131\uc744 \uc9c0\ub2cc \ub9e4\uc9c8(\uace0\uccb4, \uc561\uccb4, \uae30\uccb4)\uc744 \ud1b5\ud574 \uc804\ub2ec\ub418\ub294 \ud30c\ub3d9\uc785\ub2c8\ub2e4. \uc9c4\uacf5\uc5d0\uc11c\ub294 \uc804\ud30c\ub418\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4."}, {"num": 140, "text": "\ub2e4\uc74c \uc911 \ub9e4\uc9c8\uc774 \ud544\uc694\ud558\uc9c0 \uc54a\uc740 \ud30c\ub3d9\uc740?", "opts": ["\uc74c\ud30c", "\uc218\uba74\ud30c", "\uc9c0\uc9c4\ud30c", "\uc804\uc790\uae30\ud30c(\ube5b)"], "ans": 4, "exp": "\uc804\uc790\uae30\ud30c(\ube5b)\ub294 \ub9e4\uc9c8\uc774 \uc5c6\uc5b4\ub3c4 \uc9c4\uacf5\uc5d0\uc11c \uc804\ud30c\ub420 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \uc74c\ud30c, \uc218\uba74\ud30c, \uc9c0\uc9c4\ud30c\ub294 \ubaa8\ub450 \ud0c4\uc131\ud30c\ub85c \ub9e4\uc9c8\uc774 \ud544\uc694\ud569\ub2c8\ub2e4."}, {"num": 141, "text": "\ub9e4\uc9c8\uc774 \ud544\uc694\ud55c \ud30c\ub3d9\uc758 \uc608\ub85c \uc62c\ubc14\ub978 \uc870\ud569\uc740?", "opts": ["\uc218\uba74\ud30c, \uc74c\ud30c, \ube5b", "\uc9c0\uc9c4\ud30c, \uc74c\ud30c, \ube5b", "\uc218\uba74\ud30c, \uc9c0\uc9c4\ud30c, \uc74c\ud30c", "\uc74c\ud30c, \ube5b, \ub9c8\uc774\ud06c\ub85c\ud30c"], "ans": 3, "exp": "\uc218\uba74\ud30c(\ubb3c\uc758 \ud0c4\uc131), \uc9c0\uc9c4\ud30c(\uc9c0\uac01\uc758 \ud0c4\uc131), \uc74c\ud30c(\uacf5\uae30\uc758 \ud0c4\uc131)\ub294 \ubaa8\ub450 \ub9e4\uc9c8\uc774 \ud544\uc694\ud55c \ud0c4\uc131\ud30c\uc785\ub2c8\ub2e4."}, {"num": 142, "text": "\ud30c\ub3d9\uc774 \uc9c4\ud589\ud558\uae30 \uc704\ud574 \ud544\uc694\ud55c \uac00\uc7a5 \uae30\ubcf8\uc801\uc778 \uc870\uac74\uc740?", "opts": ["\ub192\uc740 \uc628\ub3c4", "\ud0c4\uc131\uc744 \uc9c0\ub2cc \ub9e4\uc9c8", "\uad11\uc6d0", "\uac15\ud55c \uc555\ub825"], "ans": 2, "exp": "\ud0c4\uc131\ud30c\uac00 \uc9c4\ud589\ud558\ub824\uba74 \ud0c4\uc131\uc744 \uc9c0\ub2cc \ub9e4\uc9c8\uc774 \ud544\uc218\uc801\uc785\ub2c8\ub2e4. \ub9e4\uc9c8\uc774 \uc5c6\uc73c\uba74 \ud30c\ub3d9\uc774 \uc804\ud30c\ub420 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4."}, {"num": 143, "text": "\ub2e4\uc74c \uc911 \ud0c4\uc131\ud30c\uc5d0 \ud574\ub2f9\ud558\ub294 \uac83\uc740?", "opts": ["\ud0dc\uc591 \ube5b", "\ub77c\ub514\uc624\ud30c", "\uc74c\ud30c", "\uc790\uc678\uc120"], "ans": 3, "exp": "\uc74c\ud30c\ub294 \uacf5\uae30\uc758 \ud0c4\uc131\uc5d0 \uc758\ud574 \uc804\ud30c\ub418\ub294 \ud0c4\uc131\ud30c\uc785\ub2c8\ub2e4. \ub098\uba38\uc9c0\ub294 \ubaa8\ub450 \ub9e4\uc9c8 \uc5c6\uc774\ub3c4 \uc804\ud30c\ub418\ub294 \uc804\uc790\uae30\ud30c\uc785\ub2c8\ub2e4."}, {"num": 144, "text": "\uc9c0\uad6c\uc0c1\uc758 \ubaa8\ub4e0 \ud0c4\uc131\ud30c\uc758 \uacf5\ud1b5\uc810\uc740?", "opts": ["\ubaa8\ub450 \uac19\uc740 \uc18d\ub825\uc73c\ub85c \uc9c4\ud589\ud55c\ub2e4", "\ubaa8\ub450 \uc9c4\uacf5\uc5d0\uc11c\ub3c4 \uc804\ud30c\ub41c\ub2e4", "\ubaa8\ub450 \ud0c4\uc131\uc744 \uc9c0\ub2cc \ub9e4\uc9c8\uc744 \ud544\uc694\ub85c \ud55c\ub2e4", "\ubaa8\ub450 \ud6a1\ud30c\uc774\ub2e4"], "ans": 3, "exp": "\ubaa8\ub4e0 \ud0c4\uc131\ud30c\ub294 \ud0c4\uc131\uc744 \uc9c0\ub2cc \ub9e4\uc9c8\uc744 \ud1b5\ud574\uc11c\ub9cc \uc804\ud30c\ub429\ub2c8\ub2e4. \uc774\uac83\uc774 \ud0c4\uc131\ud30c\uc758 \uc815\uc758\uc801 \ud2b9\uc131\uc785\ub2c8\ub2e4."}, {"num": 145, "text": "\ud30c\ub3d9\uc774 \uc804\ub2ec\ud558\ub294 \uac83\uc73c\ub85c \uc633\uc740 \uac83\uc740?", "opts": ["\ubb3c\uc9c8 \uc790\uccb4", "\uc5d0\ub108\uc9c0\uc640 \uc6b4\ub3d9\ub7c9", "\uc6d0\uc790\uc640 \ubd84\uc790", "\ube5b\uacfc \uc18c\ub9ac"], "ans": 2, "exp": "\ud30c\ub3d9\uc740 \ub9e4\uc9c8\uc758 \uac01 \ubd80\ubd84\uc774 \uc81c\uc790\ub9ac\uc5d0\uc11c \uc9c4\ub3d9\ud558\uba74\uc11c \uc5d0\ub108\uc9c0\uc640 \uc6b4\ub3d9\ub7c9\uc744 \uc804\ub2ec\ud569\ub2c8\ub2e4. \ub9e4\uc9c8 \uc790\uccb4\ub294 \uc774\ub3d9\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4."}, {"num": 146, "text": "\ud6a1\ud30c\uc758 \uc815\uc758\ub85c \uac00\uc7a5 \uc801\uc808\ud55c \uac83\uc740?", "opts": ["\ud30c\ub3d9\uc758 \uc9c4\ud589 \ubc29\ud5a5\uacfc \ub9e4\uc9c8\uc758 \uc9c4\ub3d9 \ubc29\ud5a5\uc774 \ub098\ub780\ud55c \ud30c\ub3d9", "\ud30c\ub3d9\uc758 \uc9c4\ud589 \ubc29\ud5a5\uacfc \ub9e4\uc9c8\uc758 \uc9c4\ub3d9 \ubc29\ud5a5\uc774 \uc218\uc9c1\uc778 \ud30c\ub3d9", "\uc74c\ud30c\uc640 \uac19\uc740 \uc885\ub958\uc758 \ud30c\ub3d9", "\uc9c0\uc9c4\ud30c \uc911 P\ud30c\ub77c\uace0 \ubd88\ub9ac\ub294 \ud30c\ub3d9"], "ans": 2, "exp": "\ud6a1\ud30c\ub294 \ud30c\ub3d9\uc758 \uc9c4\ud589 \ubc29\ud5a5(\u2190\u2192)\uacfc \ub9e4\uc9c8\uc758 \uc9c4\ub3d9 \ubc29\ud5a5(\u2191\u2193)\uc774 \uc218\uc9c1\uc785\ub2c8\ub2e4. \uad50\uacfc\uc11c \uadf8\ub9bc \u2162-6 (\uac00)\ub97c \ucc38\uace0\ud558\uc138\uc694."}, {"num": 147, "text": "\uc885\ud30c\uc758 \uc815\uc758\ub85c \uc633\uc740 \uac83\uc740?", "opts": ["\ud30c\ub3d9\uc758 \uc9c4\ud589 \ubc29\ud5a5\uacfc \ub9e4\uc9c8\uc758 \uc9c4\ub3d9 \ubc29\ud5a5\uc774 \uc218\uc9c1\uc778 \ud30c\ub3d9", "\ud30c\ub3d9\uc758 \uc9c4\ud589 \ubc29\ud5a5\uacfc \ub9e4\uc9c8\uc758 \uc9c4\ub3d9 \ubc29\ud5a5\uc774 \ub098\ub780\ud55c \ud30c\ub3d9", "\ubb3c\uc758 \ud45c\uba74\uc5d0\uc11c\ub9cc \ubc1c\uc0dd\ud558\ub294 \ud30c\ub3d9", "\ud56d\uc0c1 \ub9e4\uc9c8\uc774 \uc5c6\uc5b4\uc57c \uc9c4\ud589\ub418\ub294 \ud30c\ub3d9"], "ans": 2, "exp": "\uc885\ud30c\ub294 \ud30c\ub3d9\uc758 \uc9c4\ud589 \ubc29\ud5a5(\u2190\u2192)\uacfc \ub9e4\uc9c8\uc758 \uc9c4\ub3d9 \ubc29\ud5a5(\u2190\u2192)\uc774 \ub098\ub780\ud569\ub2c8\ub2e4. \uad50\uacfc\uc11c \uadf8\ub9bc \u2162-6 (\ub098)\ub97c \ucc38\uace0\ud558\uc138\uc694."}, {"num": 148, "text": "\uc218\uba74\ud30c(\uc218\uc704\uc758 \uc0c1\ud558 \uc9c4\ub3d9)\uc758 \ubd84\ub958\ub85c \uc633\uc740 \uac83\uc740?", "opts": ["\uc885\ud30c", "\ud6a1\ud30c", "\uc885\ud6a1\ud30c\uc758 \ud63c\ud569", "\uc815\uc0c1\ud30c"], "ans": 2, "exp": "\uc218\uba74\ud30c\ub294 \uc218\uc704\uac00 \uc704\uc544\ub798(\u2191\u2193)\ub85c \uc9c4\ub3d9\ud558\uba74\uc11c \ud30c\ub3d9\uc774 \uc606(\u2190\u2192)\uc73c\ub85c \uc9c4\ud589\ud558\ubbc0\ub85c \ud6a1\ud30c\uc785\ub2c8\ub2e4."}, {"num": 149, "text": "\uc9c0\uc9c4\ud30c \uc911 S\ud30c(\ud6a1\ud30c)\uc758 \ud2b9\uc9d5\uc73c\ub85c \uc62c\ubc14\ub978 \uac83\uc740?", "opts": ["\uace0\uccb4, \uc561\uccb4, \uae30\uccb4\ub97c \ubaa8\ub450 \ud1b5\uacfc\ud55c\ub2e4", "\uc9c0\uc9c4\ud30c \uc911 \uac00\uc7a5 \ube60\ub974\ub2e4", "\uace0\uccb4\ub9cc \ud1b5\uacfc\ud558\uace0 \uc561\uccb4\ub294 \ud1b5\uacfc\ud558\uc9c0 \ubabb\ud55c\ub2e4", "\uc74c\ud30c\uc640 \uac19\uc740 \uc18d\ub825\uc73c\ub85c \uc9c4\ud589\ud55c\ub2e4"], "ans": 3, "exp": "\uc9c0\uc9c4\ud30c \uc911 S\ud30c\ub294 \ud6a1\ud30c\ub85c\uc11c \uace0\uccb4\uc5d0\uc11c\ub9cc \uc804\ud30c\ub429\ub2c8\ub2e4. \uc561\uccb4 \uc678\ud575\uc5d0\uc11c S\ud30c\uac00 \ub098\ud0c0\ub098\uc9c0 \uc54a\ub294 \uc774\uc720\uc785\ub2c8\ub2e4."}, {"num": 150, "text": "\uc9c0\uc9c4\ud30c \uc911 P\ud30c(\uc885\ud30c)\uc758 \ud2b9\uc9d5\uc73c\ub85c \uc633\uc740 \uac83\uc740?", "opts": ["\uace0\uccb4\uc5d0\uc11c\ub9cc \uc804\ud30c\ub41c\ub2e4", "\uc561\uccb4\ub97c \ud1b5\uacfc\ud558\uc9c0 \ubabb\ud55c\ub2e4", "\uace0\uccb4, \uc561\uccb4, \uae30\uccb4\ub97c \ubaa8\ub450 \ud1b5\uacfc\ud55c\ub2e4", "S\ud30c\ubcf4\ub2e4 \ub290\ub9ac\uac8c \uc9c4\ud589\ud55c\ub2e4"], "ans": 3, "exp": "\uc9c0\uc9c4\ud30c \uc911 P\ud30c\ub294 \uc885\ud30c\ub85c\uc11c \uace0\uccb4, \uc561\uccb4, \uae30\uccb4\ub97c \ubaa8\ub450 \ud1b5\uacfc\ud569\ub2c8\ub2e4. P\ud30c\uac00 S\ud30c\ubcf4\ub2e4 \ube60\ub974\uace0 \uba3c\uc800 \ub3c4\ub2ec\ud569\ub2c8\ub2e4."}, {"num": 151, "text": "\uc74c\ud30c\uc758 \ubd84\ub958\ub85c \uc633\uc740 \uac83\uc740?", "opts": ["\ud6a1\ud30c (\uacf5\uae30\uc758 \uc555\ucd95\uacfc \ud33d\ucc3d\uc774 \uc9c4\ud589 \ubc29\ud5a5\uacfc \uc218\uc9c1)", "\uc885\ud30c (\uacf5\uae30\uc758 \uc555\ucd95\uacfc \ud33d\ucc3d\uc774 \uc9c4\ud589 \ubc29\ud5a5\uacfc \ub098\ub780\ud568)", "\ud6a1\ud30c\uc640 \uc885\ud30c\uc758 \ud63c\ud569", "\uc815\uc0c1\ud30c\uc640 \uc9c4\ud589\ud30c\uc758 \uc870\ud569"], "ans": 2, "exp": "\uc74c\ud30c\ub294 \uacf5\uae30\uc758 \uc555\ucd95(\ub192\uc740 \uc555\ub825)\uacfc \ud33d\ucc3d(\ub0ae\uc740 \uc555\ub825)\uc774 \uc74c\ud30c\uc758 \uc9c4\ud589 \ubc29\ud5a5\uacfc \ub098\ub780\ud558\uac8c \uc77c\uc5b4\ub098\ubbc0\ub85c \uc885\ud30c\uc785\ub2c8\ub2e4."}, {"num": 152, "text": "\ub2e4\uc74c \uc911 \ud6a1\ud30c\uc758 \uc608\ub85c \uc62c\ubc14\ub978 \uac83\uc740?", "opts": ["\uc74c\ud30c", "\uc74c\ud5a5\ud30c", "\ucd08\uc74c\ud30c", "\uc218\uba74\ud30c"], "ans": 4, "exp": "\uc218\uba74\ud30c\ub294 \ubb3c\uc758 \ud45c\uba74\uc774 \uc704\uc544\ub798\ub85c \uc9c4\ub3d9\ud558\uba74\uc11c \ud30c\ub3d9\uc774 \uc606\uc73c\ub85c \uc9c4\ud589\ud558\ubbc0\ub85c \ud6a1\ud30c\uc785\ub2c8\ub2e4. \uc74c\ud30c, \uc74c\ud5a5\ud30c, \ucd08\uc74c\ud30c\ub294 \ubaa8\ub450 \uc885\ud30c\uc785\ub2c8\ub2e4."}, {"num": 153, "text": "\ub2e4\uc74c \uc911 \uc885\ud30c\uc758 \uc608\ub85c \uc62c\ubc14\ub978 \uac83\uc740?", "opts": ["\uc9c0\uc9c4\ud30c\uc758 S\ud30c", "\uc218\uba74\ud30c", "\uc904\uc758 \ud30c\ub3d9", "\uc74c\ud30c"], "ans": 4, "exp": "\uc74c\ud30c\ub294 \uc885\ud30c\uc785\ub2c8\ub2e4. S\ud30c\ub294 \ud6a1\ud30c, \uc218\uba74\ud30c\uc640 \uc904\uc758 \ud30c\ub3d9\ub3c4 \ud6a1\ud30c\uc785\ub2c8\ub2e4."}, {"num": 154, "text": "\ud30c\ub3d9\uc758 '\ub9c8\ub8e8'\uc758 \uc815\uc758\ub85c \uc633\uc740 \uac83\uc740?", "opts": ["\ud30c\ub3d9\uc774 \uac00\uc7a5 \ub0ae\uc740 \uc704\uce58", "\ub9e4\uc9c8\uc758 \uc9c4\ub3d9\uc774 \uc544\ub798\ucabd \uadf9\ub2e8\uc778 \uc810", "\ub9e4\uc9c8\uc758 \uc9c4\ub3d9\uc774 \uc704\ucabd \uadf9\ub2e8\uc778 \uc810", "\ud30c\ub3d9\uc758 \uc911\uc559\uc120"], "ans": 3, "exp": "\ub9c8\ub8e8\ub294 \ub9e4\uc9c8\uc758 \uc9c4\ub3d9\uc774 \uc704\ucabd \uadf9\ub2e8\uc5d0 \ub3c4\ub2ec\ud55c \uc810\uc785\ub2c8\ub2e4. \uad50\uacfc\uc11c \uadf8\ub9bc \u2162-7 (\uac00)\uc5d0\uc11c \ub9c8\ub8e8\ub97c \ud655\uc778\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4."}, {"num": 155, "text": "\ud30c\ub3d9\uc758 '\uace8'\uc758 \uc815\uc758\ub85c \uc633\uc740 \uac83\uc740?", "opts": ["\ub9e4\uc9c8\uc758 \uc9c4\ub3d9\uc774 \uc704\ucabd \uadf9\ub2e8\uc778 \uc810", "\ud30c\ub3d9\uc758 \uc9c4\ud589 \ubc29\ud5a5", "\ub9e4\uc9c8\uc758 \uc9c4\ub3d9\uc774 \uc544\ub798\ucabd \uadf9\ub2e8\uc778 \uc810", "\ud30c\ub3d9\uc758 \uc18d\ub825"], "ans": 3, "exp": "\uace8\uc740 \ub9e4\uc9c8\uc758 \uc9c4\ub3d9\uc774 \uc544\ub798\ucabd \uadf9\ub2e8\uc5d0 \ub3c4\ub2ec\ud55c \uc810\uc785\ub2c8\ub2e4. \uad50\uacfc\uc11c \uadf8\ub9bc \u2162-7 (\uac00)\uc5d0\uc11c \uace8\uc744 \ud655\uc778\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4."}, {"num": 156, "text": "\ud30c\ub3d9\uc758 '\uc9c4\ud3ed'\uc758 \uc815\uc758\ub85c \uac00\uc7a5 \uc801\uc808\ud55c \uac83\uc740?", "opts": ["\ub9c8\ub8e8\uc5d0\uc11c \uace8\uae4c\uc9c0\uc758 \uac70\ub9ac", "\ub9c8\ub8e8\uc5d0\uc11c \uc911\uc559\uc120\uae4c\uc9c0\uc758 \uac70\ub9ac", "\ud30c\ub3d9\uc774 \uc9c4\ud589\ud558\ub294 \uac70\ub9ac", "\ud30c\ub3d9\uc774 \ud55c \uc8fc\uae30\uc5d0 \uc9c4\ud589\ud558\ub294 \uac70\ub9ac"], "ans": 2, "exp": "\uc9c4\ud3ed(A)\uc740 \ub9c8\ub8e8(\ub610\ub294 \uace8)\uc5d0\uc11c \uc911\uc559\uc120\uae4c\uc9c0\uc758 \ucd5c\ub300 \ubcc0\uc704\uc785\ub2c8\ub2e4. \uad50\uacfc\uc11c \uadf8\ub9bc \u2162-7 (\uac00)\ub97c \ucc38\uace0\ud558\uc138\uc694."}, {"num": 157, "text": "\ud30c\ub3d9\uc758 '\ud30c\uc7a5'\uc758 \uc815\uc758\ub85c \uc633\uc740 \uac83\uc740?", "opts": ["\ub9c8\ub8e8\uc640 \ub2e4\uc74c \ub9c8\ub8e8 \uc0ac\uc774\uc758 \uac70\ub9ac", "\ud55c \ubc88\uc758 \uc9c4\ub3d9\uc5d0 \uc18c\uc694\ub418\ub294 \uc2dc\uac04", "1\ucd08 \ub3d9\uc548 \uc77c\uc5b4\ub098\ub294 \uc9c4\ub3d9\uc758 \ud69f\uc218", "\ud30c\ub3d9\uc774 \uc9c4\ud589\ud558\ub294 \uc18d\ub825"], "ans": 1, "exp": "\ud30c\uc7a5(\u03bb)\uc740 \ub9c8\ub8e8\uc5d0\uc11c \ub2e4\uc74c \ub9c8\ub8e8\uae4c\uc9c0, \ub610\ub294 \uace8\uc5d0\uc11c \ub2e4\uc74c \uace8\uae4c\uc9c0\uc758 \uac70\ub9ac\uc785\ub2c8\ub2e4. \uad50\uacfc\uc11c \uadf8\ub9bc \u2162-7 (\uac00)\ub97c \ucc38\uace0\ud558\uc138\uc694."}, {"num": 158, "text": "\ud30c\ub3d9\uc758 '\uc8fc\uae30'\uc758 \uc815\uc758\ub85c \uc633\uc740 \uac83\uc740?", "opts": ["1\ucd08 \ub3d9\uc548 \uc77c\uc5b4\ub098\ub294 \uc9c4\ub3d9\uc758 \ud69f\uc218", "\ud55c \ubc88\uc758 \uc9c4\ub3d9\uc5d0 \uc18c\uc694\ub418\ub294 \uc2dc\uac04", "\ud30c\ub3d9\uc774 \ud30c\uc7a5\ub9cc\ud07c \uc9c4\ud589\ud558\ub294 \uc2dc\uac04", "\ub9c8\ub8e8\uc758 \uac1c\uc218"], "ans": 2, "exp": "\uc8fc\uae30(T)\ub294 \ud55c \ubc88\uc758 \uc644\uc804\ud55c \uc9c4\ub3d9(\uc608: \ub9c8\ub8e8\u2192\uace8\u2192\ub9c8\ub8e8)\uc5d0 \ud544\uc694\ud55c \uc2dc\uac04\uc785\ub2c8\ub2e4."}, {"num": 159, "text": "\ubcc0\uc704-\uc704\uce58 \uadf8\ub798\ud504(\ud55c \uc21c\uac04\uc758 \ud30c\ub3d9 \ubaa8\uc2b5)\uc5d0\uc11c \ud655\uc778\ud560 \uc218 \uc788\ub294 \ubb3c\ub9ac\ub7c9\uc740?", "opts": ["\uc9c4\ub3d9\uc218, \uc8fc\uae30", "\ud30c\uc7a5, \uc9c4\ud3ed", "\uc18d\ub825, \uac00\uc18d\ub3c4", "\uc2dc\uac04, \uac01\uc18d\ub3c4"], "ans": 2, "exp": "\ubcc0\uc704-\uc704\uce58 \uadf8\ub798\ud504\ub294 \ud55c \uc21c\uac04\uc758 \uacf5\uac04\uc801 \ubaa8\uc2b5\uc744 \ub098\ud0c0\ub0b4\ubbc0\ub85c \ud30c\uc7a5\uacfc \uc9c4\ud3ed\uc744 \uc77d\uc744 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \uad50\uacfc\uc11c \uadf8\ub9bc \u2162-7 (\uac00)\uc785\ub2c8\ub2e4."}, {"num": 160, "text": "\ubcc0\uc704-\uc2dc\uac04 \uadf8\ub798\ud504(\ud55c \uc810\uc758 \uc9c4\ub3d9 \uacfc\uc815)\uc5d0\uc11c \ud655\uc778\ud560 \uc218 \uc788\ub294 \ubb3c\ub9ac\ub7c9\uc740?", "opts": ["\ud30c\uc7a5, \uc9c4\ud3ed, \uc18d\ub825", "\uc8fc\uae30, \uc9c4\ub3d9\uc218, \uc9c4\ud3ed", "\ud30c\uc7a5, \uc8fc\uae30, \uc18d\ub825", "\uc9c4\ub3d9\uc218, \uc18d\ub825, \ud30c\uc7a5"], "ans": 2, "exp": "\ubcc0\uc704-\uc2dc\uac04 \uadf8\ub798\ud504\ub294 \ud55c \uc810\uc758 \uc2dc\uac04\uc801 \ubcc0\ud654\ub97c \ub098\ud0c0\ub0b4\ubbc0\ub85c \uc8fc\uae30, \uc9c4\ub3d9\uc218, \uc9c4\ud3ed\uc744 \uc77d\uc744 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \uad50\uacfc\uc11c \uadf8\ub9bc \u2162-7 (\ub098)\uc785\ub2c8\ub2e4."}, {"num": 161, "text": "\ud30c\ub3d9\uc758 \ud45c\ud604\uc5d0\uc11c \ub9c8\ub8e8, \uace8, \uc9c4\ud3ed, \ud30c\uc7a5, \uc8fc\uae30\ub97c \ubaa8\ub450 \ud45c\uc2dc\ud558\ub824\uba74?", "opts": ["\ubcc0\uc704-\uc704\uce58 \uadf8\ub798\ud504\ub9cc \ud544\uc694", "\ubcc0\uc704-\uc2dc\uac04 \uadf8\ub798\ud504\ub9cc \ud544\uc694", "\ubcc0\uc704-\uc704\uce58 \uadf8\ub798\ud504\uc640 \ubcc0\uc704-\uc2dc\uac04 \uadf8\ub798\ud504 \ubaa8\ub450 \ud544\uc694", "\uadf8\ub798\ud504 \uc5c6\uc774 \uc218\uc2dd\uc73c\ub85c\ub9cc \uac00\ub2a5"], "ans": 3, "exp": "\ub9c8\ub8e8, \uace8, \uc9c4\ud3ed, \ud30c\uc7a5\uc740 \ubcc0\uc704-\uc704\uce58 \uadf8\ub798\ud504\uc5d0\uc11c, \uc8fc\uae30\ub294 \ubcc0\uc704-\uc2dc\uac04 \uadf8\ub798\ud504\uc5d0\uc11c \ub098\ud0c0\ub0c5\ub2c8\ub2e4."}, {"num": 162, "text": "[\uc2ec\ud654] \uc8fc\uc5b4\uc9c4 \ubcc0\uc704-\uc704\uce58 \uadf8\ub798\ud504\uc5d0\uc11c \ud30c\uc7a5\uc774 4m\uc774\uace0, \ubcc0\uc704-\uc2dc\uac04 \uadf8\ub798\ud504\uc5d0\uc11c \uc8fc\uae30\uac00 2\ucd08\uc778 \ud30c\ub3d9\uc758 \uc18d\ub825\uc740?", "opts": ["1 m/s", "2 m/s", "4 m/s", "8 m/s"], "ans": 2, "exp": "\ud30c\ub3d9\uc758 \uc18d\ub825 v = \u03bb/T = 4m / 2s = 2 m/s\uc785\ub2c8\ub2e4."}, {"num": 163, "text": "[\uc2ec\ud654] \ubcc0\uc704-\uc704\uce58 \uadf8\ub798\ud504\ub97c \ubcf4\uace0 \uc9c4\ud3ed\uc774 0.5m, \ud30c\uc7a5\uc774 2m\uc778 \ud30c\ub3d9\uc5d0\uc11c \uc9c4\ub3d9\uc218\uac00 10Hz\uc77c \ub54c\uc758 \uc18d\ub825\uc740?", "opts": ["5 m/s", "10 m/s", "20 m/s", "40 m/s"], "ans": 2, "exp": "\ud30c\ub3d9\uc758 \uc18d\ub825 v = \u03bbf = 2m \u00d7 10Hz = 20 m/s\uc785\ub2c8\ub2e4."}, {"num": 164, "text": "\uc9c4\ub3d9\uc218\uc758 \uc815\uc758\ub85c \uc633\uc740 \uac83\uc740?", "opts": ["\ud55c \ubc88\uc758 \uc9c4\ub3d9\uc5d0 \uac78\ub9ac\ub294 \uc2dc\uac04", "1\ucd08 \ub3d9\uc548 \uc77c\uc5b4\ub098\ub294 \uc9c4\ub3d9\uc758 \ud69f\uc218", "\ud30c\ub3d9\uc774 \ud55c \uc8fc\uae30\uc5d0 \uc9c4\ud589\ud558\ub294 \uac70\ub9ac", "\uc9c4\ud3ed\uacfc \uc8fc\uae30\uc758 \uacf1"], "ans": 2, "exp": "\uc9c4\ub3d9\uc218(f)\ub294 1\ucd08 \ub3d9\uc548 \uc644\uc804\ud55c \uc9c4\ub3d9\uc774 \uba87 \ubc88 \uc77c\uc5b4\ub098\ub294\uc9c0\ub97c \ub098\ud0c0\ub0b4\uba70, \ub2e8\uc704\ub294 Hz(\ud5e4\ub974\uce20)\uc785\ub2c8\ub2e4."}, {"num": 165, "text": "\uc8fc\uae30(T)\uc640 \uc9c4\ub3d9\uc218(f)\uc758 \uad00\uacc4\uc2dd\uc73c\ub85c \uc633\uc740 \uac83\uc740?", "opts": ["T = f", "T = 1/f", "T = 2f", "T = f\u00b2"], "ans": 2, "exp": "\uc8fc\uae30\uc640 \uc9c4\ub3d9\uc218\ub294 \uc5ed\uc218 \uad00\uacc4\uc785\ub2c8\ub2e4. T = 1/f, \ub610\ub294 f = 1/T\uc785\ub2c8\ub2e4."}, {"num": 166, "text": "\ud30c\ub3d9\uc758 \uc18d\ub825\uc744 \ub098\ud0c0\ub0b4\ub294 \uacf5\uc2dd\uc73c\ub85c \uc633\uc740 \uac83\uc740?", "opts": ["v = \u03bbT", "v = \u03bb/f", "v = \u03bbf", "v = f/\u03bb"], "ans": 3, "exp": "\ud30c\ub3d9\uc758 \uc18d\ub825 v = \u03bbf = \u03bb/T\uc785\ub2c8\ub2e4. \ud30c\uc7a5\uc5d0 \uc9c4\ub3d9\uc218\ub97c \uacf1\ud558\uba74 \uc18d\ub825\uc785\ub2c8\ub2e4."}, {"num": 167, "text": "\uc8fc\uae30\uac00 0.1\ucd08\uc778 \ud30c\ub3d9\uc758 \uc9c4\ub3d9\uc218\ub294?", "opts": ["0.1 Hz", "1 Hz", "10 Hz", "100 Hz"], "ans": 3, "exp": "f = 1/T = 1/0.1 = 10 Hz\uc785\ub2c8\ub2e4."}, {"num": 168, "text": "\uc9c4\ub3d9\uc218\uac00 20Hz\uc774\uace0 \ud30c\uc7a5\uc774 0.5m\uc778 \ud30c\ub3d9\uc758 \uc18d\ub825\uc740?", "opts": ["5 m/s", "10 m/s", "20 m/s", "40 m/s"], "ans": 2, "exp": "v = \u03bbf = 0.5m \u00d7 20Hz = 10 m/s\uc785\ub2c8\ub2e4."}, {"num": 169, "text": "\ud30c\ub3d9\uc758 \uc18d\ub825\uc774 340m/s\uc774\uace0 \uc9c4\ub3d9\uc218\uac00 1700Hz\uc778 \uc74c\ud30c\uc758 \ud30c\uc7a5\uc740?", "opts": ["0.1 m", "0.2 m", "0.5 m", "2 m"], "ans": 2, "exp": "\u03bb = v/f = 340m/s / 1700Hz = 0.2m\uc785\ub2c8\ub2e4."}, {"num": 170, "text": "[\uc2ec\ud654] \uac19\uc740 \ub9e4\uc9c8\uc5d0\uc11c \uc9c4\ub3d9\uc218\uac00 2\ubc30 \uc99d\uac00\ud558\uba74 \ud30c\uc7a5\uc740 \uc5b4\ub5bb\uac8c \ubcc0\ud560\uae4c?", "opts": ["2\ubc30 \uc99d\uac00\ud55c\ub2e4", "1/2\ub85c \uac10\uc18c\ud55c\ub2e4", "4\ubc30 \uc99d\uac00\ud55c\ub2e4", "\ubcc0\ud558\uc9c0 \uc54a\ub294\ub2e4"], "ans": 2, "exp": "v = \u03bbf\ub294 \ub9e4\uc9c8\uc5d0\uc11c \uc77c\uc815\ud558\ubbc0\ub85c, f\uac00 2\ubc30 \uc99d\uac00\ud558\uba74 \u03bb\ub294 1/2\ub85c \uac10\uc18c\ud569\ub2c8\ub2e4."}, {"num": 171, "text": "[\uc2ec\ud654] \ud30c\uc7a5\uc774 0.2m, \uc9c4\ub3d9\uc218\uac00 1700Hz\uc778 \uc74c\ud30c\uac00 \ub2e4\ub978 \ub9e4\uc9c8\uc5d0 \uc9c4\uc785\ud558\uc5ec \uc9c4\ub3d9\uc218\uac00 \ubcc0\ud558\uc9c0 \uc54a\uace0 \uc18d\ub825\uc774 1020m/s\uac00 \ub418\uc5c8\uc744 \ub54c, \uc0c8\ub85c\uc6b4 \ub9e4\uc9c8\uc5d0\uc11c\uc758 \ud30c\uc7a5\uc740?", "opts": ["0.06 m", "0.12 m", "0.6 m", "1.2 m"], "ans": 3, "exp": "\uc0c8 \ub9e4\uc9c8\uc5d0\uc11c \u03bb' = v'/f = 1020m/s / 1700Hz = 0.6m\uc785\ub2c8\ub2e4."}, {"num": 172, "text": "\uace0\uc815\ub2e8 \ubc18\uc0ac\uc758 \ud2b9\uc9d5\uc73c\ub85c \uc633\uc740 \uac83\uc740?", "opts": ["\ubc18\uc0ac\ud30c\uc758 \uc704\uc0c1\uc774 \uc785\uc0ac\ud30c\uc640 \uac19\ub2e4", "\ubc18\uc0ac\ud30c\uc758 \uc704\uc0c1\uc774 \uc785\uc0ac\ud30c\ubcf4\ub2e4 180\u00b0 \uc55e\uc120\ub2e4", "\ubc18\uc0ac\ud30c\uc758 \uc704\uc0c1\uc774 \uc785\uc0ac\ud30c\ubcf4\ub2e4 180\u00b0 \ub4a4\ub5a8\uc5b4\uc9c4\ub2e4", "\ubc18\uc0ac\uac00 \uc77c\uc5b4\ub098\uc9c0 \uc54a\ub294\ub2e4"], "ans": 3, "exp": "\uace0\uc815\ub2e8 \ubc18\uc0ac\uc5d0\uc11c\ub294 \ubc18\uc0ac\ud30c\uc758 \uc704\uc0c1\uc774 \uc785\uc0ac\ud30c\ubcf4\ub2e4 180\u00b0 \ub4a4\ub5a8\uc5b4\uc9d1\ub2c8\ub2e4(\uc5ed\uc704\uc0c1). \uad50\uacfc\uc11c \uadf8\ub9bc \u2162-8 (\uac00)\ub97c \ucc38\uace0\ud558\uc138\uc694."}, {"num": 173, "text": "\uc790\uc720\ub2e8 \ubc18\uc0ac\uc758 \ud2b9\uc9d5\uc73c\ub85c \uc62c\ubc14\ub978 \uac83\uc740?", "opts": ["\ubc18\uc0ac\ud30c\uc758 \uc704\uc0c1\uc774 180\u00b0 \ubcc0\ud55c\ub2e4", "\ubc18\uc0ac\ud30c\uc758 \uc704\uc0c1\uc774 \uc785\uc0ac\ud30c\uc640 \uac19\ub2e4", "\ubc18\uc0ac\uac00 \uc77c\uc5b4\ub098\uc9c0 \uc54a\ub294\ub2e4", "\ud30c\ub3d9\uc774 \uc9c4\ud589 \ubc29\ud5a5\uc774 \ubc14\ub00c\uc9c0 \uc54a\ub294\ub2e4"], "ans": 2, "exp": "\uc790\uc720\ub2e8 \ubc18\uc0ac\uc5d0\uc11c\ub294 \ubc18\uc0ac\ud30c\uc758 \uc704\uc0c1\uc774 \uc785\uc0ac\ud30c\uc640 \uac19\uc2b5\ub2c8\ub2e4(\uac19\uc740 \uc704\uc0c1). \uad50\uacfc\uc11c \uadf8\ub9bc \u2162-8 (\ub098)\ub97c \ucc38\uace0\ud558\uc138\uc694."}, {"num": 174, "text": "[\uc2ec\ud654] \uc18d\ub825\uc774 \ube60\ub978 \uc904\uc5d0\uc11c \ub290\ub9b0 \uc904\ub85c\uc758 \uacbd\uacc4\uba74\uc5d0\uc11c \ubc18\uc0ac\uac00 \uc77c\uc5b4\ub0a0 \ub54c, \ubc18\uc0ac\ud30c\uc640 \ud22c\uacfc\ud30c\uc758 \uc9c4\ub3d9\uc218 \uad00\uacc4\ub294?", "opts": ["\ubc18\uc0ac\ud30c\uc758 \uc9c4\ub3d9\uc218 > \ud22c\uacfc\ud30c\uc758 \uc9c4\ub3d9\uc218", "\ubc18\uc0ac\ud30c\uc758 \uc9c4\ub3d9\uc218 = \ud22c\uacfc\ud30c\uc758 \uc9c4\ub3d9\uc218", "\ubc18\uc0ac\ud30c\uc758 \uc9c4\ub3d9\uc218 < \ud22c\uacfc\ud30c\uc758 \uc9c4\ub3d9\uc218", "\uad00\uacc4\uac00 \uc5c6\ub2e4"], "ans": 2, "exp": "\uacbd\uacc4\uba74\uc5d0\uc11c \ubc18\uc0ac\ud30c\uc640 \ud22c\uacfc\ud30c\uc758 \uc9c4\ub3d9\uc218\ub294 \uac19\uc2b5\ub2c8\ub2e4. \ud30c\uc7a5\uacfc \uc18d\ub825\uc740 \ub2ec\ub77c\uc9c0\uc9c0\ub9cc \uc9c4\ub3d9\uc218\ub294 \ubcc0\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4."}, {"num": 175, "text": "[\uc2ec\ud654] \ub450 \uc904\uc758 \uacbd\uacc4\uba74\uc5d0\uc11c \uc18d\ub825\uc774 \ube60\ub978 \uc904\uc5d0\uc11c \ub290\ub9b0 \uc904\ub85c \uc9c4\ud589\ud558\ub294 \ud30c\ub3d9\uc758 \ubc18\uc0ac\ub97c \uc124\uba85\ud560 \ub54c, \uac00\uc7a5 \uc911\uc694\ud55c \uac1c\ub150\uc740?", "opts": ["\ud30c\uc7a5\uc758 \ubcc0\ud654", "\uc9c4\ub3d9\uc218\uc758 \ubcc0\ud654", "\uc784\ud53c\ub358\uc2a4 \ubd80\uc870\ud654(\ub9e4\uc9c8\uc758 \uc131\uc9c8 \ucc28\uc774)", "\uc9c4\ud3ed\uc758 \uac10\uc18c"], "ans": 3, "exp": "\ub450 \ub9e4\uc9c8\uc758 \uc784\ud53c\ub358\uc2a4(\u03c1v, \ubc00\ub3c4\u00d7\uc18d\ub825) \ucc28\uc774\uac00 \ubc18\uc0ac\uc758 \uc815\ub3c4\ub97c \uacb0\uc815\ud569\ub2c8\ub2e4. \ucc28\uc774\uac00 \ud074\uc218\ub85d \uac15\ud55c \ubc18\uc0ac\uac00 \uc77c\uc5b4\ub0a9\ub2c8\ub2e4."}, {"num": 176, "text": "\ucd08\uc74c\ud30c \uc601\uc0c1 \uc9c4\ub2e8 \uc7a5\uce58\uc758 \uc6d0\ub9ac\ub85c \uc633\uc740 \uac83\uc740?", "opts": ["\uc74c\ud30c\ub97c \ubc1c\uc0ac\ud558\uc5ec \ubc18\uc0ac\ub41c \uc18c\ub9ac\ub97c \uc774\uc6a9\ud55c\ub2e4", "\ud608\uc561, \uadfc\uc721, \uc9c0\ubc29 \ub4f1 \uc131\ubd84\uc5d0 \ub530\ub77c \ucd08\uc74c\ud30c\uc758 \uc18d\ub3c4\uac00 \ub2e4\ub974\uae30 \ub54c\ubb38\uc5d0 \uacbd\uacc4\uba74\uc5d0\uc11c \ubc18\uc0ac\ud558\ub294 \uc815\ub3c4\uac00 \ub2e4\ub974\ub2e4", "\ucd08\uc74c\ud30c\uc758 \uc9c4\ub3d9\uc218\ub97c \uce21\uc815\ud55c\ub2e4", "\ucd08\uc74c\ud30c\uc758 \ud30c\uc7a5\uc744 \uc9c1\uc811 \uce21\uc815\ud55c\ub2e4"], "ans": 2, "exp": "\ucd08\uc74c\ud30c \uc601\uc0c1 \uc9c4\ub2e8\uc740 \uc11c\ub85c \ub2e4\ub978 \uc131\ubd84\uc758 \uacbd\uacc4\uba74\uc5d0\uc11c \ubc18\uc0ac\ub418\ub294 \ucd08\uc74c\ud30c\uc758 \uc591\uc774 \ub2e4\ub978 \uc810\uc744 \uc774\uc6a9\ud569\ub2c8\ub2e4. \uad50\uacfc\uc11c \uadf8\ub9bc \u2162-9\ub97c \ucc38\uace0\ud558\uc138\uc694."}, {"num": 177, "text": "\ube44\ud30c\uad34 \uac80\uc0ac(Non-Destructive Testing)\uc758 \ubaa9\uc801\uc73c\ub85c \uc633\uc740 \uac83\uc740?", "opts": ["\uc7ac\ub8cc\uc758 \uc678\ud615 \ubcc0\ud654 \uac10\uc9c0", "\ucd08\uc74c\ud30c\ub97c \uc774\uc6a9\ud558\uc5ec \ubb3c\uccb4\uc758 \ud45c\uba74 \uacb0\ud568\ub9cc \ucc3e\uae30", "\ubb3c\uccb4\ub97c \uc190\uc0c1\uc2dc\ud0a4\uc9c0 \uc54a\uc73c\uba74\uc11c \ub0b4\ubd80\uc758 \uacb0\ud568\uc744 \ucc3e\uae30", "\uc628\ub3c4 \ubcc0\ud654 \uce21\uc815"], "ans": 3, "exp": "\ube44\ud30c\uad34 \uac80\uc0ac\ub294 \ube44\ud589\uae30, \ub2e4\ub9ac, \uac74\ubb3c \ub4f1 \ub300\ud615 \uad6c\uc870\ubb3c\uc744 \uc190\uc0c1\uc2dc\ud0a4\uc9c0 \uc54a\uc73c\uba74\uc11c \ucd08\uc74c\ud30c\ub85c \ub0b4\ubd80 \uacb0\ud568\uc744 \ucc3e\ub294 \uac80\uc0ac \ubc29\ubc95\uc785\ub2c8\ub2e4."}]};
 
-// ══════════════════════════════════════
-// 퀴즈 메타
-// ══════════════════════════════════════
-const QUIZ_META = {
-  subjectCode: "MEC",
-  subjectName: "역학과 에너지",
-  mainNo:      3,
-  mainName:    "탄성파와소리",
-  subNo:       1,
-  subName:     "탄성파와 성질",
-  sectionNo:   2,
-  sectionName: "탄성파"
-};
+let currentQuestion = 0;
+let userAnswers = {};
+let studentName = '';
+let quizMode = 'all';
 
-// ══════════════════════════════════════
-// 퀴즈 데이터
-// ══════════════════════════════════════
-const QUIZ = [
-  {num:1, text:"다음 중 파동의 정의로 가장 적절한 것은?", opts:["물질이 한 지점에서 다른 지점으로 이동하는 현상", "매질의 각 부분이 제자리에서 진동하면서 에너지만 전달되는 현상", "에너지가 매질을 통해 흩어지면서 감소하는 현상", "매질의 밀도 변화로 인해 발생하는 현상"], ans:2, exp:"파동은 매질의 각 부분이 제자리에서 진동(떨림)하면서 에너지와 운동량만 전달되는 현상입니다. 매질 자신은 이동하지 않습니다."},
-  {num:2, text:"탄성파(탄성파동)의 정의로 옳은 것은?", opts:["모든 종류의 파동을 통칭하는 용어이다.", "매질을 통하여 전달되는 파동이다.", "빛과 같이 매질이 없어도 전달되는 파동이다.", "한 지점에서만 발생하고 확산되지 않는 파동이다."], ans:2, exp:"탄성파는 줄, 용수철, 수면, 공기 등 어떤 매질을 통하여 전달되는 파동입니다. 매질의 탄성력에 의해 전달됩니다."},
-  {num:3, text:"파동 전달에 있어 매질의 역할로 옳지 않은 것은?", opts:["파동이 통과하는 물질이다.", "파동의 전달 속도를 결정한다.", "매질마다 다른 속도로 파동을 전달한다.", "파동이 전달되기 위해 반드시 필요하다."], ans:4, exp:"탄성파는 매질이 필요하지만, 전자기파(빛)는 매질이 없어도 진공에서 전달됩니다. 따라서 모든 파동이 매질을 필요로 하는 것은 아닙니다."},
-  {num:4, text:"다음 중 매질이 없어도 전달되는 파동은?", opts:["수상파(수면파)", "음파(소리)", "전자기파(빛)", "지진파"], ans:3, exp:"전자기파(빛, 전파, X선 등)는 매질이 없는 진공에서도 전달됩니다. 나머지는 모두 매질을 통해 전달되는 탄성파입니다."},
-  {num:5, text:"음파(소리)에 대한 설명으로 옳은 것은?", opts:["음파는 전자기파의 일종이다.", "음파는 매질이 없어도 전달된다.", "음파는 탄성파이며 매질을 통해 전달된다.", "음파의 속도는 모든 매질에서 같다."], ans:3, exp:"음파는 탄성파이며 공기, 물, 고체 등의 매질을 통해 전달됩니다. 매질의 종류와 온도에 따라 전달 속도가 달라집니다."},
-  {num:6, text:"파동을 분류하는 기준으로 옳지 않은 것은?", opts:["매질의 필요 여부 (탄성파 vs 전자기파)", "진행 방향 (횡파 vs 종파)", "진동 진폭의 크기", "에너지의 전달 방식"], ans:3, exp:"진동 진폭의 크기는 파동의 세기(강도)를 결정하지만, 파동을 분류하는 기본적인 기준이 아닙니다. 파동은 주로 매질 필요 여부, 진행 방향 등으로 분류합니다."},
-  {num:7, text:"횡파(transverse wave)의 정의로 가장 적절한 것은?", opts:["파동의 진행 방향과 매질의 진동 방향이 나란한 파동이다.", "파동의 진행 방향과 매질의 진동 방향이 수직인 파동이다.", "진동 진폭이 크게 변하는 파동이다.", "한 점에서 모든 방향으로 진행하는 파동이다."], ans:2, exp:"횡파는 파동의 진행 방향과 매질의 진동 방향이 수직(perpendicular)입니다. 예: 수상파, 지진파의 S파, 빛의 전자기파."},
-  {num:8, text:"종파(longitudinal wave)의 정의로 가장 적절한 것은?", opts:["파동의 진행 방향과 매질의 진동 방향이 수직인 파동이다.", "파동의 진행 방향과 매질의 진동 방향이 나란한 파동이다.", "진동 주기가 일정한 파동이다.", "여러 매질을 통과하면서 꺾이는 파동이다."], ans:2, exp:"종파는 파동의 진행 방향과 매질의 진동 방향이 나란합니다(parallel). 압축과 희박이 생깁니다. 예: 음파, 지진파의 P파."},
-  {num:9, text:"다음 중 횡파의 예로 옳은 것은?", opts:["음파(소리)", "지진파의 P파", "물의 표면파(수상파)", "공기 중의 음압 변화"], ans:3, exp:"물의 표면파(수상파)는 수면의 상하 진동(수직)과 파동의 수평 진행이 수직이므로 횡파입니다. 음파와 지진파의 P파는 종파입니다."},
-  {num:10, text:"다음 중 종파의 예로만 옳게 짝지어진 것은?", opts:["음파, 지진파의 S파", "음파, 지진파의 P파", "수상파, 빛의 전자기파", "음파, 지진파 전체"], ans:2, exp:"음파는 공기의 압축과 희박으로 진행하는 종파입니다. 지진파의 P파(1차파)도 종파입니다. S파는 횡파입니다."},
-  {num:11, text:"횡파와 종파에 대한 비교 설명으로 옳은 것은?", opts:["횡파는 빠르고 종파는 느리다.", "횡파에는 마루와 골이 있고, 종파에는 압축부와 희박부가 있다.", "횡파는 고체에서만, 종파는 모든 매질에서 전달된다.", "종파는 1차원 운동만 하고 횡파는 2차원 운동을 한다."], ans:2, exp:"횡파의 특징: 마루(crest)와 골(trough). 종파의 특징: 압축부(compression)와 희박부(rarefaction). 수상파는 실제로 혼합파입니다."},
-  {num:12, text:"[심화] 물 위의 부표가 수상파의 통과와 함께 진동할 때, 부표의 운동으로 옳은 것은?", opts:["수평 방향으로만 진동한다.", "수직 방향으로만 진동한다.", "수평 방향과 수직 방향 모두 진동한다(원형 궤적).", "한 지점에 고정되고 흔들리지 않는다."], ans:3, exp:"수상파는 실제로 횡파와 종파의 특성을 모두 가진 혼합파(mixed wave)입니다. 부표는 원형 궤적을 따라 운동합니다. 파장보다 깊은 곳의 입자는 거의 움직이지 않습니다."},
-  {num:13, text:"횡파를 위치-변위 그래프로 나타낼 때, 다음 중 옳은 설명은?", opts:["마루는 가장 낮은 점이고 골은 가장 높은 점이다.", "마루는 가장 높은 점이고 골은 가장 낮은 점이다.", "마루와 골은 시간에 따라 바뀐다.", "모든 파동에 마루와 골이 있다."], ans:2, exp:"위치-변위 그래프에서 마루(crest)는 변위가 최대(양수)인 점, 골(trough)은 변위가 최소(음수)인 점입니다."},
-  {num:14, text:"파동의 진폭(amplitude)의 정의로 옳은 것은?", opts:["한 번의 진동에 걸리는 시간이다.", "1초 동안 진동하는 횟수이다.", "평형 위치에서 최대 변위까지의 거리이다.", "파동이 1주기 동안 진행하는 거리이다."], ans:3, exp:"진폭(A)은 평형 위치에서 마루(또는 골)까지의 거리로, 파동의 세기(강도)를 나타냅니다. 진폭이 클수록 더 강한 파동입니다."},
-  {num:15, text:"파동의 파장(wavelength, λ)의 정의로 가장 적절한 것은?", opts:["파동이 1주기 동안 진행하는 거리이다.", "한 번의 진동에 걸리는 시간이다.", "인접한 두 마루(또는 골) 사이의 거리이다.", "1초 동안 진동하는 횟수이다."], ans:1, exp:"파장(λ)은 파동이 한 주기(T)를 완성하는 동안 진행하는 거리입니다. 또는 인접한 두 마루(또는 골) 사이의 거리와 같습니다."},
-  {num:16, text:"파동의 주기(T)와 진동수(f)의 관계로 옳은 것은?", opts:["T = f", "T = 1/f", "T = f²", "T는 주파수와 무관하다."], ans:2, exp:"주기 T(초)는 한 번의 진동에 걸리는 시간이고, 진동수 f(Hz)는 1초 동안 진동하는 횟수입니다. 따라서 T = 1/f 또는 f = 1/T입니다."},
-  {num:17, text:"어느 한 점에서의 파동 운동을 변위-시간 그래프로 나타낼 때, 그래프의 주기는 무엇을 나타내는가?", opts:["파동의 파장", "파동의 진폭", "매질의 한 점의 진동 주기", "파동이 진행하는 속도"], ans:3, exp:"변위-시간 그래프에서 가로축이 시간이므로, 그래프의 한 주기는 매질의 특정한 한 점이 완전히 한 번 진동하는데 걸리는 시간(주기 T)입니다."},
-  {num:18, text:"어느 시각에서의 파동 모습을 위치-변위 그래프로 나타낼 때, 그래프에서 인접한 마루와 골 사이의 거리는?", opts:["파동의 주기 T", "파동의 진폭 A", "파동의 파장 λ의 1/2", "파동의 속력 v"], ans:3, exp:"위치-변위 그래프에서 마루에서 골까지의 가로(위치) 거리는 λ/2입니다. 마루에서 다음 마루까지가 λ입니다."},
-  {num:19, text:"[심화] 같은 파동의 변위-위치 그래프와 변위-시간 그래프를 그렸을 때, 두 그래프의 주기가 다르다면 그 이유는?", opts:["두 그래프가 잘못 그려졌다.", "변위-위치 그래프의 주기는 파장이고, 변위-시간 그래프의 주기는 진동 주기이기 때문이다.", "파동의 진행 방향이 바뀌었다.", "매질의 밀도가 변했다."], ans:2, exp:"변위-위치 그래프의 '주기'는 공간적 주기인 파장(λ)을 의미하고, 변위-시간 그래프의 '주기'는 시간적 주기(T)를 의미합니다. v = λ/T 또는 v = fλ로 연결됩니다."},
-  {num:20, text:"파동의 속력(v), 파장(λ), 진동수(f)의 관계식으로 옳은 것은?", opts:["v = λ + f", "v = λ × f", "v = λ / f", "v = f / λ"], ans:2, exp:"파동 속력 공식: v = λf (또는 v = λ/T). 파동이 한 주기에 진행하는 거리가 파장이므로 v = λ/T = λf입니다."},
-  {num:21, text:"파장이 2 m이고 진동수가 10 Hz인 파동의 속력은?", opts:["0.2 m/s", "5 m/s", "20 m/s", "100 m/s"], ans:3, exp:"v = λf = 2 m × 10 Hz = 20 m/s"},
-  {num:22, text:"주기가 0.2 초이고 파장이 4 m인 파동의 속력은?", opts:["0.8 m/s", "5 m/s", "10 m/s", "20 m/s"], ans:3, exp:"f = 1/T = 1/0.2 = 5 Hz, v = λf = 4 × 5 = 20 m/s (또는 v = λ/T = 4/0.2 = 20 m/s)"},
-  {num:23, text:"속력이 340 m/s이고 진동수가 100 Hz인 음파의 파장은?", opts:["0.29 m", "1.4 m", "3.4 m", "34000 m"], ans:3, exp:"λ = v/f = 340 m/s ÷ 100 Hz = 3.4 m. 음파의 속력은 약 340 m/s(20°C 공기)입니다."},
-  {num:24, text:"[심화] 수중에서 음파의 속력이 1500 m/s이고 파장이 1.5 m일 때, 진동수는?", opts:["250 Hz", "500 Hz", "1000 Hz", "2250 Hz"], ans:2, exp:"f = v/λ = 1500 m/s ÷ 1.5 m = 1000 Hz. 물에서 음파는 공기보다 약 4배 빠르게 전달됩니다."},
-  {num:25, text:"[심화] 같은 음원에서 나온 음파가 공기에서 물로 진입할 때, 변하는 것은? (단, 음속: 공기 340 m/s, 물 1500 m/s)", opts:["진동수가 증가한다.", "파장이 증가한다.", "주기가 감소한다.", "진동수는 같고 속력과 파장은 변한다."], ans:4, exp:"매질이 변해도 진동수(f)는 변하지 않습니다(음원이 같으므로). 하지만 v = λf이므로 속력이 증가하면 파장도 증가합니다. 물에서 λ = v/f = 1500/f로 늘어납니다."},
-  {num:26, text:"파동에서 위상(phase)의 의미로 가장 적절한 것은?", opts:["파동의 최대 높이이다.", "파동이 진행하는 속도이다.", "주기적 진동에서 특정 순간의 진동 상태(각도)를 나타낸다.", "파동의 세기이다."], ans:3, exp:"위상은 주기적 진동에서 한 주기를 360° 또는 2π로 나누어, 현재 진동 상태가 주기의 어느 부분에 있는지를 나타냅니다."},
-  {num:27, text:"두 점에서의 파동이 다음과 같은 경우, 두 점의 위상 차이는?", opts:["0° (같은 위상)", "90°", "180° (반대 위상)", "270°"], ans:1, exp:"두 마루는 같은 위상(0°), 마루와 골은 반대 위상(180°), 마루와 평형점은 90° 위상 차이를 가집니다. 같은 형태의 점들은 같은 위상입니다."},
-  {num:28, text:"파동이 경계면에서 반사할 때, 반사파의 특성으로 옳은 것은?", opts:["반사파의 진동수와 파장은 입사파와 같다.", "반사파의 진동수는 입사파의 절반이다.", "반사파의 진폭은 항상 입사파의 진폭과 같다.", "반사파는 완전히 새로운 파동이다."], ans:1, exp:"반사파는 매체의 경계면에서 되돌아오는 파동으로, 입사파와 같은 진동수(f)와 파장(λ)을 가집니다. 다만 진행 방향이 반대입니다."},
-  {num:29, text:"고정단(고정된 끝)에서의 파동 반사로 옳은 설명은?", opts:["반사파는 같은 형태로 돌아온다.", "반사파는 180° 위상이 바뀌어 돌아온다(역위상).", "반사파는 크기가 절반으로 줄어든다.", "반사파는 발생하지 않는다."], ans:2, exp:"고정단에서는 반사파가 입사파와 반대 위상(180°, 역위상)으로 돌아옵니다. 고정점은 움직일 수 없으므로 위상이 뒤바뀝니다."},
-  {num:30, text:"자유단(자유로운 끝)에서의 파동 반사로 옳은 설명은?", opts:["반사파는 180° 위상이 바뀐다.", "반사파는 같은 위상(0°)으로 돌아온다.", "반사파는 발생하지 않는다.", "반사파의 진폭이 절반이 된다."], ans:2, exp:"자유단에서는 반사파가 입사파와 같은 위상(0°, 동위상)으로 돌아옵니다. 자유롭게 움직일 수 있으므로 위상 변화가 없습니다."},
-  {num:31, text:"[심화] 굵기가 다른 두 줄이 연결되어 있을 때, 파동이 속력이 느린 줄에서 속력이 빠른 줄로 진입할 때 반사파의 위상은?", opts:["0° (동위상)", "180° (역위상)", "90°", "파동의 크기에 따라 결정된다."], ans:1, exp:"굵은 줄(속력 느림) → 가는 줄(속력 빠름)로 진입할 때는 자유단 반사처럼 작용하여 반사파가 0° (동위상)으로 돌아옵니다."},
-  {num:32, text:"[심화] 파동이 속력이 빠른 매질에서 속력이 느린 매질로 진입할 때, 반사파의 특성은?", opts:["반사파는 발생하지 않는다.", "반사파는 0° 위상으로 돌아온다.", "반사파는 180° 위상으로 돌아오고, 투과파는 진행한다.", "모든 에너지가 투과된다."], ans:3, exp:"속력이 빠른 매질 → 느린 매질: 고정단 반사처럼 반사파가 180° (역위상)으로 돌아옵니다. 일부는 투과하여 다음 매질로 진행합니다. 에너지 보존에 의해 반사 에너지 + 투과 에너지 = 입사 에너지입니다."},
-  {num:33, text:"초음파 영상 진단 장치에서 초음파가 이용되는 이유로 가장 적절한 것은?", opts:["초음파의 주파수가 매우 낮아 먼 거리까지 전달되기 때문이다.", "초음파는 인체에 해롭지 않으면서 신체 내부 구조를 시각화할 수 있기 때문이다.", "초음파는 X선보다 해상도가 높기 때문이다.", "초음파는 방사능을 방출하기 때문이다."], ans:2, exp:"초음파(2~13 MHz)는 인체에 거의 해가 없으면서, 혈액, 근육, 지방 등 조직의 경계에서 반사하여 산모와 태아의 건강 검진, 심장, 장기 검사 등에 활용됩니다."},
-  {num:34, text:"비파괴 검사(초음파를 이용)의 원리로 옳은 것은?", opts:["물체를 파괴하면서 내부를 관찰한다.", "초음파를 보내 물체 내부의 결함이나 불연속면에서 반사된 음파를 감지한다.", "물체의 열 변화를 적외선으로 측정한다.", "물체의 색깔 변화를 분석한다."], ans:2, exp:"비파괴 검사는 초음파가 부품·건물·다리 등의 내부 결함(균열, 기공, 이물질)에서 반사되는 신호를 분석하여 손상 여부를 판단합니다. 물체를 파괴하지 않습니다."},
-  {num:35, text:"지진파를 이용한 지하 지질 구조 탐사에서 P파와 S파가 함께 이용되는 이유는?", opts:["P파와 S파의 속력이 다르므로 지하의 층을 구분할 수 있기 때문이다.", "P파는 종파이고 S파는 횡파이므로 서로 다른 정보를 제공하기 때문이다.", "두 가지 파동을 모두 이용하면 더 정확한 지질 구조 파악이 가능하기 때문이다.", "모두 옳다."], ans:4, exp:"P파(1차파, 종파): 빠르고 모든 매질 통과. S파(2차파, 횡파): 느리고 고체만 통과. 두 파동의 도착 시간 차이, 진행 경로, 속력 변화를 종합 분석하면 지질 구조(층 구성, 밀도, 온도)를 정확히 파악할 수 있습니다."}
-];
+function startQuiz() {
+  studentName = document.getElementById('name').value || '학생';
+  quizMode = document.getElementById('mode').value;
+  
+  if (!studentName.trim()) {
+    alert('이름을 입력해주세요');
+    return;
+  }
+  
+  showScreen('screen-quiz');
+  document.getElementById('headerText').textContent = `${quizData.mainName} · ${quizData.subName} · ${quizData.sectionName} · 40문항`;
+  document.getElementById('qTotal').textContent = quizData.questions.length;
+  
+  displayQuestion(0);
+}
 
-// ══════════════════════════════════════
-// 상태
-// ══════════════════════════════════════
-let userName = '', userSchool = '', userPhone = '';
-let userAnswers = {}; // num → chosen index (1~4)
-let timerInterval = null;
-let elapsedSec = 0;
-let quizStarted = false;
-
-// ══════════════════════════════════════
-// 유틸
-// ══════════════════════════════════════
-function showScreen(id) {
+function showScreen(screenId) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  document.getElementById(screenId).classList.add('active');
   window.scrollTo(0, 0);
 }
 
-function fmtTime(sec) {
-  const m = String(Math.floor(sec / 60)).padStart(2, '0');
-  const s = String(sec % 60).padStart(2, '0');
-  return `${m}:${s}`;
-}
-
-function toast(msg, duration = 2500) {
-  const el = document.getElementById('savingToast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), duration);
-}
-
-// ══════════════════════════════════════
-// SCREEN 1 → 시작
-// ══════════════════════════════════════
-function startQuiz() {
-  const name = document.getElementById('input-name').value.trim();
-  const school = document.getElementById('input-school').value.trim();
-  const phone = document.getElementById('input-phone').value.trim();
-  if (!name) { alert('이름을 입력해주세요.'); return; }
-  if (!school) { alert('학교를 입력해주세요.'); return; }
-  if (!/^[0-9]{4}$/.test(phone)) { alert('전화번호 뒷자리 4자리(숫자)를 입력해주세요.'); return; }
-
-  userName = name;
-  userSchool = school;
-  userPhone = phone;
-  userAnswers = {};
-  elapsedSec = 0;
-
-  renderQuiz();
-  showScreen('screen-quiz');
-  startTimer();
-}
-
-// ══════════════════════════════════════
-// 타이머
-// ══════════════════════════════════════
-function startTimer() {
-  clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    elapsedSec++;
-    document.getElementById('timerDisplay').textContent = fmtTime(elapsedSec);
-  }, 1000);
-}
-
-function stopTimer() {
-  clearInterval(timerInterval);
-}
-
-// ══════════════════════════════════════
-// 퀴즈 렌더
-// ══════════════════════════════════════
-const LABELS = ['①','②','③','④'];
-
-function renderQuiz() {
-  const body = document.getElementById('quizBody');
-  body.innerHTML = QUIZ.map(q => `
-    <div class="q-card" id="qcard-${q.num}">
-      <div class="q-head">
-        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
-        <span class="q-text">${q.text}</span>
-      </div>
-      <div class="q-options">
-        ${q.opts.map((opt, i) => `
-          <button class="opt-btn" id="opt-${q.num}-${i+1}" onclick="selectOpt(${q.num}, ${i+1})">
-            <span class="opt-label">${LABELS[i]}</span>
-            <span>${opt}</span>
-          </button>
-        `).join('')}
-      </div>
-    </div>
-  `).join('');
-  updateProgress();
-}
-
-function selectOpt(num, chosen) {
-  userAnswers[num] = chosen;
-
-  // 선택 표시
-  for (let i = 1; i <= 4; i++) {
-    const btn = document.getElementById(`opt-${num}-${i}`);
-    btn.style.borderColor = i === chosen ? 'var(--accent)' : '';
-    btn.style.background = i === chosen ? 'var(--accent-light)' : '';
-  }
-  updateProgress();
-}
-
-function updateProgress() {
-  const answered = Object.keys(userAnswers).length;
-  const total = QUIZ.length;
-  document.getElementById('metaProgress').textContent = `${answered} / ${total}`;
-  document.getElementById('progressFill').style.width = `${(answered / total) * 100}%`;
-}
-
-// ══════════════════════════════════════
-// 제출
-// ══════════════════════════════════════
-function submitQuiz() {
-  const answered = Object.keys(userAnswers).length;
-  if (answered < QUIZ.length) {
-    if (!confirm(`아직 ${QUIZ.length - answered}문제가 남아 있어요. 제출하시겠어요?`)) return;
-  }
-  stopTimer();
-  showResult();
-}
-
-// ══════════════════════════════════════
-// 결과
-// ══════════════════════════════════════
-function showResult() {
-  const correct = QUIZ.filter(q => userAnswers[q.num] === q.ans);
-  const wrong   = QUIZ.filter(q => userAnswers[q.num] !== q.ans);
-  const score   = correct.length;
-  const total   = QUIZ.length;
-
-  document.getElementById('resultName').textContent = `${userName} · ${userSchool} · ${userPhone}`;
-  document.getElementById('resultScore').textContent = score;
-  document.getElementById('resultScoreSub').textContent = `/ ${total} 문항`;
-  document.getElementById('statTime').textContent = fmtTime(elapsedSec);
-  document.getElementById('statCorrect').textContent = `${score}개`;
-  document.getElementById('statWrong').textContent = `${wrong.length}개`;
-
-  // 오답 리뷰
-  const reviewSection = document.getElementById('reviewSection');
-  if (wrong.length === 0) {
-    reviewSection.innerHTML = `<div style="text-align:center;padding:32px 0;color:var(--accent);font-weight:700;">🎉 전부 맞혔어요!</div>`;
-  } else {
-    reviewSection.innerHTML = `
-      <h2>틀린 문제 <span class="badge-wrong">${wrong.length}문제</span></h2>
-      ${wrong.map(q => renderReviewCard(q)).join('')}
+function displayQuestion(index) {
+  const q = quizData.questions[index];
+  currentQuestion = index;
+  
+  document.getElementById('qNum').textContent = index + 1;
+  document.getElementById('questionText').textContent = q.text;
+  
+  // 진행률
+  const progress = ((index + 1) / quizData.questions.length) * 100;
+  document.getElementById('progressFill').style.width = progress + '%';
+  
+  // 선택지
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  
+  q.opts.forEach((opt, i) => {
+    const optNum = i + 1;
+    const id = 'opt-' + index + '-' + optNum;
+    
+    const div = document.createElement('div');
+    div.className = 'option';
+    if (userAnswers[index] === optNum) div.classList.add('selected');
+    
+    div.innerHTML = `
+      <input type="radio" id="${id}" name="option" value="${optNum}" ${userAnswers[index] === optNum ? 'checked' : ''}>
+      <label for="${id}">${optNum}. ${opt}</label>
     `;
-  }
-
-  showScreen('screen-result');
-  saveScore(score, total);
-}
-
-function renderReviewCard(q) {
-  return `
-    <div class="review-card" id="review-${q.num}">
-      <div class="q-head">
-        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
-        <span class="q-text">${q.text}</span>
-      </div>
-      <div class="review-retry-wrap" id="retry-opts-${q.num}">
-        ${q.opts.map((opt, i) => `
-          <button class="opt-btn" id="retry-opt-${q.num}-${i+1}" onclick="retryOpt(${q.num}, ${i+1})">
-            <span class="opt-label">${LABELS[i]}</span>
-            <span>${opt}</span>
-          </button>
-        `).join('')}
-      </div>
-      <div class="review-exp">
-        <div class="review-exp-label">✦ 해설</div>
-        <p>${q.exp}</p>
-      </div>
-    </div>
-  `;
-}
-
-function retryOpt(num, chosen) {
-  const q = QUIZ.find(x => x.num === num);
-  for (let i = 1; i <= 4; i++) {
-    const btn = document.getElementById(`retry-opt-${num}-${i}`);
-    if (!btn) continue;
-    btn.disabled = true;
-    if (i === q.ans) btn.className = 'opt-btn correct';
-    else if (i === chosen && chosen !== q.ans) btn.className = 'opt-btn wrong';
-    else btn.className = 'opt-btn reveal';
-  }
-}
-
-// ══════════════════════════════════════
-// Airtable 저장
-// ══════════════════════════════════════
-async function saveScore(score, total) {
-  toast('점수 저장 중...');
-  try {
-    const res = await fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_SCORES}`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${AT_TOKEN}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        fields: {
-          '이름': userName,
-          '학교': userSchool,
-          'phone_last4': userPhone,
-          '날짜': new Date().toISOString().split('T')[0],
-          '과목코드': QUIZ_META.subjectCode,
-          '과목명': QUIZ_META.subjectName,
-          '대단원번호': QUIZ_META.mainNo,
-          '대단원명': QUIZ_META.mainName,
-          '중단원번호': QUIZ_META.subNo,
-          '중단원명': QUIZ_META.subName,
-          '섹션번호': QUIZ_META.sectionNo,
-          '섹션명': QUIZ_META.sectionName,
-          '총점': score,
-          '총문항수': total,
-          '풀이시간': fmtTime(elapsedSec)
-        }
-      })
+    
+    div.addEventListener('click', () => {
+      userAnswers[index] = optNum;
+      displayQuestion(index);
     });
-    if (res.ok) toast('✓ 점수가 저장되었습니다.');
-    else toast('저장 실패 — 네트워크를 확인해주세요.');
-  } catch(e) {
-    toast('저장 실패 — 네트워크를 확인해주세요.');
+    
+    container.appendChild(div);
+  });
+  
+  // 해설 표시
+  if (userAnswers[index] !== undefined) {
+    const isCorrect = userAnswers[index] === q.ans;
+    document.getElementById('explanationBox').style.display = 'block';
+    document.getElementById('explanationText').textContent = q.exp;
+    
+    if (isCorrect) {
+      document.getElementById('explanationBox').style.borderLeftColor = '#2d5a3d';
+    } else {
+      document.getElementById('explanationBox').style.borderLeftColor = '#c0392b';
+    }
+  } else {
+    document.getElementById('explanationBox').style.display = 'none';
+  }
+  
+  // 버튼 활성화
+  document.getElementById('prevBtn').disabled = index === 0;
+  document.getElementById('nextBtn').textContent = index === quizData.questions.length - 1 ? '완료' : '다음';
+}
+
+function nextQuestion() {
+  if (currentQuestion < quizData.questions.length - 1) {
+    displayQuestion(currentQuestion + 1);
+  } else {
+    showResult();
   }
 }
 
-// ══════════════════════════════════════
-// 리셋
-// ══════════════════════════════════════
-function resetQuiz() {
-  userName = '';
-  userSchool = '';
-  userPhone = '';
-  userAnswers = {};
-  elapsedSec = 0;
-  document.getElementById('input-name').value = '';
-  document.getElementById('input-school').value = '';
-  document.getElementById('input-phone').value = '';
-  document.getElementById('timerDisplay').textContent = '00:00';
-  showScreen('screen-intro');
+function prevQuestion() {
+  if (currentQuestion > 0) {
+    displayQuestion(currentQuestion - 1);
+  }
+}
+
+function showResult() {
+  const correct = Object.keys(userAnswers).filter(i => 
+    userAnswers[i] === quizData.questions[i].ans
+  ).length;
+  
+  const total = quizData.questions.length;
+  const answered = Object.keys(userAnswers).length;
+  const percent = Math.round((correct / total) * 100);
+  
+  document.getElementById('resultIcon').textContent = percent >= 80 ? '🎉' : percent >= 60 ? '👍' : '💪';
+  document.getElementById('resultScore').textContent = correct + '/' + total;
+  document.getElementById('resultText').textContent = percent + '% 정답';
+  document.getElementById('answeredCount').textContent = answered + ' / ' + total;
+  document.getElementById('correctCount').textContent = correct + '개';
+  document.getElementById('correctRate').textContent = percent + '%';
+  
+  showScreen('screen-result');
 }
 </script>
+
 </body>
 </html>
