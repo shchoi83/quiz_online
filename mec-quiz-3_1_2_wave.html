@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>탄성파 · 물리 퀴즈</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --border: #e2ddd6;
+  --text: #1a1714;
+  --text-dim: #8a8480;
+  --accent: #2d5a3d;
+  --accent-light: #e8f0eb;
+  --wrong: #c0392b;
+  --wrong-light: #fdf0ef;
+  --correct: #2d5a3d;
+  --correct-light: #e8f0eb;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+  padding: 0 0 60px;
+}
+
+/* ── 공통 ── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 14px 28px;
+  font-size: 0.95rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  width: 100%;
+}
+
+.btn:hover { opacity: 0.88; }
+.btn:active { transform: scale(0.98); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+}
+
+.btn-ghost:hover { background: var(--accent-light); opacity: 1; }
+
+/* ── SCREEN 1: 입력 ── */
+#screen-intro {
+  padding-top: 80px;
+}
+
+.intro-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.intro-header .tag {
+  display: inline-block;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: 0.08em;
+}
+
+.intro-header h1 { margin-bottom: 8px; }
+.intro-header p { color: var(--text-dim); font-size: 0.9rem; }
+
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: var(--shadow);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+}
+
+.form-group input {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 13px 16px;
+  font-size: 1rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus { border-color: var(--accent); }
+
+.form-info {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  background: var(--accent-light);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.form-info span {
+  font-size: 0.82rem;
+  color: var(--accent);
+}
+
+/* ── SCREEN 2: 퀴즈 ── */
+#screen-quiz { padding-top: 0; }
+
+.quiz-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+}
+
+.quiz-topbar-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.progress-wrap {
+  flex: 1;
+  background: var(--border);
+  border-radius: 99px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 6px;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.quiz-meta {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.meta-item {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.meta-item span {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.quiz-body {
+  padding: 32px 20px;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: border-color 0.3s;
+}
+
+.q-card.correct { border-color: var(--correct); }
+.q-card.wrong { border-color: var(--wrong); }
+
+.q-head {
+  padding: 20px 24px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.q-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.q-text {
+  font-size: 0.93rem;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+
+.q-options {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.opt-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+  transition: all 0.15s;
+  width: 100%;
+}
+
+.opt-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.opt-btn:disabled { cursor: default; }
+
+.opt-btn.correct {
+  border-color: var(--correct);
+  background: var(--correct-light);
+  color: var(--correct);
+}
+
+.opt-btn.wrong {
+  border-color: var(--wrong);
+  background: var(--wrong-light);
+  color: var(--wrong);
+}
+
+.opt-btn.reveal {
+  border-color: rgba(45,90,61,0.35);
+  background: rgba(45,90,61,0.04);
+  color: rgba(45,90,61,0.6);
+}
+
+.opt-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 0.15s;
+}
+
+.opt-btn.correct .opt-label { background: var(--correct); border-color: var(--correct); color: #fff; }
+.opt-btn.wrong .opt-label { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+
+/* submit btn area */
+.submit-wrap {
+  padding: 0 20px 40px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ── SCREEN 3: 결과 ── */
+#screen-result { padding-top: 48px; }
+
+.result-hero {
+  text-align: center;
+  padding: 48px 20px 32px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.result-name {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  font-family: 'DM Mono', monospace;
+}
+
+.result-score {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin-bottom: 4px;
+}
+
+.result-score-sub {
+  font-size: 1rem;
+  color: var(--text-dim);
+  margin-bottom: 24px;
+}
+
+.result-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.result-section {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.result-section h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-wrong {
+  background: var(--wrong-light);
+  color: var(--wrong);
+  font-size: 0.72rem;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* review card */
+.review-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.review-card .q-head { padding-bottom: 12px; }
+
+.review-exp {
+  padding: 14px 24px 18px;
+  border-top: 1px solid var(--border);
+  background: var(--accent-light);
+}
+
+.review-exp-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--accent);
+  margin-bottom: 5px;
+  letter-spacing: 0.06em;
+}
+
+.review-exp p {
+  font-size: 0.84rem;
+  color: var(--accent);
+  line-height: 1.65;
+}
+
+.review-retry-wrap {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.result-actions {
+  max-width: 720px;
+  margin: 32px auto 0;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* saving overlay */
+.saving-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 99px;
+  font-size: 0.82rem;
+  font-family: 'DM Mono', monospace;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 999;
+  white-space: nowrap;
+}
+
+.saving-toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1: 이름 / 학교 입력
+══════════════════════════════════════ -->
+<div id="screen-intro" class="screen active">
+  <div class="container">
+    <div class="intro-header">
+      <div class="tag">PHYSICS QUIZ</div>
+      <h1>열역학 1법칙(일과 열기관)</h1>
+      <p>역학과 에너지 · 2단원 열과에너지 · 1중단원 열과 일 · 2섹션</p>
+    </div>
+
+    <div class="form-card">
+      <div class="form-info">
+        <span>📋 총 33문항 · 객관식 4지선다 · 시간 제한 없음</span>
+      </div>
+
+      <div class="form-group">
+        <label>이름</label>
+        <input type="text" id="input-name" placeholder="홍길동" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>학교</label>
+        <input type="text" id="input-school" placeholder="○○고등학교" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>전화번호 뒷자리 4자리 <span style="color:var(--text-dim);font-weight:300;">(동명이인 구별용)</span></label>
+        <input type="tel" id="input-phone" placeholder="1234" autocomplete="off" maxlength="4" inputmode="numeric" pattern="[0-9]{4}">
+      </div>
+
+      <button class="btn" onclick="startQuiz()">시작하기 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2: 퀴즈
+══════════════════════════════════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-topbar">
+    <div class="quiz-topbar-inner">
+      <div class="progress-wrap">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="quiz-meta">
+        <div class="meta-item" id="metaProgress">0 / 33</div>
+        <div class="meta-item">⏱ <span id="timerDisplay">00:00</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-body" id="quizBody"></div>
+
+  <div class="submit-wrap">
+    <button class="btn" onclick="submitQuiz()">제출하기</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 3: 결과
+══════════════════════════════════════ -->
+<div id="screen-result" class="screen">
+  <div class="result-hero">
+    <div class="result-name" id="resultName"></div>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-score-sub" id="resultScoreSub"></div>
+    <div class="result-stats">
+      <div class="stat-item">
+        <div class="stat-val" id="statTime"></div>
+        <div class="stat-label">풀이 시간</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statCorrect"></div>
+        <div class="stat-label">정답</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statWrong"></div>
+        <div class="stat-label">오답</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-section" id="reviewSection"></div>
+
+  <div class="result-actions">
+    <button class="btn btn-ghost" onclick="resetQuiz()">↺ 새로 응시하기</button>
+  </div>
+</div>
+
+<div class="saving-toast" id="savingToast"></div>
+
+<script>
+// ══════════════════════════════════════
+// Airtable 설정
+// ══════════════════════════════════════
+const AT_TOKEN   = "patBcLElKAr7fPbgS.0f288a25e39501f27d9d33569371fc819acb54173cf44daa68fc028f16e479f9";
+const AT_BASE    = "appmCOjqp5xIJuPqt";
+const AT_SCORES  = "scores";
+
+// ══════════════════════════════════════
+// 퀴즈 메타
+// ══════════════════════════════════════
+const QUIZ_META = {
+  subjectCode: "MEC",
+  subjectName: "역학과 에너지",
+  mainNo:      3,
+  mainName:    "탄성파와소리",
+  subNo:       2,
+  subName:     "탄성파와 파동의 이용",
+  sectionNo:   1,
+  sectionName: "도플러"
+};
+
+// ══════════════════════════════════════
+// 퀴즈 데이터
+// ══════════════════════════════════════
+const QUIZ = [
+  {num:1, text:"음원이나 관찰자가 서로에 대해 움직일 때, 관찰자가 듣는 소리의 진동수가 음원의 진동수와 다르게 들리는 현상을 무엇이라 하는가?", opts:["탄성파", "간섭 현상", "회절 현상", "굴절 현상"], ans:1, exp:"음원과 관찰자의 상대 운동 때문에 관찰자가 듣는 진동수가 달라지는 현상을 탄성파(Doppler effect)라 합니다. 19세기 오스트리아의 물리학자 도플러가 발견했습니다."},
+  {num:2, text:"구급차가 사이렌을 울리며 관찰자에게 다가올 때와 멀어질 때 관찰자가 듣는 소리의 변화로 옳은 것은?", opts:["다가올 때 높은 소리, 멀어질 때 낮은 소리", "다가올 때 낮은 소리, 멀어질 때 높은 소리", "다가올 때나 멀어질 때나 같은 소리", "다가올 때 침묵, 멀어질 때 큰 소리"], ans:1, exp:"음원이 다가오면 파장이 짧아져 진동수가 커지므로 높은 소리를 듣고, 음원이 멀어지면 파장이 길어져 진동수가 작아지므로 낮은 소리를 듣게 됩니다."},
+  {num:3, text:"탄성파를 처음 발표한 물리학자와 그의 국적이 옳게 짝지어진 것은?", opts:["뉴턴 — 영국", "도플러 — 오스트리아", "아인슈타인 — 독일", "갈릴레이 — 이탈리아"], ans:2, exp:"도플러(Doppler, Johann Christian, 1803~1853)는 오스트리아의 물리학자로, 쌍성에서 오는 빛의 색이 달라지는 원인을 연구한 논문에서 탄성파를 발표했습니다."},
+  {num:4, text:"탄성파가 일어나기 위한 필수 조건으로 가장 적절한 것은?", opts:["음원의 진동수가 매우 클 것", "관찰자가 매우 빠르게 움직일 것", "음원과 관찰자 사이에 상대 운동이 있을 것", "매질(공기)이 매우 차가울 것"], ans:3, exp:"탄성파는 음원과 관찰자 사이의 상대 운동(둘 중 하나, 또는 모두가 움직임)에 의해 발생합니다. 둘 다 정지해 있으면 탄성파는 나타나지 않습니다."},
+  {num:5, text:"음원이 정지한 관찰자에게 일정한 속력 v_S로 다가올 때, 음원 앞쪽 방향으로 진행하는 음파의 파장은?", opts:["원래 파장 λ보다 짧아진다.", "원래 파장 λ와 같다.", "원래 파장 λ보다 길어진다.", "음원의 속력이 음속보다 작으면 길어지고, 크면 짧아진다."], ans:1, exp:"음원이 진행하는 방향으로는 매 주기마다 음원이 v_S·T 만큼 따라붙으므로 파장이 짧아집니다: λ′ = λ − v_S·T = λ − v_S/f."},
+  {num:6, text:"음원이 정지한 관찰자에게 일정한 속력 v_S로 다가올 때, 관찰자가 듣는 소리의 진동수는?", opts:["원래 진동수 f보다 작다.", "원래 진동수 f와 같다.", "원래 진동수 f보다 크다.", "음원의 속력과 무관하다."], ans:3, exp:"파장이 짧아지면 진동수가 커집니다. 식으로는 f′ = v/(v − v_S) · f 이므로 v_S > 0일 때 f′ > f, 즉 더 높은 소리를 듣게 됩니다."},
+  {num:7, text:"음원이 정지한 관찰자로부터 일정한 속력 v_S로 멀어질 때, 관찰자가 듣는 소리의 파장과 진동수의 변화는?", opts:["파장은 짧아지고 진동수는 커진다.", "파장은 길어지고 진동수는 작아진다.", "파장은 길어지고 진동수도 커진다.", "파장과 진동수 모두 변화 없다."], ans:2, exp:"음원이 멀어지는 방향으로는 매 주기마다 음원이 멀어진 거리만큼 파장이 더 늘어납니다: λ″ = λ + v_S/f. 따라서 파장은 길어지고 진동수는 작아집니다(f″ = v/(v + v_S) · f)."},
+  {num:8, text:"음원이 움직이는 경우, 관찰자가 듣는 소리의 속력 v′에 대한 설명으로 옳은 것은? (관찰자는 정지, 매질은 정지한 공기)", opts:["v′은 v(공기 중 음속)와 같다.", "v′ = v + v_S 가 된다.", "v′ = v − v_S 가 된다.", "v′은 음원의 운동 방향에 따라 두 배까지 커질 수 있다."], ans:1, exp:"소리의 속력은 매질(공기)에 의해 결정되며 음원의 운동과 무관합니다. 따라서 v′ = v 로 일정합니다. 음원의 운동은 파장만 변화시킵니다."},
+  {num:9, text:"음원이 정지한 관찰자에게 속력 v_S로 다가올 때, 관찰자가 듣는 진동수 f′은? (v: 음속, f: 음원의 고유 진동수)", opts:["f′ = v/(v + v_S) · f", "f′ = v/(v − v_S) · f", "f′ = (v − v_S)/v · f", "f′ = (v + v_S)/v · f"], ans:2, exp:"음원이 다가올 때 파장이 짧아져 λ′ = λ − v_S/f. f′ = v/λ′ = v/(v − v_S) · f. 분모가 작아지므로 f′ > f."},
+  {num:10, text:"음원이 정지한 관찰자로부터 속력 v_S로 멀어질 때, 관찰자가 듣는 진동수 f″은?", opts:["f″ = v/(v + v_S) · f", "f″ = v/(v − v_S) · f", "f″ = (v − v_S)/v · f", "f″ = (v + v_S)/v · f"], ans:1, exp:"음원이 멀어질 때 파장이 길어져 λ″ = λ + v_S/f. f″ = v/λ″ = v/(v + v_S) · f. 분모가 커지므로 f″ < f."},
+  {num:11, text:"진동수 f인 음원이 정지한 관찰자에게 v_S = v/4 의 속력으로 다가올 때, 관찰자가 듣는 진동수는? (v: 음속)", opts:["(3/4)f", "(5/4)f", "(4/3)f", "(4/5)f"], ans:3, exp:"f′ = v/(v − v_S) · f = v/(v − v/4) · f = v/((3/4)v) · f = (4/3)f. 음원이 다가오므로 원래보다 큰 진동수를 듣게 됩니다."},
+  {num:12, text:"[심화] 진동수 f인 음원이 정지한 관찰자에게 속력 v_S로 다가올 때의 진동수 f′ 과 같은 속력 v_S로 멀어질 때의 진동수 f″ 의 대소 관계로 옳은 것은? (v: 음속, 0 < v_S < v)", opts:["f′ < f < f″", "f″ < f < f′", "f′ = f″", "f′ + f″ = 2f (산술평균이 f)"], ans:2, exp:"f′ = v/(v − v_S) · f 는 분모가 작아져 f보다 크고, f″ = v/(v + v_S) · f 는 분모가 커져 f보다 작습니다. 따라서 f″ < f < f′. (참고: f′ + f″ = 2v²/(v² − v_S²) · f ≠ 2f 이므로 산술평균은 f가 아닙니다.)"},
+  {num:13, text:"음원은 정지하고 관찰자가 속력 v_O로 음원에 다가갈 때, 관찰자가 듣는 소리의 속력 v′은?", opts:["v′ = v (변화 없음)", "v′ = v − v_O", "v′ = v + v_O", "v′ = v · v_O"], ans:3, exp:"음원과 매질이 정지해 있을 때 파장 λ는 변하지 않지만, 관찰자가 음원 쪽으로 다가가므로 관찰자에 대한 음파의 상대 속력은 v′ = v + v_O 가 됩니다."},
+  {num:14, text:"음원이 정지하고 관찰자가 속력 v_O로 음원에 다가갈 때, 관찰자가 듣는 진동수 f′은?", opts:["f′ = v/(v + v_O) · f", "f′ = (v + v_O)/v · f", "f′ = (v − v_O)/v · f", "f′ = v/(v − v_O) · f"], ans:2, exp:"파장 λ는 변하지 않고 관찰자에 대한 음파의 상대 속력이 v + v_O가 되므로 f′ = (v + v_O)/λ = (v + v_O)/v · f. 관찰자가 다가가므로 f′ > f."},
+  {num:15, text:"음원이 정지하고 관찰자가 속력 v_O로 음원으로부터 멀어질 때, 관찰자가 듣는 진동수 f″은?", opts:["f″ = (v − v_O)/v · f", "f″ = (v + v_O)/v · f", "f″ = v/(v + v_O) · f", "f″ = v/(v − v_O) · f"], ans:1, exp:"관찰자가 멀어지면 음파의 상대 속력이 v − v_O 로 줄어들므로 f″ = (v − v_O)/v · f. 관찰자가 멀어지므로 f″ < f."},
+  {num:16, text:"[심화] 진동수 f인 정지한 음원으로부터 관찰자가 v_O = v 의 속력으로 멀어질 때 관찰자가 듣는 진동수는? (v: 음속)", opts:["0 (소리가 들리지 않는다)", "f/2", "f", "2f"], ans:1, exp:"f″ = (v − v_O)/v · f. v_O = v 이면 분자가 0이 되어 f″ = 0. 음파가 관찰자를 따라잡지 못하므로 사실상 소리를 듣지 못합니다."},
+  {num:17, text:"음원과 관찰자가 모두 움직일 때 일반 도플러 공식은? (v: 음속, v_O: 관찰자 속력, v_S: 음원 속력)", opts:["f′ = (v ± v_S) / (v ∓ v_O) · f", "f′ = (v ± v_O) / (v ∓ v_S) · f", "f′ = (v_O ± v_S) / v · f", "f′ = v / (v_O ∓ v_S) · f"], ans:2, exp:"일반 도플러 공식은 f′ = ((v ± v_O) / (v ∓ v_S)) · f. 부호는 가까워지는 방향이면 분자 +, 분모 −를, 멀어지는 방향이면 분자 −, 분모 +를 사용합니다."},
+  {num:18, text:"일반 도플러 공식에서 음원이 관찰자에게 다가오는 경우 분모의 부호와, 관찰자가 음원에 다가가는 경우 분자의 부호로 옳은 것은?", opts:["분모: + , 분자: +", "분모: + , 분자: −", "분모: − , 분자: +", "분모: − , 분자: −"], ans:3, exp:"가까워지면 진동수가 커져야 합니다. 분모는 작아져야 하므로 v − v_S, 분자는 커져야 하므로 v + v_O. 즉 분모 −, 분자 +."},
+  {num:19, text:"[심화] 진동수 f인 음원과 관찰자가 모두 정지해 있을 때 도플러 공식을 적용하면? (v_S = 0, v_O = 0)", opts:["f′ = 0", "f′ = f (변화 없음)", "f′ = 2f", "공식이 적용되지 않는다."], ans:2, exp:"v_S = 0, v_O = 0 을 대입하면 f′ = v/v · f = f. 두 물체가 모두 정지하면 탄성파는 나타나지 않고 관찰자는 원래 진동수를 듣습니다."},
+  {num:20, text:"음원과 관찰자가 같은 직선 위에 있고, 둘 다 같은 방향으로 같은 속력으로 움직인다(예: 둘 다 오른쪽으로 v_S = v_O). 관찰자가 듣는 진동수의 변화로 옳은 것은?", opts:["원래 진동수보다 커진다.", "원래 진동수보다 작아진다.", "원래 진동수와 같다.", "음원과 관찰자의 절대 속력에 따라 달라진다."], ans:3, exp:"두 물체의 상대 속도가 0이면 사실상 둘이 정지해 있는 것과 같으므로 진동수 변화 없음. 일반식에 대입해도 f′ = (v − v_O)/(v − v_S) · f = f (같은 부호로 빼면 같음)."},
+  {num:21, text:"음원은 왼쪽에 있고 관찰자는 오른쪽에 있다. 음원이 오른쪽(관찰자 쪽)으로 움직이고 관찰자는 정지해 있다. 일반식에서 음원 속력의 부호로 옳은 것은?", opts:["분모에 − (가까워짐)", "분모에 + (멀어짐)", "분자에 + (가까워짐)", "분자에 − (멀어짐)"], ans:1, exp:"음원이 관찰자에게 다가오므로 진동수가 커져야 합니다. 일반식 f′ = (v ± v_O)/(v ∓ v_S) · f 에서 분모가 작아져야 하므로 v − v_S, 즉 분모에 − 부호를 사용합니다."},
+  {num:22, text:"[심화 — 부호 결정] 음원은 왼쪽에, 관찰자는 오른쪽에 있다. 음원이 왼쪽(관찰자에서 멀어지는 쪽)으로, 관찰자도 왼쪽(음원 쪽)으로 동시에 움직인다. 가장 적절한 부호 적용은?", opts:["분자 + (가까워짐), 분모 − (가까워짐)", "분자 + (가까워짐), 분모 + (멀어짐)", "분자 − (멀어짐), 분모 − (가까워짐)", "분자 − (멀어짐), 분모 + (멀어짐)"], ans:2, exp:"관찰자는 음원 쪽으로 다가가므로 분자는 v + v_O. 음원은 관찰자로부터 멀어지므로 분모는 v + v_S. 식: f′ = (v + v_O)/(v + v_S) · f."},
+  {num:23, text:"[심화 — 부호 결정] 음원과 관찰자가 같은 직선상에 있다. 음원과 관찰자 모두 오른쪽으로 움직이는데, 음원이 더 빠르다(v_S > v_O, 음원은 관찰자 뒤쪽). 관찰자가 듣는 진동수는?", opts:["원래 진동수와 같다.", "원래 진동수보다 작다.", "원래 진동수보다 크다.", "결정 불가능하다."], ans:3, exp:"음원이 관찰자보다 빨라 거리가 좁혀지므로 둘이 가까워지는 상황입니다. 음원이 관찰자에 접근(분모 v − v_S), 관찰자는 음원에서 멀어지는 방향(분자 v − v_O). f′ = (v − v_O)/(v − v_S) · f. v_S > v_O 이면 분모가 분자보다 더 많이 줄어들어 f′ > f."},
+  {num:24, text:"[심화 — 부호 결정] 음원과 관찰자가 서로 반대 방향으로 멀어지고 있다. 일반식에서 적절한 부호 적용은?", opts:["f′ = (v + v_O)/(v − v_S) · f", "f′ = (v − v_O)/(v + v_S) · f", "f′ = (v + v_O)/(v + v_S) · f", "f′ = (v − v_O)/(v − v_S) · f"], ans:2, exp:"관찰자가 음원에서 멀어지므로 분자는 v − v_O, 음원도 관찰자로부터 멀어지므로 분모는 v + v_S. 따라서 f′ = (v − v_O)/(v + v_S) · f. 분자는 작아지고 분모는 커져 f′ < f (낮은 소리)."},
+  {num:25, text:"[심화 — 부호 결정] 음원과 관찰자가 서로를 향해(반대 방향에서) 다가오고 있다. 관찰자가 듣는 진동수의 변화는?", opts:["감소한다.", "변하지 않는다.", "증가한다.", "음원의 속력에만 의존한다."], ans:3, exp:"관찰자가 음원에 다가가므로 분자 v + v_O, 음원도 관찰자에 다가가므로 분모 v − v_S. f′ = (v + v_O)/(v − v_S) · f. 분자는 커지고 분모는 작아져 f′ > f (높은 소리)."},
+  {num:26, text:"진동수 f인 음원이 속력 v_S로 관찰자에게 다가올 때, 음원 앞쪽에서의 파장 λ′ 을 옳게 나타낸 것은? (λ = v/f, v: 음속)", opts:["λ′ = λ + v_S/f (길어짐)", "λ′ = λ · v_S/v", "λ′ = λ / v_S", "λ′ = λ − v_S/f (짧아짐)"], ans:4, exp:"음원의 주기 T 동안 음원이 v_S·T 만큼 진행하여 다음 파면을 따라잡습니다. 따라서 한 파장의 길이가 그만큼 줄어듭니다: λ′ = λ − v_S·T = λ − v_S/f."},
+  {num:27, text:"진동수 f인 음원이 속력 v_S로 관찰자로부터 멀어질 때, 음원 뒤쪽에서의 파장 λ″은?", opts:["λ″ = λ − v_S/f", "λ″ = λ + v_S/f", "λ″ = λ / (v − v_S)", "λ″ = λ · (v + v_S)/v"], ans:2, exp:"음원이 진행 방향과 반대 방향으로는 매 주기마다 v_S·T 만큼 늘어난 거리에 파면이 만들어지므로 파장이 길어집니다: λ″ = λ + v_S/f."},
+  {num:28, text:"관찰자만 움직이는 경우(음원 정지), 매질(공기) 속에서 음파의 파장 λ에 대한 설명으로 옳은 것은?", opts:["관찰자가 다가가면 짧아진다.", "관찰자가 멀어지면 길어진다.", "관찰자의 운동과 무관하게 일정하다.", "관찰자의 속력에 따라 양쪽으로 변한다."], ans:3, exp:"음파의 파장은 매질 속에 한 번 만들어지면 음원의 진동수와 음속에 의해 정해지며(λ = v/f), 관찰자의 운동과는 무관합니다. 관찰자의 운동은 '음파의 상대 속력'만 변화시킵니다."},
+  {num:29, text:"음속 340 m/s, 진동수 680 Hz인 정지한 음원으로부터 발생한 음파의 파장은?", opts:["0.5 m", "1.0 m", "2.0 m", "5.0 m"], ans:1, exp:"λ = v/f = 340/680 = 0.5 m."},
+  {num:30, text:"음속 340 m/s, 진동수 500 Hz인 음원이 정지한 관찰자에게 속력 20 m/s로 다가올 때 관찰자가 듣는 진동수는? (소수점 자리 반올림)", opts:["약 471 Hz", "약 480 Hz", "약 500 Hz", "약 531 Hz"], ans:4, exp:"f′ = v/(v − v_S) · f = 340/(340 − 20) · 500 = 340/320 · 500 ≈ 531.25 Hz. 음원이 다가오므로 진동수가 원래보다 큽니다."},
+  {num:31, text:"[심화] 음속 340 m/s 환경에서, 정지한 음원의 진동수가 600 Hz 일 때 관찰자가 30 m/s 속력으로 음원에 다가가면서 들리는 진동수는?", opts:["약 547 Hz", "약 570 Hz", "약 600 Hz", "약 653 Hz"], ans:4, exp:"관찰자가 음원에 다가가는 경우: f′ = (v + v_O)/v · f = (340 + 30)/340 · 600 = 370/340 · 600 ≈ 652.9 Hz."},
+  {num:32, text:"탄성파를 이용한 장치의 예시로 옳지 않은 것은?", opts:["도플러 레이더 (마이크로파로 기상 관측)", "도플러 초음파 검사기 (혈류 속도·방향 측정)", "도플러 유량계 (유체의 속도·유량 측정)", "광섬유 통신 (광신호 전송)"], ans:4, exp:"광섬유 통신은 빛의 전반사를 이용한 기술로 탄성파와는 무관합니다. 나머지 세 가지는 모두 반사된 파동의 진동수 변화로 속도를 측정하는 탄성파 응용 장치입니다."},
+  {num:33, text:"천체 관측에서, 별이 지구로부터 멀어질 때 별빛의 진동수가 작아지면서 가시광선 스펙트럼이 붉은색 쪽으로 치우치는 현상을 무엇이라 하는가?", opts:["청색편이 (blue shift)", "적색편이 (red shift)", "간섭무늬", "편광"], ans:2, exp:"탄성파에 의해 멀어지는 별은 빛의 진동수가 작아지고(파장은 길어지고) 스펙트럼이 적색 쪽으로 이동합니다. 이를 적색편이라 하며, 우주가 팽창하고 있다는 증거 중 하나입니다."},
+  {num:34, text:"[심화 응용] 음원이 관찰자에게 다가오는 속력 v_S가 음속 v에 가까워질수록 관찰자가 듣는 진동수 f′의 변화는?", opts:["f′은 0에 수렴한다.", "f′은 f에 수렴한다.", "f′은 2f에 수렴한다.", "f′은 무한대로 발산한다."], ans:4, exp:"f′ = v/(v − v_S) · f. v_S → v 이면 분모 (v − v_S) → 0 이므로 f′ → ∞. 음원이 음속에 도달하면 모든 파면이 한 점에 겹쳐 충격파(소닉붐)가 발생합니다. 이론적으로 진동수가 무한대로 발산함을 의미합니다."},
+  {num:35, text:"[심화 응용] 멀리 있는 별 A는 지구에 대해 정지해 있고, 별 B는 지구로부터 매우 빠른 속력으로 멀어지고 있다. 두 별의 빛의 스펙트럼 비교로 옳은 것은?", opts:["B의 스펙트럼은 A에 비해 청색편이 한다.", "B의 스펙트럼은 A에 비해 적색편이 한다.", "둘은 같은 위치에서 관측된다.", "B의 빛은 관측되지 않는다."], ans:2, exp:"별 B가 멀어지면 빛의 진동수가 작아지고 파장이 길어져 가시광 영역에서 붉은 쪽으로 치우치는 적색편이가 일어납니다. 이는 우주가 팽창함을 보여주는 결정적인 증거이자(허블의 발견), 외계 행성·은하의 운동 측정에 활용됩니다."}
+];
+
+// ══════════════════════════════════════
+// 상태
+// ══════════════════════════════════════
+let userName = '', userSchool = '', userPhone = '';
+let userAnswers = {}; // num → chosen index (1~4)
+let timerInterval = null;
+let elapsedSec = 0;
+let quizStarted = false;
+
+// ══════════════════════════════════════
+// 유틸
+// ══════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function fmtTime(sec) {
+  const m = String(Math.floor(sec / 60)).padStart(2, '0');
+  const s = String(sec % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function toast(msg, duration = 2500) {
+  const el = document.getElementById('savingToast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration);
+}
+
+// ══════════════════════════════════════
+// SCREEN 1 → 시작
+// ══════════════════════════════════════
+function startQuiz() {
+  const name = document.getElementById('input-name').value.trim();
+  const school = document.getElementById('input-school').value.trim();
+  const phone = document.getElementById('input-phone').value.trim();
+  if (!name) { alert('이름을 입력해주세요.'); return; }
+  if (!school) { alert('학교를 입력해주세요.'); return; }
+  if (!/^[0-9]{4}$/.test(phone)) { alert('전화번호 뒷자리 4자리(숫자)를 입력해주세요.'); return; }
+
+  userName = name;
+  userSchool = school;
+  userPhone = phone;
+  userAnswers = {};
+  elapsedSec = 0;
+
+  renderQuiz();
+  showScreen('screen-quiz');
+  startTimer();
+}
+
+// ══════════════════════════════════════
+// 타이머
+// ══════════════════════════════════════
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    elapsedSec++;
+    document.getElementById('timerDisplay').textContent = fmtTime(elapsedSec);
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// ══════════════════════════════════════
+// 퀴즈 렌더
+// ══════════════════════════════════════
+const LABELS = ['①','②','③','④'];
+
+function renderQuiz() {
+  const body = document.getElementById('quizBody');
+  body.innerHTML = QUIZ.map(q => `
+    <div class="q-card" id="qcard-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="q-options">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="opt-${q.num}-${i+1}" onclick="selectOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  updateProgress();
+}
+
+function selectOpt(num, chosen) {
+  userAnswers[num] = chosen;
+
+  // 선택 표시
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`opt-${num}-${i}`);
+    btn.style.borderColor = i === chosen ? 'var(--accent)' : '';
+    btn.style.background = i === chosen ? 'var(--accent-light)' : '';
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = Object.keys(userAnswers).length;
+  const total = QUIZ.length;
+  document.getElementById('metaProgress').textContent = `${answered} / ${total}`;
+  document.getElementById('progressFill').style.width = `${(answered / total) * 100}%`;
+}
+
+// ══════════════════════════════════════
+// 제출
+// ══════════════════════════════════════
+function submitQuiz() {
+  const answered = Object.keys(userAnswers).length;
+  if (answered < QUIZ.length) {
+    if (!confirm(`아직 ${QUIZ.length - answered}문제가 남아 있어요. 제출하시겠어요?`)) return;
+  }
+  stopTimer();
+  showResult();
+}
+
+// ══════════════════════════════════════
+// 결과
+// ══════════════════════════════════════
+function showResult() {
+  const correct = QUIZ.filter(q => userAnswers[q.num] === q.ans);
+  const wrong   = QUIZ.filter(q => userAnswers[q.num] !== q.ans);
+  const score   = correct.length;
+  const total   = QUIZ.length;
+
+  document.getElementById('resultName').textContent = `${userName} · ${userSchool} · ${userPhone}`;
+  document.getElementById('resultScore').textContent = score;
+  document.getElementById('resultScoreSub').textContent = `/ ${total} 문항`;
+  document.getElementById('statTime').textContent = fmtTime(elapsedSec);
+  document.getElementById('statCorrect').textContent = `${score}개`;
+  document.getElementById('statWrong').textContent = `${wrong.length}개`;
+
+  // 오답 리뷰
+  const reviewSection = document.getElementById('reviewSection');
+  if (wrong.length === 0) {
+    reviewSection.innerHTML = `<div style="text-align:center;padding:32px 0;color:var(--accent);font-weight:700;">🎉 전부 맞혔어요!</div>`;
+  } else {
+    reviewSection.innerHTML = `
+      <h2>틀린 문제 <span class="badge-wrong">${wrong.length}문제</span></h2>
+      ${wrong.map(q => renderReviewCard(q)).join('')}
+    `;
+  }
+
+  showScreen('screen-result');
+  saveScore(score, total);
+}
+
+function renderReviewCard(q) {
+  return `
+    <div class="review-card" id="review-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="review-retry-wrap" id="retry-opts-${q.num}">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="retry-opt-${q.num}-${i+1}" onclick="retryOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="review-exp">
+        <div class="review-exp-label">✦ 해설</div>
+        <p>${q.exp}</p>
+      </div>
+    </div>
+  `;
+}
+
+function retryOpt(num, chosen) {
+  const q = QUIZ.find(x => x.num === num);
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`retry-opt-${num}-${i}`);
+    if (!btn) continue;
+    btn.disabled = true;
+    if (i === q.ans) btn.className = 'opt-btn correct';
+    else if (i === chosen && chosen !== q.ans) btn.className = 'opt-btn wrong';
+    else btn.className = 'opt-btn reveal';
+  }
+}
+
+// ══════════════════════════════════════
+// Airtable 저장
+// ══════════════════════════════════════
+async function saveScore(score, total) {
+  toast('점수 저장 중...');
+  try {
+    const res = await fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_SCORES}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${AT_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        fields: {
+          '이름': userName,
+          '학교': userSchool,
+          'phone_last4': userPhone,
+          '날짜': new Date().toISOString().split('T')[0],
+          '과목코드': QUIZ_META.subjectCode,
+          '과목명': QUIZ_META.subjectName,
+          '대단원번호': QUIZ_META.mainNo,
+          '대단원명': QUIZ_META.mainName,
+          '중단원번호': QUIZ_META.subNo,
+          '중단원명': QUIZ_META.subName,
+          '섹션번호': QUIZ_META.sectionNo,
+          '섹션명': QUIZ_META.sectionName,
+          '총점': score,
+          '총문항수': total,
+          '풀이시간': fmtTime(elapsedSec)
+        }
+      })
+    });
+    if (res.ok) toast('✓ 점수가 저장되었습니다.');
+    else toast('저장 실패 — 네트워크를 확인해주세요.');
+  } catch(e) {
+    toast('저장 실패 — 네트워크를 확인해주세요.');
+  }
+}
+
+// ══════════════════════════════════════
+// 리셋
+// ══════════════════════════════════════
+function resetQuiz() {
+  userName = '';
+  userSchool = '';
+  userPhone = '';
+  userAnswers = {};
+  elapsedSec = 0;
+  document.getElementById('input-name').value = '';
+  document.getElementById('input-school').value = '';
+  document.getElementById('input-phone').value = '';
+  document.getElementById('timerDisplay').textContent = '00:00';
+  showScreen('screen-intro');
+}
+</script>
+</body>
+</html>
