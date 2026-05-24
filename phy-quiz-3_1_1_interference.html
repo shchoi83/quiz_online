@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>빛의 중첩과 간섭 · 물리 퀴즈</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --border: #e2ddd6;
+  --text: #1a1714;
+  --text-dim: #8a8480;
+  --accent: #2d5a3d;
+  --accent-light: #e8f0eb;
+  --wrong: #c0392b;
+  --wrong-light: #fdf0ef;
+  --correct: #2d5a3d;
+  --correct-light: #e8f0eb;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+  padding: 0 0 60px;
+}
+
+/* ── 공통 ── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 14px 28px;
+  font-size: 0.95rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  width: 100%;
+}
+
+.btn:hover { opacity: 0.88; }
+.btn:active { transform: scale(0.98); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+}
+
+.btn-ghost:hover { background: var(--accent-light); opacity: 1; }
+
+/* ── SCREEN 1: 입력 ── */
+#screen-intro {
+  padding-top: 80px;
+}
+
+.intro-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.intro-header .tag {
+  display: inline-block;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: 0.08em;
+}
+
+.intro-header h1 { margin-bottom: 8px; }
+.intro-header p { color: var(--text-dim); font-size: 0.9rem; }
+
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: var(--shadow);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+}
+
+.form-group input {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 13px 16px;
+  font-size: 1rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus { border-color: var(--accent); }
+
+.form-info {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  background: var(--accent-light);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.form-info span {
+  font-size: 0.82rem;
+  color: var(--accent);
+}
+
+/* ── SCREEN 2: 퀴즈 ── */
+#screen-quiz { padding-top: 0; }
+
+.quiz-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+}
+
+.quiz-topbar-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.progress-wrap {
+  flex: 1;
+  background: var(--border);
+  border-radius: 99px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 6px;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.quiz-meta {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.meta-item {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.meta-item span {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.quiz-body {
+  padding: 32px 20px;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: border-color 0.3s;
+}
+
+.q-card.correct { border-color: var(--correct); }
+.q-card.wrong { border-color: var(--wrong); }
+
+.q-head {
+  padding: 20px 24px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.q-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.q-text {
+  font-size: 0.93rem;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+
+.q-options {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.opt-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+  transition: all 0.15s;
+  width: 100%;
+}
+
+.opt-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.opt-btn:disabled { cursor: default; }
+
+.opt-btn.correct {
+  border-color: var(--correct);
+  background: var(--correct-light);
+  color: var(--correct);
+}
+
+.opt-btn.wrong {
+  border-color: var(--wrong);
+  background: var(--wrong-light);
+  color: var(--wrong);
+}
+
+.opt-btn.reveal {
+  border-color: rgba(45,90,61,0.35);
+  background: rgba(45,90,61,0.04);
+  color: rgba(45,90,61,0.6);
+}
+
+.opt-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 0.15s;
+}
+
+.opt-btn.correct .opt-label { background: var(--correct); border-color: var(--correct); color: #fff; }
+.opt-btn.wrong .opt-label { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+
+/* submit btn area */
+.submit-wrap {
+  padding: 0 20px 40px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ── SCREEN 3: 결과 ── */
+#screen-result { padding-top: 48px; }
+
+.result-hero {
+  text-align: center;
+  padding: 48px 20px 32px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.result-name {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  font-family: 'DM Mono', monospace;
+}
+
+.result-score {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin-bottom: 4px;
+}
+
+.result-score-sub {
+  font-size: 1rem;
+  color: var(--text-dim);
+  margin-bottom: 24px;
+}
+
+.result-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.result-section {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.result-section h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-wrong {
+  background: var(--wrong-light);
+  color: var(--wrong);
+  font-size: 0.72rem;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* review card */
+.review-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.review-card .q-head { padding-bottom: 12px; }
+
+.review-exp {
+  padding: 14px 24px 18px;
+  border-top: 1px solid var(--border);
+  background: var(--accent-light);
+}
+
+.review-exp-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--accent);
+  margin-bottom: 5px;
+  letter-spacing: 0.06em;
+}
+
+.review-exp p {
+  font-size: 0.84rem;
+  color: var(--accent);
+  line-height: 1.65;
+}
+
+.review-retry-wrap {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.result-actions {
+  max-width: 720px;
+  margin: 32px auto 0;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* saving overlay */
+.saving-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 99px;
+  font-size: 0.82rem;
+  font-family: 'DM Mono', monospace;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 999;
+  white-space: nowrap;
+}
+
+.saving-toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1: 이름 / 학교 입력
+══════════════════════════════════════ -->
+<div id="screen-intro" class="screen active">
+  <div class="container">
+    <div class="intro-header">
+      <div class="tag">PHYSICS QUIZ</div>
+      <h1>빛의 중첩과 간섭</h1>
+      <p>물리학 · 3단원 빛과 물질 · 1중단원 빛의 이해 · 1섹션</p>
+    </div>
+
+    <div class="form-card">
+      <div class="form-info">
+        <span>📋 총 40문항 · 객관식 4지선다 · 시간 제한 없음</span>
+      </div>
+
+      <div class="form-group">
+        <label>이름</label>
+        <input type="text" id="input-name" placeholder="홍길동" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>학교</label>
+        <input type="text" id="input-school" placeholder="○○고등학교" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>전화번호 뒷자리 4자리 <span style="color:var(--text-dim);font-weight:300;">(동명이인 구별용)</span></label>
+        <input type="tel" id="input-phone" placeholder="1234" autocomplete="off" maxlength="4" inputmode="numeric" pattern="[0-9]{4}">
+      </div>
+
+      <button class="btn" onclick="startQuiz()">시작하기 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2: 퀴즈
+══════════════════════════════════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-topbar">
+    <div class="quiz-topbar-inner">
+      <div class="progress-wrap">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="quiz-meta">
+        <div class="meta-item" id="metaProgress">0 / 40</div>
+        <div class="meta-item">⏱ <span id="timerDisplay">00:00</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-body" id="quizBody"></div>
+
+  <div class="submit-wrap">
+    <button class="btn" onclick="submitQuiz()">제출하기</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 3: 결과
+══════════════════════════════════════ -->
+<div id="screen-result" class="screen">
+  <div class="result-hero">
+    <div class="result-name" id="resultName"></div>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-score-sub" id="resultScoreSub"></div>
+    <div class="result-stats">
+      <div class="stat-item">
+        <div class="stat-val" id="statTime"></div>
+        <div class="stat-label">풀이 시간</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statCorrect"></div>
+        <div class="stat-label">정답</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statWrong"></div>
+        <div class="stat-label">오답</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-section" id="reviewSection"></div>
+
+  <div class="result-actions">
+    <button class="btn btn-ghost" onclick="resetQuiz()">↺ 새로 응시하기</button>
+  </div>
+</div>
+
+<div class="saving-toast" id="savingToast"></div>
+
+<script>
+// ══════════════════════════════════════
+// Airtable 설정
+// ══════════════════════════════════════
+const AT_TOKEN   = "patBcLElKAr7fPbgS.0f288a25e39501f27d9d33569371fc819acb54173cf44daa68fc028f16e479f9";
+const AT_BASE    = "appmCOjqp5xIJuPqt";
+const AT_SCORES  = "scores";
+
+// ══════════════════════════════════════
+// 퀴즈 메타
+// ══════════════════════════════════════
+const QUIZ_META = {
+  subjectCode: "PHY",
+  subjectName: "물리학",
+  mainNo:      3,
+  mainName:    "빛과 물질",
+  subNo:       1,
+  subName:     "빛의 이해",
+  sectionNo:   1,
+  sectionName: "빛의 중첩과 간섭"
+};
+
+// ══════════════════════════════════════
+// 퀴즈 데이터
+// ══════════════════════════════════════
+// 정답 시퀀스 (블록별):
+// A(4): 1,1,2,4   B(3): 3,3,4   C(5): 2,1,4,3,3   D(3): 3,2,2
+// E(4): 4,4,3,2   F(8): 3,3,4,4,3,2,2,4   G(3): 4,1,1
+// H(4): 4,3,1,1   I(2): 1,2   J(2): 2,2   K(2): 1,1
+
+const QUIZ = [
+  // ══════════════════════════════════════
+  // 블록 A. 파동의 중첩 원리·독립성 (Q1~Q4)
+  // ══════════════════════════════════════
+  {num:1, text:"파동의 중첩 원리에 대한 설명으로 옳은 것은?", opts:["두 파동이 만났을 때의 변위는 각 파동의 변위의 합과 같다.", "두 파동이 만나면 한쪽 파동만 살아남는다.", "두 파동이 만나면 두 파동 모두 사라진다.", "두 파동이 만났을 때의 변위는 두 변위의 곱과 같다."], ans:1, exp:"중첩 원리: 두 파동이 만나는 동안 각 지점의 변위는 겹치기 전 두 파동의 변위의 합과 같습니다. y = y₁ + y₂."},
+
+  {num:2, text:"파동의 독립성에 대한 설명으로 옳은 것은?", opts:["두 파동이 중첩될 때 서로 영향을 주지 않고 본래의 파동 모양을 유지하면서 진행한다.", "두 파동이 만나면 서로 진행 방향을 바꾼다.", "두 파동이 만나면 한 파동이 다른 파동을 흡수한다.", "두 파동이 만나는 순간 두 파동 모두 영구히 변형된다."], ans:1, exp:"파동의 독립성: 두 파동이 중첩되는 동안 서로에게 영향을 주지 않고, 중첩이 끝나면 본래 모양을 유지한 채 각자 진행합니다."},
+
+  {num:3, text:"파동 A의 어느 지점에서의 변위가 y₁, 파동 B의 같은 지점에서의 변위가 y₂일 때, 두 파동이 만났을 때의 합성 변위 y는?", opts:["y = y₁ - y₂", "y = y₁ + y₂", "y = y₁ × y₂", "y = y₁ / y₂"], ans:2, exp:"중첩 원리에 의해 두 파동이 만난 지점의 변위는 두 변위의 합입니다. y = y₁ + y₂."},
+
+  {num:4, text:"마주 보며 진행하던 두 파동이 서로 겹쳤다가 다시 분리된 이후의 모습으로 옳은 것은?", opts:["두 파동이 모두 사라진다.", "두 파동 중 하나만 진행한다.", "두 파동이 합쳐져 새로운 한 개의 파동이 된다.", "두 파동은 본래의 파형을 유지한 채 각자 진행한다."], ans:4, exp:"파동의 독립성에 의해 중첩이 끝난 후에는 본래의 두 파동이 영향을 받지 않고 각각 원래의 파형으로 진행합니다."},
+
+  // ══════════════════════════════════════
+  // 블록 B. 위상의 정의 + 원운동 연관 (Q5~Q7)
+  // ══════════════════════════════════════
+  {num:5, text:"교과서에서 정의하는 '위상'의 의미로 가장 옳은 것은?", opts:["파동의 진동수와 같은 의미이다.", "파동의 진폭의 크기를 나타내는 양이다.", "파동의 한 지점이 진동할 때 한 순간의 변위와 운동 상태를 의미한다.", "파동이 한 번 진동하는 데 걸리는 시간이다."], ans:3, exp:"위상의 정의: 파동의 한 지점이 진동할 때 한 순간의 변위와 운동 상태를 의미합니다."},
+
+  {num:6, text:"두 파동의 위상에 대한 설명으로 옳은 것은?", opts:["변위만 같으면 위상이 같다고 한다.", "운동 방향만 같으면 위상이 같다고 한다.", "변위와 운동 상태가 모두 같을 때 위상이 같다고 한다.", "두 파동의 위상은 비교할 수 없는 개념이다."], ans:3, exp:"위상은 그 순간의 변위와 운동 상태를 모두 포함하는 개념입니다. 두 양이 모두 일치해야 같은 위상입니다."},
+
+  {num:7, text:"[심화] 등속 원운동을 하는 물체와 단진동(파동의 한 지점의 진동)을 비교한 설명으로 옳은 것은?", opts:["원운동과 단진동은 서로 전혀 관련이 없다.", "원운동의 속력은 단진동에서 변위와 같다.", "원운동의 반지름은 단진동의 진동수와 같다.", "원운동을 한 평면에 투영한 운동이 단진동에 해당하며, 회전각이 위상에 대응된다."], ans:4, exp:"등속 원운동을 지름 방향으로 투영하면 단진동이 됩니다. 이때 회전 각도(라디안)가 위상에 해당합니다."},
+
+  // ══════════════════════════════════════
+  // 블록 C. 보강/상쇄 간섭 정의·조건 (Q8~Q12)
+  // ══════════════════════════════════════
+  {num:8, text:"보강 간섭에 대한 설명으로 옳은 것은?", opts:["두 파동의 변위가 항상 0이 되는 간섭이다.", "두 파동의 변위가 같은 방향으로 중첩되어 합성 파동의 진폭이 최대가 되는 간섭이다.", "두 파동의 변위가 반대 방향으로 중첩되어 진폭이 0이 되는 간섭이다.", "두 파동의 진동수가 달라야만 일어나는 간섭이다."], ans:2, exp:"보강 간섭은 두 파동의 변위가 같은 방향(위상이 일치)으로 중첩되어 합성 파동의 진폭이 최대가 되는 현상입니다."},
+
+  {num:9, text:"상쇄 간섭에 대한 설명으로 옳은 것은?", opts:["두 파동의 변위가 반대 방향으로 중첩되어 합성 파동의 진폭이 최소가 되는 간섭이다.", "두 파동의 변위가 같은 방향으로 중첩되어 진폭이 최대가 되는 간섭이다.", "두 파동의 진폭이 두 배가 되는 간섭이다.", "두 파동의 진행 방향이 같아야만 일어나는 간섭이다."], ans:1, exp:"상쇄 간섭은 두 파동의 변위가 반대 방향(위상이 반대)으로 중첩되어 합성 파동의 진폭이 최소가 되는 현상입니다."},
+
+  {num:10, text:"두 파동이 보강 간섭을 일으키기 위한 위상 조건으로 옳은 것은?", opts:["두 파동의 위상차가 180°이어야 한다.", "두 파동의 위상차가 90°이어야 한다.", "두 파동의 진폭이 항상 달라야 한다.", "두 파동의 위상이 일치해야 한다."], ans:4, exp:"보강 간섭은 두 파동의 위상이 일치(위상차 0, 360°, 720° …)할 때 일어납니다."},
+
+  {num:11, text:"두 파동이 상쇄 간섭을 일으키기 위한 위상 조건으로 옳은 것은?", opts:["두 파동의 위상이 일치해야 한다.", "두 파동의 위상이 90° 차이가 나야 한다.", "두 파동의 위상이 반대(180° 위상차)여야 한다.", "두 파동의 진폭이 같아야만 한다."], ans:3, exp:"상쇄 간섭은 두 파동의 위상이 반대, 즉 위상차가 180°(또는 반 파장 등가)일 때 일어납니다."},
+
+  {num:12, text:"진폭이 같은 두 파동이 보강 간섭과 상쇄 간섭을 일으킬 때, 각각 합성 파동의 진폭은 어떻게 되는가?", opts:["보강: 0, 상쇄: 2배", "보강: 2배, 상쇄: 변화 없음", "보강: 2배, 상쇄: 0", "보강: 변화 없음, 상쇄: 2배"], ans:3, exp:"진폭이 같은 두 파동이 보강 간섭하면 합성 진폭은 2배가 되고, 상쇄 간섭하면 0이 됩니다."},
+
+  // ══════════════════════════════════════
+  // 블록 D. 진폭 합성·위상차 정량 (Q13~Q15)
+  // ══════════════════════════════════════
+  {num:13, text:"진폭이 각각 20 cm, 30 cm인 두 파동이 만나 보강 간섭을 하였을 때 합성 파동의 진폭은? (단, 두 파동은 마루와 마루가 만난다고 가정)", opts:["10 cm", "20 cm", "50 cm", "0 cm"], ans:3, exp:"보강 간섭에서는 같은 방향의 변위가 더해지므로 진폭의 합이 됩니다. 20 + 30 = 50 cm."},
+
+  {num:14, text:"진폭이 각각 20 cm, 30 cm인 두 파동이 만나 상쇄 간섭을 하였을 때 합성 파동의 진폭은? (단, 한쪽은 마루, 다른 쪽은 골이 만난다고 가정)", opts:["50 cm", "10 cm", "0 cm", "25 cm"], ans:2, exp:"상쇄 간섭에서는 반대 방향의 변위가 빼지므로 진폭의 차가 됩니다. |30 - 20| = 10 cm."},
+
+  {num:15, text:"[심화] 진폭이 5 cm로 같은 두 파동이 위상차 180°로 중첩되었다. 합성 파동의 진폭으로 가장 옳은 것은?", opts:["10 cm", "0 cm", "5 cm", "2.5 cm"], ans:2, exp:"진폭이 같은 두 파동이 위상차 180°(완전 상쇄)로 만나면 합성 진폭은 5 - 5 = 0 cm이 됩니다."},
+
+  // ══════════════════════════════════════
+  // 블록 E. 영의 이중 슬릿 실험 (Q16~Q19)
+  // ══════════════════════════════════════
+  {num:16, text:"영(Young)의 이중 슬릿 실험으로 입증된 빛의 성질로 옳은 것은?", opts:["빛의 입자성", "빛의 직진성", "빛의 굴절성", "빛의 파동성"], ans:4, exp:"영(Thomas Young)은 1803년 이중 슬릿 실험을 통해 빛이 간섭 현상을 일으킨다는 것을 보임으로써 빛의 파동성을 입증하였습니다."},
+
+  {num:17, text:"영의 이중 슬릿 실험에서 스크린에 나타나는 무늬의 모습으로 옳은 것은?", opts:["균일하게 빛나는 한 줄의 밝은 선이 나타난다.", "스크린 전체가 균일하게 어둡다.", "둥근 점 모양의 빛이 하나만 나타난다.", "밝은 무늬와 어두운 무늬가 번갈아 나타나는 줄무늬가 생긴다."], ans:4, exp:"이중 슬릿을 통과한 두 빛이 간섭을 일으켜 스크린에 보강 간섭(밝은 무늬)과 상쇄 간섭(어두운 무늬)이 교대로 줄무늬 형태로 나타납니다."},
+
+  {num:18, text:"영의 이중 슬릿 실험 장치에서 빛이 거치는 순서로 옳은 것은?", opts:["스크린 → 이중 슬릿 → 단일 슬릿 → 광원", "이중 슬릿 → 단일 슬릿 → 스크린 → 광원", "광원 → 단일 슬릿 → 이중 슬릿 → 스크린", "광원 → 이중 슬릿 → 스크린 → 단일 슬릿"], ans:3, exp:"광원에서 나온 빛은 먼저 단일 슬릿을 통과하여 가지런한(같은 위상의) 빛이 된 후, 이중 슬릿을 거쳐 스크린에 간섭무늬를 만듭니다."},
+
+  {num:19, text:"[심화] 영의 실험에서 광원 바로 뒤에 단일 슬릿을 두는 이유로 가장 옳은 것은?", opts:["빛의 색을 단색광으로 거르기 위해서이다.", "이중 슬릿에 도달하는 빛이 같은 위상이 되도록 하기 위해서이다.", "빛의 세기를 더 강하게 만들기 위해서이다.", "스크린의 밝기를 조절하기 위해서이다."], ans:2, exp:"단일 슬릿을 통과한 빛은 그 슬릿을 새 점광원으로 하여 같은 위상으로 퍼져 나가므로, 이중 슬릿의 두 슬릿에 도달하는 빛이 같은 위상이 됩니다. (간섭이 일어나기 위한 코히어런스 조건)"},
+
+  // ══════════════════════════════════════
+  // 블록 F. 경로차 → 보강/상쇄 판별 (8개, 핵심 강화) (Q20~Q27)
+  // ══════════════════════════════════════
+  {num:20, text:"이중 슬릿 실험에서 두 빛의 경로차 Δ가 한 파장(λ)일 때, 그 지점에서 일어나는 간섭은?", opts:["상쇄 간섭", "위상차 90°의 부분 간섭", "보강 간섭", "간섭이 일어나지 않음"], ans:3, exp:"경로차가 파장의 정수배일 때(Δ = mλ, m = 0, 1, 2 …) 두 파동의 위상이 일치하므로 보강 간섭이 일어납니다."},
+
+  {num:21, text:"이중 슬릿 실험에서 두 빛의 경로차 Δ가 반 파장(λ/2)일 때 일어나는 간섭은?", opts:["변화 없음", "보강 간섭", "상쇄 간섭", "두 빛이 사라짐"], ans:3, exp:"경로차가 반 파장의 홀수배일 때(Δ = (2m+1)·λ/2) 두 파동의 위상이 반대가 되어 상쇄 간섭이 일어납니다."},
+
+  {num:22, text:"두 파원에서 나온 같은 위상의 파동이 어떤 지점에 도달할 때 경로차 Δ = 2λ였다. 이 지점에서 일어나는 간섭은?", opts:["상쇄 간섭", "위상차 90°", "어두운 무늬", "보강 간섭"], ans:4, exp:"경로차가 파장의 정수배(2λ = 2·λ)이므로 위상이 일치하는 보강 간섭이 일어납니다."},
+
+  {num:23, text:"두 파원에서 나온 같은 위상의 파동의 경로차가 Δ = 3λ/2인 지점에서 일어나는 간섭은?", opts:["보강 간섭(밝은 무늬)", "위상이 일치하는 간섭", "변화 없음", "상쇄 간섭(어두운 무늬)"], ans:4, exp:"3λ/2 = (2·1 + 1)·λ/2 이므로 반 파장의 홀수배입니다. 따라서 상쇄 간섭(어두운 무늬)이 일어납니다."},
+
+  {num:24, text:"두 파원에서 나온 같은 위상의 파동의 경로차가 Δ = 5λ/2인 지점에서 일어나는 간섭으로 옳은 것은?", opts:["보강 간섭", "위상차가 0인 간섭", "상쇄 간섭", "간섭 없음"], ans:3, exp:"5λ/2 = (2·2 + 1)·λ/2 이므로 반 파장의 홀수배입니다. 따라서 상쇄 간섭이 일어납니다."},
+
+  {num:25, text:"파장이 600 nm인 단색광에서 두 빛의 경로차가 1200 nm인 지점이 있다. 이 지점에서 일어나는 간섭은?", opts:["상쇄 간섭", "보강 간섭", "위상차 90°의 간섭", "간섭이 일어나지 않음"], ans:2, exp:"Δ/λ = 1200/600 = 2 이므로 경로차가 정확히 2λ입니다. 파장의 정수배이므로 보강 간섭이 일어납니다."},
+
+  {num:26, text:"[심화] 파장이 500 nm인 단색광이 이중 슬릿을 통과한 후, 어떤 지점에서 두 빛의 경로차가 750 nm로 측정되었다. 이 지점에서 일어나는 간섭은?", opts:["보강 간섭(밝은 무늬)", "상쇄 간섭(어두운 무늬)", "위상차가 0인 간섭", "간섭이 없는 균일한 밝기"], ans:2, exp:"Δ/λ = 750/500 = 1.5 = 3/2 이므로 경로차가 반 파장의 홀수배(3λ/2)입니다. 따라서 상쇄 간섭이 일어납니다."},
+
+  {num:27, text:"[심화] 두 슬릿에서 같은 위상으로 출발한 빛(파장 λ = 400 nm)이 만나는 지점에서 경로차가 1000 nm이다. 이 지점에서 일어나는 간섭은?", opts:["보강 간섭", "위상차 0인 간섭", "간섭이 없는 균일한 밝기", "상쇄 간섭"], ans:4, exp:"Δ/λ = 1000/400 = 2.5 = 5/2 이므로 반 파장의 홀수배입니다. 따라서 상쇄 간섭이 일어납니다."},
+
+  // ══════════════════════════════════════
+  // 블록 G. 경로차 조건식 자체 (Q28~Q30)
+  // ══════════════════════════════════════
+  {num:28, text:"이중 슬릿에 의한 빛의 간섭에서 보강 간섭이 일어나는 경로차 Δ의 조건식으로 옳은 것은? (m = 0, 1, 2, 3 …)", opts:["Δ = m · (λ/4)", "Δ = (2m + 1) · λ", "Δ = m · (3λ)", "Δ = (λ/2) · (2m) = mλ"], ans:4, exp:"보강 간섭의 경로차 조건: Δ = (λ/2)(2m) = mλ (m = 0, 1, 2, 3, …). 즉 파장의 정수배입니다."},
+
+  {num:29, text:"이중 슬릿에 의한 빛의 간섭에서 상쇄 간섭이 일어나는 경로차 Δ의 조건식으로 옳은 것은? (m = 0, 1, 2, 3 …)", opts:["Δ = (λ/2) · (2m + 1)", "Δ = mλ", "Δ = m · λ²", "Δ = λ/m"], ans:1, exp:"상쇄 간섭의 경로차 조건: Δ = (λ/2)(2m + 1) (m = 0, 1, 2, 3, …). 즉 반 파장의 홀수배입니다."},
+
+  {num:30, text:"보강 간섭 조건식 Δ = (λ/2)(2m)에서 m = 3을 대입했을 때, 경로차 Δ는 파장 λ의 몇 배인가?", opts:["3배", "1.5배", "6배", "0.5배"], ans:1, exp:"Δ = (λ/2)(2·3) = (λ/2)·6 = 3λ. 따라서 파장의 3배입니다."},
+
+  // ══════════════════════════════════════
+  // 블록 H. 무늬 간격 Δx ∝ λ/d (Q31~Q34)
+  // ══════════════════════════════════════
+  {num:31, text:"이중 슬릿 실험에서 밝은 무늬 사이의 간격(Δx)에 대한 관계로 옳은 것은? (λ: 빛의 파장, d: 슬릿 사이의 간격, L: 슬릿-스크린 거리)", opts:["Δx ∝ d / λ", "Δx ∝ d · λ", "Δx ∝ d²", "Δx ∝ λ / d"], ans:4, exp:"이중 슬릿 간섭무늬에서 인접 밝은 무늬 사이의 간격은 Δx ∝ λ/d 의 관계를 가집니다. (스크린 거리 L을 고려하면 Δx = Lλ/d)"},
+
+  {num:32, text:"이중 슬릿 실험에서 슬릿 사이의 간격(d)을 더 좁힐 때, 스크린에 나타나는 무늬 간격(Δx)의 변화로 옳은 것은?", opts:["변화하지 않는다.", "더 좁아진다.", "더 넓어진다.", "0이 된다."], ans:3, exp:"Δx ∝ 1/d 이므로 슬릿 간격 d가 작아지면 무늬 간격 Δx는 넓어집니다."},
+
+  {num:33, text:"이중 슬릿 실험에서 파장이 더 긴 빛(예: 빨간색 → 더 긴 파장)을 사용했을 때, 스크린에 나타나는 무늬 간격의 변화로 옳은 것은?", opts:["더 넓어진다.", "더 좁아진다.", "변화하지 않는다.", "어두워져 보이지 않는다."], ans:1, exp:"Δx ∝ λ 이므로 파장이 길어지면 무늬 간격도 넓어집니다."},
+
+  {num:34, text:"[심화] 슬릿 간격 d = 0.2 mm인 이중 슬릿으로 실험할 때보다 d = 0.4 mm인 이중 슬릿으로 실험할 때, 무늬 간격은 어떻게 변하는가? (다른 조건은 같음)", opts:["1/2배(절반)로 좁아진다.", "변하지 않는다.", "2배로 넓어진다.", "4배로 넓어진다."], ans:1, exp:"Δx ∝ 1/d 이므로 d가 2배 커지면 Δx는 1/2배가 됩니다. 교과서 그림 Ⅲ-5에서 d = 0.4 mm일 때 무늬 간격이 더 좁아지는 것을 볼 수 있습니다."},
+
+  // ══════════════════════════════════════
+  // 블록 I. 박막 간섭 (Q35~Q36)
+  // ══════════════════════════════════════
+  {num:35, text:"비 오는 날 물 위에 뜬 기름막이나 비누막에서 다양한 색깔이 보이는 현상의 원인으로 가장 옳은 것은?", opts:["얇은 막의 위쪽 표면과 아래쪽 표면에서 반사한 두 빛이 간섭을 일으키기 때문이다.", "막에 들어 있는 색소 때문이다.", "막의 표면이 거울처럼 빛을 반사하기 때문이다.", "막이 빛을 굴절시켜 분산시키기 때문이다."], ans:1, exp:"기름막·비누막은 색소가 없지만, 막의 위·아래 두 면에서 반사된 두 빛이 박막 간섭(thin-film interference)을 일으켜 파장(색)에 따라 보강·상쇄 결과가 달라 무지개색으로 보입니다."},
+
+  {num:36, text:"[심화] 박막 간섭에서 막의 두께가 변하면 보이는 색깔이 변하는 이유로 가장 옳은 것은?", opts:["막의 색소가 변하기 때문에", "막의 두께가 변하면 두 반사광의 경로차가 변하여, 보강 간섭이 일어나는 파장(색)이 달라지기 때문에", "막이 점점 사라지기 때문에", "광원의 세기가 변하기 때문에"], ans:2, exp:"박막 간섭에서는 두 반사광의 경로차가 막의 두께(와 굴절률)에 의해 결정됩니다. 두께가 변하면 보강 간섭 조건을 만족하는 파장이 달라지므로, 강하게 보이는 색이 변합니다."},
+
+  // ══════════════════════════════════════
+  // 블록 J. 모르포 나비 + 무반사 코팅 (Q37~Q38)
+  // ══════════════════════════════════════
+  {num:37, text:"색소가 없는 모르포 나비의 날개가 파란색으로 보이는 까닭으로 가장 옳은 것은?", opts:["나비가 파란색 색소를 가지고 있기 때문에", "날개 표면에 있는 얇은 층들에서 각각 반사한 파란색 빛이 보강 간섭을 일으키기 때문에", "햇빛 중 파란색만 통과시키는 필터 역할을 하기 때문에", "날개가 빛을 모두 흡수하고 다시 방출하기 때문에"], ans:2, exp:"모르포 나비 날개에는 얇은 층 구조가 여러 개 있어 각 층에서 반사된 빛이 간섭을 일으킵니다. 그 결과 파란색 파장에서 보강 간섭이 일어나 파란색으로 보입니다. (구조색)"},
+
+  {num:38, text:"안경 렌즈의 무반사 코팅에 대한 설명으로 옳은 것은?", opts:["렌즈 위에 검은색 색소를 칠해 반사를 차단한다.", "얇은 막을 입혀서, 위·아래 면에서 반사된 두 빛이 상쇄 간섭하여 반사광을 없앤다.", "렌즈를 매우 두껍게 만들어 빛을 흡수시킨다.", "렌즈의 표면을 거칠게 만들어 빛을 산란시킨다."], ans:2, exp:"무반사 코팅은 렌즈에 적절한 두께의 얇은 막을 입혀, 막의 위·아래 면에서 반사된 두 빛이 상쇄 간섭하도록 만든 것입니다. 그 결과 반사광이 줄고 더 많은 빛이 투과합니다."},
+
+  // ══════════════════════════════════════
+  // 블록 K. 간섭계 + 활용 (Q39~Q40)
+  // ══════════════════════════════════════
+  {num:39, text:"교과서에서 정의하는 '간섭계'의 의미로 가장 옳은 것은?", opts:["빛의 간섭 현상을 이용하여 거리나 길이 등의 물리량을 정밀하게 측정하는 기기이다.", "빛의 색을 분해하여 보여 주는 기기이다.", "빛의 세기를 증폭시키는 기기이다.", "빛의 입자성을 측정하는 기기이다."], ans:1, exp:"간섭계의 정의: 빛의 간섭 현상을 이용하여 거리나 길이 등의 물리량을 정밀하게 측정하는 기기입니다."},
+
+  {num:40, text:"[심화] 빛의 간섭 현상을 이용한 기술 또는 현상으로 옳지 않은 것은?", opts:["지폐·신용카드의 위조 방지용 홀로그램", "안경 렌즈의 무반사 코팅", "모르포 나비의 파란색 표면", "프리즘에 의한 햇빛의 무지개 색 분산"], ans:4, exp:"프리즘에 의한 햇빛의 분산은 파장에 따라 굴절률이 다른 '분산(굴절)' 현상으로, 간섭과는 다른 원리입니다. 나머지(홀로그램, 무반사 코팅, 모르포 나비)는 모두 빛의 간섭을 이용한 사례입니다."},
+];
+
+// ══════════════════════════════════════
+// 상태
+// ══════════════════════════════════════
+let userName = '', userSchool = '', userPhone = '';
+let userAnswers = {}; // num → chosen index (1~4)
+let timerInterval = null;
+let elapsedSec = 0;
+let quizStarted = false;
+
+// ══════════════════════════════════════
+// 유틸
+// ══════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function fmtTime(sec) {
+  const m = String(Math.floor(sec / 60)).padStart(2, '0');
+  const s = String(sec % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function toast(msg, duration = 2500) {
+  const el = document.getElementById('savingToast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration);
+}
+
+// ══════════════════════════════════════
+// SCREEN 1 → 시작
+// ══════════════════════════════════════
+function startQuiz() {
+  const name = document.getElementById('input-name').value.trim();
+  const school = document.getElementById('input-school').value.trim();
+  const phone = document.getElementById('input-phone').value.trim();
+  if (!name) { alert('이름을 입력해주세요.'); return; }
+  if (!school) { alert('학교를 입력해주세요.'); return; }
+  if (!/^[0-9]{4}$/.test(phone)) { alert('전화번호 뒷자리 4자리(숫자)를 입력해주세요.'); return; }
+
+  userName = name;
+  userSchool = school;
+  userPhone = phone;
+  userAnswers = {};
+  elapsedSec = 0;
+
+  renderQuiz();
+  showScreen('screen-quiz');
+  startTimer();
+}
+
+// ══════════════════════════════════════
+// 타이머
+// ══════════════════════════════════════
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    elapsedSec++;
+    document.getElementById('timerDisplay').textContent = fmtTime(elapsedSec);
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// ══════════════════════════════════════
+// 퀴즈 렌더
+// ══════════════════════════════════════
+const LABELS = ['①','②','③','④'];
+
+function renderQuiz() {
+  const body = document.getElementById('quizBody');
+  body.innerHTML = QUIZ.map(q => `
+    <div class="q-card" id="qcard-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="q-options">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="opt-${q.num}-${i+1}" onclick="selectOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  updateProgress();
+}
+
+function selectOpt(num, chosen) {
+  userAnswers[num] = chosen;
+
+  // 선택 표시
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`opt-${num}-${i}`);
+    btn.style.borderColor = i === chosen ? 'var(--accent)' : '';
+    btn.style.background = i === chosen ? 'var(--accent-light)' : '';
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = Object.keys(userAnswers).length;
+  const total = QUIZ.length;
+  document.getElementById('metaProgress').textContent = `${answered} / ${total}`;
+  document.getElementById('progressFill').style.width = `${(answered / total) * 100}%`;
+}
+
+// ══════════════════════════════════════
+// 제출
+// ══════════════════════════════════════
+function submitQuiz() {
+  const answered = Object.keys(userAnswers).length;
+  if (answered < QUIZ.length) {
+    if (!confirm(`아직 ${QUIZ.length - answered}문제가 남아 있어요. 제출하시겠어요?`)) return;
+  }
+  stopTimer();
+  showResult();
+}
+
+// ══════════════════════════════════════
+// 결과
+// ══════════════════════════════════════
+function showResult() {
+  const correct = QUIZ.filter(q => userAnswers[q.num] === q.ans);
+  const wrong   = QUIZ.filter(q => userAnswers[q.num] !== q.ans);
+  const score   = correct.length;
+  const total   = QUIZ.length;
+
+  document.getElementById('resultName').textContent = `${userName} · ${userSchool} · ${userPhone}`;
+  document.getElementById('resultScore').textContent = score;
+  document.getElementById('resultScoreSub').textContent = `/ ${total} 문항`;
+  document.getElementById('statTime').textContent = fmtTime(elapsedSec);
+  document.getElementById('statCorrect').textContent = `${score}개`;
+  document.getElementById('statWrong').textContent = `${wrong.length}개`;
+
+  // 오답 리뷰
+  const reviewSection = document.getElementById('reviewSection');
+  if (wrong.length === 0) {
+    reviewSection.innerHTML = `<div style="text-align:center;padding:32px 0;color:var(--accent);font-weight:700;">🎉 전부 맞혔어요!</div>`;
+  } else {
+    reviewSection.innerHTML = `
+      <h2>틀린 문제 <span class="badge-wrong">${wrong.length}문제</span></h2>
+      ${wrong.map(q => renderReviewCard(q)).join('')}
+    `;
+  }
+
+  showScreen('screen-result');
+  saveScore(score, total);
+}
+
+function renderReviewCard(q) {
+  return `
+    <div class="review-card" id="review-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="review-retry-wrap" id="retry-opts-${q.num}">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="retry-opt-${q.num}-${i+1}" onclick="retryOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="review-exp">
+        <div class="review-exp-label">✦ 해설</div>
+        <p>${q.exp}</p>
+      </div>
+    </div>
+  `;
+}
+
+function retryOpt(num, chosen) {
+  const q = QUIZ.find(x => x.num === num);
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`retry-opt-${num}-${i}`);
+    if (!btn) continue;
+    btn.disabled = true;
+    if (i === q.ans) btn.className = 'opt-btn correct';
+    else if (i === chosen && chosen !== q.ans) btn.className = 'opt-btn wrong';
+    else btn.className = 'opt-btn reveal';
+  }
+}
+
+// ══════════════════════════════════════
+// Airtable 저장
+// ══════════════════════════════════════
+async function saveScore(score, total) {
+  toast('점수 저장 중...');
+  try {
+    const res = await fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_SCORES}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${AT_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        fields: {
+          '이름': userName,
+          '학교': userSchool,
+          'phone_last4': userPhone,
+          '날짜': new Date().toISOString().split('T')[0],
+          '과목코드': QUIZ_META.subjectCode,
+          '과목명': QUIZ_META.subjectName,
+          '대단원번호': QUIZ_META.mainNo,
+          '대단원명': QUIZ_META.mainName,
+          '중단원번호': QUIZ_META.subNo,
+          '중단원명': QUIZ_META.subName,
+          '섹션번호': QUIZ_META.sectionNo,
+          '섹션명': QUIZ_META.sectionName,
+          '총점': score,
+          '총문항수': total,
+          '풀이시간': fmtTime(elapsedSec)
+        }
+      })
+    });
+    if (res.ok) toast('✓ 점수가 저장되었습니다.');
+    else toast('저장 실패 — 네트워크를 확인해주세요.');
+  } catch(e) {
+    toast('저장 실패 — 네트워크를 확인해주세요.');
+  }
+}
+
+// ══════════════════════════════════════
+// 리셋
+// ══════════════════════════════════════
+function resetQuiz() {
+  userName = '';
+  userSchool = '';
+  userPhone = '';
+  userAnswers = {};
+  elapsedSec = 0;
+  document.getElementById('input-name').value = '';
+  document.getElementById('input-school').value = '';
+  document.getElementById('input-phone').value = '';
+  document.getElementById('timerDisplay').textContent = '00:00';
+  showScreen('screen-intro');
+}
+</script>
+</body>
+</html>
