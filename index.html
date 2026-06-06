@@ -238,6 +238,18 @@ h1 {
       </div>
       <div class="quiz-arrow">→</div>
     </div>
+
+    <div style="margin-top:32px; border-top:1px solid var(--border); padding-top:28px;">
+      <div class="unit-label" style="font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--text-dim);letter-spacing:0.06em;margin-bottom:12px;padding-left:4px;">학교 전용 자료</div>
+      <div class="subject-card" onclick="showPasswordModal()">
+        <div class="subject-code" style="background:#f0eae0;color:#7a6a54;font-size:1.1rem;padding:8px 12px;">🔒</div>
+        <div class="subject-info">
+          <div class="subject-name">대신고 전용</div>
+          <div class="subject-desc">학교 배포 유인물</div>
+        </div>
+        <div class="quiz-arrow">→</div>
+      </div>
+    </div>
   </div>
 
   <!-- ══════════════════════════════════════
@@ -490,7 +502,148 @@ h1 {
     </div>
   </div>
 
+  <!-- ══════════════════════════════════════
+       SCREEN 4: 대신고 전용
+  ══════════════════════════════════════ -->
+  <div class="screen" id="screen-DAESIN">
+    <button class="back-btn" onclick="showSubjects()">← 과목 선택으로</button>
+    <div class="header" style="margin-bottom:32px;">
+      <div class="tag">DAESIN · 대신고 전용</div>
+      <h1>대신고 전용 자료</h1>
+      <p>학교 배포 유인물 · 기출 문제</p>
+    </div>
+
+    <div class="unit-section">
+      <div class="unit-label">2026 · 1학기 기말 · 학교 유인물 01 (전기 파트)</div>
+
+      <a class="quiz-card" href="SCH-DAESIN-26B-HANDOUT01-P01_quiz.html">
+        <div class="quiz-num" style="font-size:0.72rem;padding:6px 10px;">01–25</div>
+        <div class="quiz-info">
+          <div class="quiz-title">학프01 전기파트 1–25번</div>
+          <div class="quiz-meta">25문항 · 온라인 퀴즈</div>
+        </div>
+        <div class="quiz-arrow">→</div>
+      </a>
+
+      <a class="quiz-card" href="SCH-DAESIN-26B-HANDOUT01-P02_quiz.html">
+        <div class="quiz-num" style="font-size:0.72rem;padding:6px 10px;">26–50</div>
+        <div class="quiz-info">
+          <div class="quiz-title">학프01 전기파트 26–50번</div>
+          <div class="quiz-meta">25문항 · 온라인 퀴즈</div>
+        </div>
+        <div class="quiz-arrow">→</div>
+      </a>
+    </div>
+
+    <div class="unit-section">
+      <div class="unit-label">인쇄용 PDF</div>
+
+      <a class="quiz-card" href="SCH-DAESIN-26B-HANDOUT01_print_q.html" target="_blank">
+        <div class="quiz-num" style="font-size:0.72rem;padding:6px 8px;">문제</div>
+        <div class="quiz-info">
+          <div class="quiz-title">학프01 전기파트 문제편</div>
+          <div class="quiz-meta">50문항 · A4 2단 · 인쇄용</div>
+        </div>
+        <div class="quiz-arrow">→</div>
+      </a>
+
+      <a class="quiz-card" href="SCH-DAESIN-26B-HANDOUT01_print_a.html" target="_blank">
+        <div class="quiz-num" style="font-size:0.72rem;padding:6px 8px;">해설</div>
+        <div class="quiz-info">
+          <div class="quiz-title">학프01 전기파트 해설편</div>
+          <div class="quiz-meta">정답표 + 상세 해설 · 인쇄용</div>
+        </div>
+        <div class="quiz-arrow">→</div>
+      </a>
+    </div>
+  </div>
+
   <div class="footer-note">궁극의 물리 · 최성훈T</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     비밀번호 모달
+══════════════════════════════════════ -->
+<div id="pw-overlay" style="
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.45);
+  z-index:200;
+  align-items:center;
+  justify-content:center;
+">
+  <div style="
+    background:#fff;
+    border-radius:20px;
+    padding:36px 32px 28px;
+    width:320px;
+    box-shadow:0 8px 40px rgba(0,0,0,0.18);
+    text-align:center;
+  ">
+    <div style="
+      display:inline-flex;align-items:center;justify-content:center;
+      font-size:1.4rem;
+      margin-bottom:14px;
+      background:#f0eae0;
+      border-radius:50%;
+      width:52px;height:52px;
+    ">🔒</div>
+    <div style="font-size:1rem;font-weight:700;margin-bottom:4px;letter-spacing:-0.02em;">대신고 전용 자료</div>
+    <div style="font-size:0.82rem;color:var(--text-dim);margin-bottom:20px;">비밀번호를 입력하세요</div>
+    <input
+      type="password"
+      id="pw-input"
+      maxlength="10"
+      placeholder="비밀번호"
+      onkeydown="if(event.key==='Enter')checkPassword()"
+      style="
+        width:100%;
+        border:1.5px solid var(--border);
+        border-radius:10px;
+        padding:12px 14px;
+        font-size:1.1rem;
+        font-family:'DM Mono',monospace;
+        text-align:center;
+        letter-spacing:0.2em;
+        outline:none;
+        margin-bottom:8px;
+        transition:border-color 0.2s;
+        box-sizing:border-box;
+      "
+    >
+    <div id="pw-error" style="
+      font-size:0.78rem;
+      color:#c0392b;
+      margin-bottom:12px;
+      min-height:18px;
+      font-family:'DM Mono',monospace;
+    "></div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="closePasswordModal()" style="
+        flex:1;
+        background:transparent;
+        border:1.5px solid var(--border);
+        border-radius:10px;
+        padding:11px;
+        font-family:'Noto Sans KR',sans-serif;
+        font-size:0.88rem;
+        cursor:pointer;
+        color:var(--text-dim);
+      ">취소</button>
+      <button onclick="checkPassword()" style="
+        flex:2;
+        background:var(--accent);
+        border:none;
+        border-radius:10px;
+        padding:11px;
+        font-family:'Noto Sans KR',sans-serif;
+        font-size:0.88rem;
+        font-weight:500;
+        color:#fff;
+        cursor:pointer;
+      ">확인 →</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -505,6 +658,40 @@ function showSubject(code) {
 function showSubjects() {
   showScreen('screen-subjects');
 }
+
+/* ── 비밀번호 모달 ── */
+function showPasswordModal() {
+  const overlay = document.getElementById('pw-overlay');
+  overlay.style.display = 'flex';
+  document.getElementById('pw-input').value = '';
+  document.getElementById('pw-error').textContent = '';
+  setTimeout(() => document.getElementById('pw-input').focus(), 50);
+}
+
+function closePasswordModal() {
+  document.getElementById('pw-overlay').style.display = 'none';
+}
+
+function checkPassword() {
+  const val = document.getElementById('pw-input').value;
+  if (val === '9849') {
+    closePasswordModal();
+    showScreen('screen-DAESIN');
+  } else {
+    const errEl = document.getElementById('pw-error');
+    errEl.textContent = '비밀번호가 틀렸습니다.';
+    const input = document.getElementById('pw-input');
+    input.style.borderColor = '#c0392b';
+    input.value = '';
+    input.focus();
+    setTimeout(() => { input.style.borderColor = ''; errEl.textContent = ''; }, 1800);
+  }
+}
+
+/* 모달 외부 클릭 시 닫기 */
+document.getElementById('pw-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closePasswordModal();
+});
 </script>
 
 </body>
