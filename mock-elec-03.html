@@ -32,8 +32,6 @@ body {
 .screen { display: none; }
 .screen.active { display: block; }
 .container { max-width: 720px; margin: 0 auto; padding: 0 20px; }
-
-/* ── 공통 버튼 ── */
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
   gap: 8px; background: var(--accent); color: #fff; border: none;
@@ -47,8 +45,6 @@ body {
   background: transparent; color: var(--accent); border: 1.5px solid var(--accent);
 }
 .btn-ghost:hover { background: var(--accent-light); opacity: 1; }
-
-/* ── SCREEN 1: 입력 ── */
 #screen-intro { padding-top: 80px; }
 .intro-header { text-align: center; margin-bottom: 48px; }
 .intro-header .tag {
@@ -79,8 +75,6 @@ body {
   background: var(--accent-light); border-radius: 10px; padding: 14px 16px;
 }
 .form-info span { font-size: 0.82rem; color: var(--accent); }
-
-/* ── SCREEN 2: 답안 입력 ── */
 #screen-quiz { padding-top: 0; }
 .quiz-topbar {
   position: sticky; top: 0; z-index: 50; background: var(--surface);
@@ -96,15 +90,9 @@ body {
   height: 6px; background: var(--accent); border-radius: 99px; transition: width 0.4s ease;
 }
 .meta-row { display: flex; gap: 16px; align-items: center; flex-shrink: 0; }
-.meta-item {
-  font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--text-dim);
-}
+.meta-item { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--text-dim); }
 .meta-item span { color: var(--text); font-weight: 500; }
-
-/* ── 답안 그리드 ── */
-.answer-body {
-  padding: 28px 20px; max-width: 720px; margin: 0 auto;
-}
+.answer-body { padding: 28px 20px; max-width: 720px; margin: 0 auto; }
 .answer-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -114,10 +102,10 @@ body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 16px 18px;
+  padding: 14px 16px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   box-shadow: var(--shadow);
   transition: border-color 0.2s;
 }
@@ -128,25 +116,25 @@ body {
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 4px 10px;
+  padding: 4px 8px;
   color: var(--text-dim);
   flex-shrink: 0;
-  min-width: 42px;
+  min-width: 40px;
   text-align: center;
 }
 .choice-btns {
   display: flex;
-  gap: 6px;
+  gap: 5px;
   flex: 1;
 }
 .choice-btn {
   flex: 1;
-  height: 38px;
+  height: 36px;
   background: var(--bg);
   border: 1.5px solid var(--border);
   border-radius: 8px;
   font-family: 'DM Mono', monospace;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   color: var(--text-dim);
   cursor: pointer;
   transition: all 0.15s;
@@ -158,10 +146,7 @@ body {
   border-color: var(--accent);
   color: #fff;
 }
-
 .submit-wrap { padding: 8px 20px 40px; max-width: 720px; margin: 0 auto; }
-
-/* ── SCREEN 3: 결과 ── */
 #screen-result { padding-top: 48px; }
 .result-hero {
   text-align: center; padding: 52px 20px 40px; background: var(--surface);
@@ -180,19 +165,10 @@ body {
 .result-score-sub { font-size: 1.1rem; color: var(--text-dim); margin-bottom: 32px; }
 .result-stats { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
 .stat-item { text-align: center; }
-.stat-val {
-  font-family: 'DM Mono', monospace; font-size: 1.4rem;
-  font-weight: 500; color: var(--text);
-}
+.stat-val { font-family: 'DM Mono', monospace; font-size: 1.4rem; font-weight: 500; color: var(--text); }
 .stat-label { font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; }
-
-/* ── 채점 결과 표 ── */
-.score-table-wrap {
-  max-width: 720px; margin: 0 auto; padding: 0 20px 32px;
-}
-.score-table-wrap h2 {
-  font-size: 0.95rem; font-weight: 700; margin-bottom: 14px; color: var(--text);
-}
+.score-table-wrap { max-width: 720px; margin: 0 auto; padding: 0 20px 32px; }
+.score-table-wrap h2 { font-size: 0.95rem; font-weight: 700; margin-bottom: 14px; color: var(--text); }
 .score-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
@@ -206,8 +182,6 @@ body {
   align-items: center;
   justify-content: center;
   font-family: 'DM Mono', monospace;
-  font-size: 0.65rem;
-  line-height: 1.3;
   border: 1.5px solid var(--border);
 }
 .score-cell .cell-num { color: var(--text-dim); font-size: 0.6rem; }
@@ -218,9 +192,7 @@ body {
 .score-cell.fail .cell-ans { color: var(--wrong); }
 .score-cell.blank { background: var(--bg); }
 .score-cell.blank .cell-ans { color: var(--text-dim); }
-
 .result-actions { max-width: 720px; margin: 0 auto; padding: 0 20px; }
-
 .saving-toast {
   position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
   background: var(--text); color: #fff; font-size: 0.82rem;
@@ -232,9 +204,6 @@ body {
 </head>
 <body>
 
-<!-- ══════════════════════════════════════
-     SCREEN 1: 학생 정보 입력
-══════════════════════════════════════ -->
 <div class="screen active" id="screen-intro">
   <div class="container">
     <div class="intro-header">
@@ -266,9 +235,6 @@ body {
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     SCREEN 2: 답안 입력
-══════════════════════════════════════ -->
 <div class="screen" id="screen-quiz">
   <div class="quiz-topbar">
     <div class="quiz-topbar-inner">
@@ -281,19 +247,14 @@ body {
       </div>
     </div>
   </div>
-
   <div class="answer-body">
     <div class="answer-grid" id="answerGrid"></div>
   </div>
-
   <div class="submit-wrap">
     <button class="btn" onclick="submitQuiz()">채점하기 →</button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     SCREEN 3: 결과
-══════════════════════════════════════ -->
 <div class="screen" id="screen-result">
   <div class="result-hero">
     <div class="result-tag">MOCK · 전기</div>
@@ -315,12 +276,10 @@ body {
       </div>
     </div>
   </div>
-
   <div class="score-table-wrap">
     <h2>문항별 채점 결과</h2>
     <div class="score-grid" id="scoreGrid"></div>
   </div>
-
   <div class="result-actions">
     <button class="btn btn-ghost" onclick="resetQuiz()">↺ 새로 응시하기</button>
   </div>
@@ -329,16 +288,10 @@ body {
 <div class="saving-toast" id="savingToast"></div>
 
 <script>
-// ══════════════════════════════════════
-// Airtable 설정
-// ══════════════════════════════════════
 const AT_TOKEN  = "patBcLElKAr7fPbgS.0f288a25e39501f27d9d33569371fc819acb54173cf44daa68fc028f16e479f9";
 const AT_BASE   = "appmCOjqp5xIJuPqt";
 const AT_SCORES = "scores";
 
-// ══════════════════════════════════════
-// 퀴즈 메타 & 정답
-// ══════════════════════════════════════
 const QUIZ_META = {
   subjectCode: "PHY",
   subjectName: "물리학",
@@ -350,23 +303,16 @@ const QUIZ_META = {
   sectionName: "전기 모의고사 3차"
 };
 
-// 정답 배열 — 1-based 번호 순서대로 입력 (1~4)
-// 예: const ANSWER_KEY = [1, 3, 2, 4, 1, ...];
+// 정답 배열 (1~5)
 const ANSWER_KEY = [3, 2, 3, 1, 4, 2, 3, 4, 2, 4, 3, 5, 1, 5, 2, 3, 3, 2, 4, 1, 4, 5];
 
-// ══════════════════════════════════════
-// 상태
-// ══════════════════════════════════════
 let userName = '', userSchool = '', userPhone = '';
-let userAnswers = {};   // num(1-based) → chosen (1~4)
+let userAnswers = {};
 let timerInterval = null;
 let elapsedSec = 0;
 const TOTAL = ANSWER_KEY.length;
-const LABELS = ['①','②','③','④'];
+const LABELS = ['①','②','③','④','⑤'];
 
-// ══════════════════════════════════════
-// 초기화
-// ══════════════════════════════════════
 document.getElementById('totalCountDisplay').textContent = TOTAL || '—';
 
 function showScreen(id) {
@@ -383,9 +329,6 @@ function toast(msg, dur=2500) {
   setTimeout(() => el.classList.remove('show'), dur);
 }
 
-// ══════════════════════════════════════
-// 시작
-// ══════════════════════════════════════
 function startQuiz() {
   if (TOTAL === 0) { alert('정답지가 아직 등록되지 않았습니다.'); return; }
   const name   = document.getElementById('input-name').value.trim();
@@ -401,9 +344,6 @@ function startQuiz() {
   startTimer();
 }
 
-// ══════════════════════════════════════
-// 타이머
-// ══════════════════════════════════════
 function startTimer() {
   clearInterval(timerInterval);
   timerInterval = setInterval(() => {
@@ -413,9 +353,6 @@ function startTimer() {
 }
 function stopTimer() { clearInterval(timerInterval); }
 
-// ══════════════════════════════════════
-// 답안 그리드 렌더
-// ══════════════════════════════════════
 function renderAnswerGrid() {
   const grid = document.getElementById('answerGrid');
   grid.innerHTML = ANSWER_KEY.map((_, idx) => {
@@ -424,7 +361,7 @@ function renderAnswerGrid() {
       <div class="answer-row" id="row-${num}">
         <div class="q-label">Q${String(num).padStart(2,'0')}</div>
         <div class="choice-btns">
-          ${[1,2,3,4].map(v => `
+          ${[1,2,3,4,5].map(v => `
             <button class="choice-btn" id="cb-${num}-${v}" onclick="selectAnswer(${num}, ${v})">${LABELS[v-1]}</button>
           `).join('')}
         </div>
@@ -435,8 +372,7 @@ function renderAnswerGrid() {
 
 function selectAnswer(num, chosen) {
   userAnswers[num] = chosen;
-  // 해당 행 버튼 스타일
-  for (let v = 1; v <= 4; v++) {
+  for (let v = 1; v <= 5; v++) {
     const btn = document.getElementById(`cb-${num}-${v}`);
     btn.classList.toggle('active', v === chosen);
   }
@@ -450,9 +386,6 @@ function updateProgress() {
   document.getElementById('progressFill').style.width = `${(answered / TOTAL) * 100}%`;
 }
 
-// ══════════════════════════════════════
-// 제출
-// ══════════════════════════════════════
 function submitQuiz() {
   const answered = Object.keys(userAnswers).length;
   if (answered < TOTAL) {
@@ -462,9 +395,6 @@ function submitQuiz() {
   showResult();
 }
 
-// ══════════════════════════════════════
-// 결과
-// ══════════════════════════════════════
 function showResult() {
   let correctCount = 0;
   const results = ANSWER_KEY.map((ans, idx) => {
@@ -483,7 +413,6 @@ function showResult() {
   document.getElementById('statCorrect').textContent  = `${correctCount}개`;
   document.getElementById('statWrong').textContent    = `${wrongCount}개`;
 
-  // 문항별 채점 셀
   const grid = document.getElementById('scoreGrid');
   grid.innerHTML = results.map(r => {
     const cls = r.chosen === null ? 'blank' : (r.ok ? 'ok' : 'fail');
@@ -499,22 +428,14 @@ function showResult() {
   saveScore(correctCount, TOTAL);
 }
 
-// ══════════════════════════════════════
-// Airtable 저장
-// ══════════════════════════════════════
 async function saveScore(score, total) {
   toast('점수 저장 중...');
   try {
     const fields = {
-      '이름': userName,
-      '학교': userSchool,
-      'phone_last4': userPhone,
+      '이름': userName, '학교': userSchool, 'phone_last4': userPhone,
       '날짜': new Date().toISOString().split('T')[0],
-      '과목코드': QUIZ_META.subjectCode,
-      '과목명': QUIZ_META.subjectName,
-      '섹션명': QUIZ_META.sectionName,
-      '총점': score,
-      '총문항수': total,
+      '과목코드': QUIZ_META.subjectCode, '과목명': QUIZ_META.subjectName,
+      '섹션명': QUIZ_META.sectionName, '총점': score, '총문항수': total,
       '풀이시간': fmtTime(elapsedSec)
     };
     const res = await fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_SCORES}`, {
@@ -524,14 +445,9 @@ async function saveScore(score, total) {
     });
     if (res.ok) toast('✓ 점수가 저장되었습니다.');
     else toast('저장 실패 — 네트워크를 확인해주세요.');
-  } catch(e) {
-    toast('저장 실패 — 네트워크를 확인해주세요.');
-  }
+  } catch(e) { toast('저장 실패 — 네트워크를 확인해주세요.'); }
 }
 
-// ══════════════════════════════════════
-// 리셋
-// ══════════════════════════════════════
 function resetQuiz() {
   userName = ''; userSchool = ''; userPhone = '';
   userAnswers = {}; elapsedSec = 0;
