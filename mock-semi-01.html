@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>반도체와 상대론 모의고사 1차 · 물리 퀴즈</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --border: #e2ddd6;
+  --text: #1a1714;
+  --text-dim: #8a8480;
+  --accent: #2d5a3d;
+  --accent-light: #e8f0eb;
+  --wrong: #c0392b;
+  --wrong-light: #fdf0ef;
+  --correct: #2d5a3d;
+  --correct-light: #e8f0eb;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --radius: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+  padding: 0 0 60px;
+}
+.screen { display: none; }
+.screen.active { display: block; }
+.container { max-width: 720px; margin: 0 auto; padding: 0 20px; }
+h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.03em; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; background: var(--accent); color: #fff; border: none;
+  border-radius: var(--radius); padding: 14px 28px; font-size: 0.95rem;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 500;
+  cursor: pointer; transition: opacity 0.2s, transform 0.1s; width: 100%;
+}
+.btn:hover { opacity: 0.88; }
+.btn:active { transform: scale(0.98); }
+.btn-ghost {
+  background: transparent; color: var(--accent);
+  border: 1.5px solid var(--accent);
+}
+.btn-ghost:hover { background: var(--accent-light); opacity: 1; }
+#screen-intro { padding-top: 80px; }
+.intro-header { text-align: center; margin-bottom: 48px; }
+.intro-header .tag {
+  display: inline-block; background: var(--accent-light); color: var(--accent);
+  font-family: 'DM Mono', monospace; font-size: 0.72rem; padding: 4px 12px;
+  border-radius: 20px; margin-bottom: 16px; letter-spacing: 0.08em;
+}
+.intro-header h1 { margin-bottom: 8px; }
+.intro-header p { color: var(--text-dim); font-size: 0.9rem; }
+.form-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 32px; box-shadow: var(--shadow);
+}
+.form-group { margin-bottom: 20px; }
+.form-group label {
+  display: block; font-size: 0.82rem; font-weight: 500;
+  color: var(--text-dim); margin-bottom: 8px; letter-spacing: 0.04em;
+}
+.form-group input {
+  width: 100%; background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 13px 16px; font-size: 1rem;
+  font-family: 'Noto Sans KR', sans-serif; color: var(--text);
+  outline: none; transition: border-color 0.2s;
+}
+.form-group input:focus { border-color: var(--accent); }
+.form-info {
+  display: flex; gap: 12px; margin-bottom: 24px;
+  background: var(--accent-light); border-radius: 10px; padding: 14px 16px;
+}
+.form-info span { font-size: 0.82rem; color: var(--accent); }
+#screen-quiz { padding-top: 0; }
+.quiz-topbar {
+  position: sticky; top: 0; z-index: 50; background: var(--surface);
+  border-bottom: 1px solid var(--border); padding: 14px 20px;
+}
+.quiz-topbar-inner {
+  max-width: 720px; margin: 0 auto; display: flex; align-items: center; gap: 16px;
+}
+.progress-wrap {
+  flex: 1; background: var(--border); border-radius: 99px; height: 6px; overflow: hidden;
+}
+.progress-fill {
+  height: 6px; background: var(--accent); border-radius: 99px; transition: width 0.4s ease;
+}
+.quiz-meta { display: flex; gap: 16px; align-items: center; flex-shrink: 0; }
+.meta-item { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--text-dim); }
+.meta-item span { color: var(--text); font-weight: 500; }
+.quiz-body {
+  padding: 32px 20px; max-width: 720px; margin: 0 auto;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.q-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); transition: border-color 0.3s;
+}
+.q-card.correct { border-color: var(--correct); }
+.q-card.wrong { border-color: var(--wrong); }
+.q-head { padding: 20px 24px 16px; display: flex; gap: 12px; align-items: flex-start; }
+.q-num {
+  font-family: 'DM Mono', monospace; font-size: 0.68rem;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 3px 8px; color: var(--text-dim);
+  white-space: nowrap; margin-top: 3px; flex-shrink: 0;
+}
+.q-text { font-size: 0.93rem; line-height: 1.75; white-space: pre-line; }
+.q-options { padding: 0 24px 20px; display: flex; flex-direction: column; gap: 8px; }
+.opt-btn {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 12px 14px; cursor: pointer;
+  text-align: left; font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.88rem; line-height: 1.5; color: var(--text);
+  transition: all 0.15s; width: 100%;
+}
+.opt-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-light); }
+.opt-btn:disabled { cursor: default; }
+.opt-btn.correct { border-color: var(--correct); background: var(--correct-light); color: var(--correct); }
+.opt-btn.wrong { border-color: var(--wrong); background: var(--wrong-light); color: var(--wrong); }
+.opt-btn.reveal { border-color: rgba(45,90,61,0.35); background: rgba(45,90,61,0.04); color: rgba(45,90,61,0.6); }
+.opt-label {
+  font-family: 'DM Mono', monospace; font-size: 0.7rem;
+  padding: 2px 6px; border-radius: 4px; background: var(--surface);
+  border: 1px solid var(--border); flex-shrink: 0; margin-top: 1px; transition: all 0.15s;
+}
+.opt-btn.correct .opt-label { background: var(--correct); border-color: var(--correct); color: #fff; }
+.opt-btn.wrong .opt-label { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+.submit-wrap { padding: 0 20px 40px; max-width: 720px; margin: 0 auto; }
+#screen-result { padding-top: 48px; }
+.result-hero {
+  text-align: center; padding: 48px 20px 32px; background: var(--surface);
+  border-bottom: 1px solid var(--border); margin-bottom: 32px;
+}
+.result-name { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 6px; font-family: 'DM Mono', monospace; }
+.result-score { font-size: 4rem; font-weight: 700; color: var(--accent); line-height: 1; letter-spacing: -0.04em; margin-bottom: 4px; }
+.result-score-sub { font-size: 1rem; color: var(--text-dim); margin-bottom: 24px; }
+.result-stats { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; }
+.stat-item { text-align: center; }
+.stat-val { font-family: 'DM Mono', monospace; font-size: 1.3rem; font-weight: 500; color: var(--text); }
+.stat-label { font-size: 0.75rem; color: var(--text-dim); margin-top: 2px; }
+.result-section { max-width: 720px; margin: 0 auto; padding: 0 20px; }
+.result-section h2 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.badge-wrong { background: var(--wrong-light); color: var(--wrong); font-size: 0.8rem; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+.review-card {
+  background: var(--surface); border: 1px solid var(--wrong); border-radius: 16px;
+  overflow: hidden; margin-bottom: 16px; box-shadow: var(--shadow);
+}
+.review-retry-wrap { padding: 0 24px 16px; display: flex; flex-direction: column; gap: 8px; }
+.review-exp {
+  margin: 0 24px 20px; background: var(--accent-light); border-radius: 10px;
+  padding: 14px 16px;
+}
+.review-exp-label { font-size: 0.72rem; font-family: 'DM Mono', monospace; color: var(--accent); margin-bottom: 6px; letter-spacing: 0.06em; }
+.review-exp p { font-size: 0.86rem; line-height: 1.7; color: var(--text); }
+.result-actions { max-width: 720px; margin: 32px auto 0; padding: 0 20px; }
+.saving-toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+  background: var(--text); color: #fff; font-size: 0.82rem;
+  font-family: 'DM Mono', monospace; padding: 10px 22px; border-radius: 99px;
+  opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; z-index: 100;
+}
+.saving-toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ── SCREEN 1: 입력 ── -->
+<div class="screen active" id="screen-intro">
+  <div class="container">
+    <div class="intro-header">
+      <div class="tag">MOCK · 반도체·상대론</div>
+      <h1>반도체와 상대론 모의고사 1차</h1>
+      <p>이름과 학교, 전화번호 뒷자리를 입력하고 시작하세요</p>
+    </div>
+    <div class="form-card">
+      <div class="form-group">
+        <label>이름</label>
+        <input type="text" id="input-name" placeholder="홍길동" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>학교</label>
+        <input type="text" id="input-school" placeholder="○○고등학교" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>전화번호 뒷자리 4자리</label>
+        <input type="tel" id="input-phone" maxlength="4" placeholder="1234" autocomplete="off">
+      </div>
+      <div class="form-info">
+        <span>📋 문항수: <b id="totalCount"></b>문항 &nbsp;|&nbsp; 제한시간 없음</span>
+      </div>
+      <button class="btn" onclick="startQuiz()">시작하기 →</button>
+    </div>
+    <div style="text-align:center;margin-top:20px;">
+      <a href="index.html" style="font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--text-dim);text-decoration:none;">← 목록으로</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── SCREEN 2: 퀴즈 ── -->
+<div class="screen" id="screen-quiz">
+  <div class="quiz-topbar">
+    <div class="quiz-topbar-inner">
+      <div class="progress-wrap">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <div class="quiz-meta">
+        <div class="meta-item">진행 <span id="metaProgress">0 / 0</span></div>
+        <div class="meta-item">⏱ <span id="timerDisplay">00:00</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="quiz-body" id="quizBody"></div>
+  <div class="submit-wrap">
+    <button class="btn" onclick="submitQuiz()">제출하기 →</button>
+  </div>
+</div>
+
+<!-- ── SCREEN 3: 결과 ── -->
+<div class="screen" id="screen-result">
+  <div class="result-hero">
+    <div class="result-name" id="resultName"></div>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-score-sub" id="resultScoreSub"></div>
+    <div class="result-stats">
+      <div class="stat-item">
+        <div class="stat-val" id="statTime"></div>
+        <div class="stat-label">풀이시간</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statCorrect"></div>
+        <div class="stat-label">정답</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statWrong"></div>
+        <div class="stat-label">오답</div>
+      </div>
+    </div>
+  </div>
+  <div class="result-section" id="reviewSection"></div>
+  <div class="result-actions">
+    <button class="btn btn-ghost" onclick="resetQuiz()">↺ 새로 응시하기</button>
+  </div>
+</div>
+
+<div class="saving-toast" id="savingToast"></div>
+
+<script>
+// ══════════════════════════════════════
+// Airtable 설정
+// ══════════════════════════════════════
+const AT_TOKEN  = "patBcLElKAr7fPbgS.0f288a25e39501f27d9d33569371fc819acb54173cf44daa68fc028f16e479f9";
+const AT_BASE   = "appmCOjqp5xIJuPqt";
+const AT_SCORES = "scores";
+
+// ══════════════════════════════════════
+// 퀴즈 메타
+// ══════════════════════════════════════
+const QUIZ_META = {
+  subjectCode: "PHY",
+  subjectName: "물리학",
+  mainNo:      3,
+  mainName:    "빛과 물질",
+  subNo:       2,
+  subName:     "반도체와 상대론",
+  sectionNo:   1,
+  sectionName: "반도체와 상대론 모의고사 1차"
+};
+
+// ══════════════════════════════════════
+// 퀴즈 데이터 — 문항을 이 아래에 채워 넣으세요
+// ══════════════════════════════════════
+const QUIZ = [
+  // 예시 형식:
+  // {num:1, text:"문항 내용", opts:["①보기","②보기","③보기","④보기"], ans:1, exp:"해설 내용"},
+];
+
+// ══════════════════════════════════════
+// 상태
+// ══════════════════════════════════════
+let userName = '', userSchool = '', userPhone = '';
+let userAnswers = {};
+let timerInterval = null;
+let elapsedSec = 0;
+
+// ══════════════════════════════════════
+// 유틸
+// ══════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+function fmtTime(sec) {
+  const m = String(Math.floor(sec / 60)).padStart(2, '0');
+  const s = String(sec % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
+function toast(msg, duration = 2500) {
+  const el = document.getElementById('savingToast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration);
+}
+
+// ══════════════════════════════════════
+// SCREEN 1 → 시작
+// ══════════════════════════════════════
+document.getElementById('totalCount').textContent = QUIZ.length;
+
+function startQuiz() {
+  if (QUIZ.length === 0) { alert('문항이 아직 준비되지 않았습니다.'); return; }
+  const name   = document.getElementById('input-name').value.trim();
+  const school = document.getElementById('input-school').value.trim();
+  const phone  = document.getElementById('input-phone').value.trim();
+  if (!name)   { alert('이름을 입력해주세요.'); return; }
+  if (!school) { alert('학교를 입력해주세요.'); return; }
+  if (!/^[0-9]{4}$/.test(phone)) { alert('전화번호 뒷자리 4자리(숫자)를 입력해주세요.'); return; }
+  userName = name; userSchool = school; userPhone = phone;
+  userAnswers = {}; elapsedSec = 0;
+  renderQuiz();
+  showScreen('screen-quiz');
+  startTimer();
+}
+
+// ══════════════════════════════════════
+// 타이머
+// ══════════════════════════════════════
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    elapsedSec++;
+    document.getElementById('timerDisplay').textContent = fmtTime(elapsedSec);
+  }, 1000);
+}
+function stopTimer() { clearInterval(timerInterval); }
+
+// ══════════════════════════════════════
+// 퀴즈 렌더
+// ══════════════════════════════════════
+const LABELS = ['①','②','③','④'];
+
+function renderQuiz() {
+  const body = document.getElementById('quizBody');
+  body.innerHTML = QUIZ.map(q => `
+    <div class="q-card" id="qcard-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="q-options">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="opt-${q.num}-${i+1}" onclick="selectOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  updateProgress();
+}
+
+function selectOpt(num, chosen) {
+  userAnswers[num] = chosen;
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`opt-${num}-${i}`);
+    btn.style.borderColor = i === chosen ? 'var(--accent)' : '';
+    btn.style.background  = i === chosen ? 'var(--accent-light)' : '';
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = Object.keys(userAnswers).length;
+  const total = QUIZ.length;
+  document.getElementById('metaProgress').textContent = `${answered} / ${total}`;
+  document.getElementById('progressFill').style.width = `${(answered / total) * 100}%`;
+}
+
+// ══════════════════════════════════════
+// 제출
+// ══════════════════════════════════════
+function submitQuiz() {
+  const answered = Object.keys(userAnswers).length;
+  if (answered < QUIZ.length) {
+    if (!confirm(`아직 ${QUIZ.length - answered}문제가 남아 있어요. 제출하시겠어요?`)) return;
+  }
+  stopTimer();
+  showResult();
+}
+
+// ══════════════════════════════════════
+// 결과
+// ══════════════════════════════════════
+function showResult() {
+  const correct = QUIZ.filter(q => userAnswers[q.num] === q.ans);
+  const wrong   = QUIZ.filter(q => userAnswers[q.num] !== q.ans);
+  const score   = correct.length;
+  const total   = QUIZ.length;
+
+  document.getElementById('resultName').textContent = `${userName} · ${userSchool} · ${userPhone}`;
+  document.getElementById('resultScore').textContent = score;
+  document.getElementById('resultScoreSub').textContent = `/ ${total} 문항`;
+  document.getElementById('statTime').textContent    = fmtTime(elapsedSec);
+  document.getElementById('statCorrect').textContent = `${score}개`;
+  document.getElementById('statWrong').textContent   = `${wrong.length}개`;
+
+  const reviewSection = document.getElementById('reviewSection');
+  if (wrong.length === 0) {
+    reviewSection.innerHTML = `<div style="text-align:center;padding:32px 0;color:var(--accent);font-weight:700;">🎉 전부 맞혔어요!</div>`;
+  } else {
+    reviewSection.innerHTML = `
+      <h2>틀린 문제 <span class="badge-wrong">${wrong.length}문제</span></h2>
+      ${wrong.map(q => renderReviewCard(q)).join('')}
+    `;
+  }
+  showScreen('screen-result');
+  saveScore(score, total);
+}
+
+function renderReviewCard(q) {
+  return `
+    <div class="review-card" id="review-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="review-retry-wrap" id="retry-opts-${q.num}">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="retry-opt-${q.num}-${i+1}" onclick="retryOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="review-exp">
+        <div class="review-exp-label">✦ 해설</div>
+        <p>${q.exp}</p>
+      </div>
+    </div>
+  `;
+}
+
+function retryOpt(num, chosen) {
+  const q = QUIZ.find(x => x.num === num);
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`retry-opt-${num}-${i}`);
+    if (!btn) continue;
+    btn.disabled = true;
+    if (i === q.ans) btn.className = 'opt-btn correct';
+    else if (i === chosen && chosen !== q.ans) btn.className = 'opt-btn wrong';
+    else btn.className = 'opt-btn reveal';
+  }
+}
+
+// ══════════════════════════════════════
+// Airtable 저장
+// ══════════════════════════════════════
+async function saveScore(score, total) {
+  toast('점수 저장 중...');
+  try {
+    const res = await fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_SCORES}`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${AT_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fields: {
+          '이름': userName,
+          '학교': userSchool,
+          'phone_last4': userPhone,
+          '날짜': new Date().toISOString().split('T')[0],
+          '과목코드': QUIZ_META.subjectCode,
+          '과목명': QUIZ_META.subjectName,
+          '대단원번호': QUIZ_META.mainNo,
+          '대단원명': QUIZ_META.mainName,
+          '중단원번호': QUIZ_META.subNo,
+          '중단원명': QUIZ_META.subName,
+          '섹션번호': QUIZ_META.sectionNo,
+          '섹션명': QUIZ_META.sectionName,
+          '총점': score,
+          '총문항수': total,
+          '풀이시간': fmtTime(elapsedSec)
+        }
+      })
+    });
+    if (res.ok) toast('✓ 점수가 저장되었습니다.');
+    else toast('저장 실패 — 네트워크를 확인해주세요.');
+  } catch(e) {
+    toast('저장 실패 — 네트워크를 확인해주세요.');
+  }
+}
+
+// ══════════════════════════════════════
+// 리셋
+// ══════════════════════════════════════
+function resetQuiz() {
+  userName = ''; userSchool = ''; userPhone = '';
+  userAnswers = {}; elapsedSec = 0;
+  document.getElementById('input-name').value = '';
+  document.getElementById('input-school').value = '';
+  document.getElementById('input-phone').value = '';
+  document.getElementById('timerDisplay').textContent = '00:00';
+  showScreen('screen-intro');
+}
+</script>
+</body>
+</html>
