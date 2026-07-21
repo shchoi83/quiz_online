@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>평형과 안정성 · 물리 퀴즈</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --border: #e2ddd6;
+  --text: #1a1714;
+  --text-dim: #8a8480;
+  --accent: #2d5a3d;
+  --accent-light: #e8f0eb;
+  --wrong: #c0392b;
+  --wrong-light: #fdf0ef;
+  --correct: #2d5a3d;
+  --correct-light: #e8f0eb;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+  padding: 0 0 60px;
+}
+
+/* ── 공통 ── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 14px 28px;
+  font-size: 0.95rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  width: 100%;
+}
+
+.btn:hover { opacity: 0.88; }
+.btn:active { transform: scale(0.98); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+}
+
+.btn-ghost:hover { background: var(--accent-light); opacity: 1; }
+
+/* ── SCREEN 1: 입력 ── */
+#screen-intro {
+  padding-top: 80px;
+}
+
+.intro-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.intro-header .tag {
+  display: inline-block;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: 0.08em;
+}
+
+.intro-header h1 { margin-bottom: 8px; }
+.intro-header p { color: var(--text-dim); font-size: 0.9rem; }
+
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: var(--shadow);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+}
+
+.form-group input {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 13px 16px;
+  font-size: 1rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus { border-color: var(--accent); }
+
+.form-info {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  background: var(--accent-light);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.form-info span {
+  font-size: 0.82rem;
+  color: var(--accent);
+}
+
+/* ── SCREEN 2: 퀴즈 ── */
+#screen-quiz { padding-top: 0; }
+
+.quiz-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+}
+
+.quiz-topbar-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.progress-wrap {
+  flex: 1;
+  background: var(--border);
+  border-radius: 99px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 6px;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.quiz-meta {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.meta-item {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.meta-item span {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.quiz-body {
+  padding: 32px 20px;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: border-color 0.3s;
+}
+
+.q-card.correct { border-color: var(--correct); }
+.q-card.wrong { border-color: var(--wrong); }
+
+.q-head {
+  padding: 20px 24px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.q-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.q-text {
+  font-size: 0.93rem;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+
+.q-options {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.opt-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+  transition: all 0.15s;
+  width: 100%;
+}
+
+.opt-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.opt-btn:disabled { cursor: default; }
+
+.opt-btn.correct {
+  border-color: var(--correct);
+  background: var(--correct-light);
+  color: var(--correct);
+}
+
+.opt-btn.wrong {
+  border-color: var(--wrong);
+  background: var(--wrong-light);
+  color: var(--wrong);
+}
+
+.opt-btn.reveal {
+  border-color: rgba(45,90,61,0.35);
+  background: rgba(45,90,61,0.04);
+  color: rgba(45,90,61,0.6);
+}
+
+.opt-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 0.15s;
+}
+
+.opt-btn.correct .opt-label { background: var(--correct); border-color: var(--correct); color: #fff; }
+.opt-btn.wrong .opt-label { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+
+/* submit btn area */
+.submit-wrap {
+  padding: 0 20px 40px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ── SCREEN 3: 결과 ── */
+#screen-result { padding-top: 48px; }
+
+.result-hero {
+  text-align: center;
+  padding: 48px 20px 32px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.result-name {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  font-family: 'DM Mono', monospace;
+}
+
+.result-score {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin-bottom: 4px;
+}
+
+.result-score-sub {
+  font-size: 1rem;
+  color: var(--text-dim);
+  margin-bottom: 24px;
+}
+
+.result-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.result-section {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.result-section h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-wrong {
+  background: var(--wrong-light);
+  color: var(--wrong);
+  font-size: 0.72rem;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* review card */
+.review-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.review-card .q-head { padding-bottom: 12px; }
+
+.review-exp {
+  padding: 14px 24px 18px;
+  border-top: 1px solid var(--border);
+  background: var(--accent-light);
+}
+
+.review-exp-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--accent);
+  margin-bottom: 5px;
+  letter-spacing: 0.06em;
+}
+
+.review-exp p {
+  font-size: 0.84rem;
+  color: var(--accent);
+  line-height: 1.65;
+}
+
+.review-retry-wrap {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.result-actions {
+  max-width: 720px;
+  margin: 32px auto 0;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* saving overlay */
+.saving-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 99px;
+  font-size: 0.82rem;
+  font-family: 'DM Mono', monospace;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 999;
+  white-space: nowrap;
+}
+
+.saving-toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1: 이름 / 학교 입력
+══════════════════════════════════════ -->
+<div id="screen-intro" class="screen active">
+  <div class="container">
+    <div class="intro-header">
+      <div class="tag">PHYSICS QUIZ</div>
+      <h1>평형과 안정성</h1>
+      <p>물리학 · 1단원 힘과 에너지 · 1중단원 힘과 운동 · 1섹션</p>
+    </div>
+
+    <div class="form-card">
+      <div class="form-info">
+        <span>📋 총 20문항 · 객관식 4지선다 · 시간 제한 없음</span>
+      </div>
+
+      <div class="form-group">
+        <label>이름</label>
+        <input type="text" id="input-name" placeholder="홍길동" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>학교</label>
+        <input type="text" id="input-school" placeholder="○○고등학교" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>전화번호 뒷자리 4자리 <span style="color:var(--text-dim);font-weight:300;">(동명이인 구별용)</span></label>
+        <input type="tel" id="input-phone" placeholder="1234" autocomplete="off" maxlength="4" inputmode="numeric" pattern="[0-9]{4}">
+      </div>
+
+      <button class="btn" onclick="startQuiz()">시작하기 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2: 퀴즈
+══════════════════════════════════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-topbar">
+    <div class="quiz-topbar-inner">
+      <div class="progress-wrap">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="quiz-meta">
+        <div class="meta-item" id="metaProgress">0 / 20</div>
+        <div class="meta-item">⏱ <span id="timerDisplay">00:00</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-body" id="quizBody"></div>
+
+  <div class="submit-wrap">
+    <button class="btn" onclick="submitQuiz()">제출하기</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 3: 결과
+══════════════════════════════════════ -->
+<div id="screen-result" class="screen">
+  <div class="result-hero">
+    <div class="result-name" id="resultName"></div>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-score-sub" id="resultScoreSub"></div>
+    <div class="result-stats">
+      <div class="stat-item">
+        <div class="stat-val" id="statTime"></div>
+        <div class="stat-label">풀이 시간</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statCorrect"></div>
+        <div class="stat-label">정답</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statWrong"></div>
+        <div class="stat-label">오답</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-section" id="reviewSection"></div>
+
+  <div class="result-actions">
+    <button class="btn btn-ghost" onclick="resetQuiz()">↺ 새로 응시하기</button>
+  </div>
+</div>
+
+<div class="saving-toast" id="savingToast"></div>
+
+<script>
+// ══════════════════════════════════════
+// Airtable 설정
+// ══════════════════════════════════════
+const AT_TOKEN   = "patBcLElKAr7fPbgS.0f288a25e39501f27d9d33569371fc819acb54173cf44daa68fc028f16e479f9";
+const AT_BASE    = "appmCOjqp5xIJuPqt";
+const AT_SCORES  = "scores";
+
+// ══════════════════════════════════════
+// 퀴즈 메타
+// ══════════════════════════════════════
+const QUIZ_META = {
+  subjectCode: "PHY",
+  subjectName: "물리학",
+  mainNo:      1,
+  mainName:    "힘과 에너지",
+  subNo:       1,
+  subName:     "힘과 운동",
+  sectionNo:   1,
+  sectionName: "평형과 안정성"
+};
+
+// ══════════════════════════════════════
+// 퀴즈 데이터
+// ══════════════════════════════════════
+// ══════════════════════════════════════
+// 1-1-1 평형과 안정성 (20문항, ba 15 + ad 5)
+// 정답 시퀀스: A(3):2,3,4 / B(3):4,1,2 / C(3):4,1,4 / D(3):3,3,1
+//              E(1):1 / F(2):2,2 / G(5):3,2,3,1,4
+// ══════════════════════════════════════
+const QUIZ = [
+  // ══════════════════════════════════════
+  // 블록 A. 힘의 정의, 단위, 1N의 의미 (Q1~Q3)
+  // ══════════════════════════════════════
+  {num:1, text:"물리에서 '힘'의 정의로 옳은 것은?", opts:["물체의 색깔이나 크기를 변화시키는 원인이다.", "물체의 운동 상태나 모양을 변화시키는 원인이다.", "물체의 온도를 변화시키는 원인이다.", "물체의 위치를 정지시키는 원인이다."], ans:2, exp:"힘은 물체의 운동 상태(속력·방향)나 모양을 변화시키는 원인입니다."},
+
+  {num:2, text:"힘의 SI 단위로 옳은 것은?", opts:["kg", "m/s", "N (뉴턴)", "J (줄)"], ans:3, exp:"힘의 단위는 N(뉴턴)입니다. 1 N = 1 kg·m/s²."},
+
+  {num:3, text:"1 N의 의미로 옳은 것은?", opts:["1 kg의 물체를 1 m 이동시키는 힘의 크기이다.", "1 kg의 물체를 1초 동안 정지시키는 힘의 크기이다.", "1 g의 물체를 1 m/s²으로 가속시키는 힘의 크기이다.", "1 kg의 물체를 1 m/s²의 가속도로 가속시키는 힘의 크기이다."], ans:4, exp:"1 N = 질량 1 kg인 물체를 1 m/s²의 가속도로 가속시키는 힘의 크기입니다. (F = ma에서 1 N = 1 kg × 1 m/s²)"},
+
+  // ══════════════════════════════════════
+  // 블록 B. 알짜힘(합력) (Q4~Q6)
+  // ══════════════════════════════════════
+  {num:4, text:"'알짜힘(합력)'의 정의로 옳은 것은?", opts:["물체에 가장 마지막에 작용한 힘", "물체에 작용하는 힘 중 가장 큰 힘 하나", "물체에 작용하는 힘 중 가장 작은 힘 하나", "한 물체에 여러 힘이 동시에 작용할 때 이 힘들과 같은 효과를 내는 하나의 힘"], ans:4, exp:"알짜힘(합력)은 물체에 작용하는 모든 힘들을 하나로 합친 것과 같은 효과를 내는 힘입니다."},
+
+  {num:5, text:"한 물체에 같은 방향으로 3 N과 4 N인 두 힘이 나란히 작용할 때, 알짜힘의 크기는?", opts:["7 N", "1 N", "5 N", "12 N"], ans:1, exp:"같은 방향의 두 힘은 크기를 더합니다. 3 + 4 = 7 N."},
+
+  {num:6, text:"[심화] 한 물체에 반대 방향으로 3 N과 5 N인 두 힘이 나란히 작용할 때, 알짜힘의 크기와 방향은?", opts:["8 N, 3 N의 방향", "2 N, 5 N의 방향", "2 N, 3 N의 방향", "8 N, 5 N의 방향"], ans:2, exp:"반대 방향의 두 힘은 크기를 뺍니다. |5 − 3| = 2 N, 그리고 방향은 큰 힘(5 N)의 방향입니다."},
+
+  // ══════════════════════════════════════
+  // 블록 C. 돌림힘 (Q7~Q9)
+  // ══════════════════════════════════════
+  {num:7, text:"'돌림힘'의 정의로 옳은 것은?", opts:["물체를 변형시키는 힘", "물체를 정지시키는 힘", "물체를 이동시키는 힘", "물체에 힘이 작용할 때 물체가 회전하는 운동의 원인이 되는 물리량"], ans:4, exp:"돌림힘(토크)은 물체를 회전시키는 원인이 되는 물리량입니다. 그리스 문자 τ(타우)로 표기합니다."},
+
+  {num:8, text:"회전축으로부터 r만큼 떨어진 지점에 힘 F가 회전 팔에 수직으로 작용할 때, 돌림힘 τ의 크기로 옳은 것은?", opts:["τ = rF", "τ = r + F", "τ = r / F", "τ = F / r"], ans:1, exp:"회전 팔에 수직인 힘이 작용하면 τ = rF. 힘 F와 회전 팔이 이루는 각이 θ일 때는 일반적으로 τ = rF sin θ 입니다."},
+
+  {num:9, text:"돌림힘의 단위로 옳은 것은?", opts:["N (뉴턴)", "J (줄)", "kg (킬로그램)", "N·m (뉴턴미터)"], ans:4, exp:"돌림힘의 단위는 N·m입니다. (일의 단위 J = N·m와 수치는 같지만 물리적 의미가 다르므로 돌림힘은 J로 쓰지 않습니다.)"},
+
+  // ══════════════════════════════════════
+  // 블록 D. 역학적 평형 조건 (Q10~Q12)
+  // ══════════════════════════════════════
+  {num:10, text:"역학적 평형 상태를 유지하기 위한 두 가지 조건으로 옳게 짝지어진 것은?", opts:["힘의 합이 무한대, 돌림힘의 합이 무한대", "힘의 합이 최대, 돌림힘의 합이 최소", "힘의 합이 0(힘의 평형), 돌림힘의 합이 0(돌림힘의 평형)", "힘의 크기만 0, 방향은 무관"], ans:3, exp:"역학적 평형: (1) 힘의 평형 — 알짜힘 = 0, (2) 돌림힘의 평형 — 모든 돌림힘의 합 = 0. 두 조건을 모두 만족해야 합니다."},
+
+  {num:11, text:"'힘의 평형'의 정의로 옳은 것은?", opts:["물체에 작용하는 힘의 합이 최대인 상태", "물체에 크기가 다른 두 힘이 작용하는 상태", "물체에 작용하는 알짜힘(모든 힘의 합)이 0인 상태", "물체가 회전만 하는 상태"], ans:3, exp:"힘의 평형: 물체에 작용하는 모든 힘의 벡터 합(알짜힘)이 0인 상태입니다."},
+
+  {num:12, text:"'돌림힘의 평형'의 정의로 옳은 것은?", opts:["물체에 작용하는 모든 돌림힘의 합이 0인 상태", "물체의 무게가 0인 상태", "물체에 힘이 하나도 작용하지 않는 상태", "물체의 회전이 시작되는 순간"], ans:1, exp:"돌림힘의 평형: 물체에 작용하는 모든 돌림힘의 합이 0인 상태입니다. 이 조건이 충족되면 물체는 회전하지 않습니다."},
+
+  // ══════════════════════════════════════
+  // 블록 E. 힘 평형이지만 돌림힘 평형이 아닌 경우 (Q13)
+  // ══════════════════════════════════════
+  {num:13, text:"[심화] 한 물체에 크기가 같고 방향이 반대인 두 힘이, 같은 작용선상이 아닌 서로 다른 작용선에서 작용한다. 이 물체의 상태로 옳은 것은?", opts:["힘의 평형은 이루지만 돌림힘의 평형은 이루지 못해 물체가 회전한다.", "힘의 평형과 돌림힘의 평형을 모두 이루어 완전히 정지한다.", "물체가 한 방향으로 등속 직선 운동을 한다.", "물체는 아무런 운동도 하지 않는다."], ans:1, exp:"두 힘의 크기가 같고 방향이 반대이므로 알짜힘 = 0 (힘의 평형). 그러나 작용선이 다르면 두 힘이 짝힘(couple)을 이루어 돌림힘이 발생하므로 물체는 회전 운동을 합니다."},
+
+  // ══════════════════════════════════════
+  // 블록 F. 무게중심 (Q14~Q15)
+  // ══════════════════════════════════════
+  {num:14, text:"'무게중심'의 정의로 옳은 것은?", opts:["물체의 가장 무거운 지점", "물체를 이루는 입자들의 전체 무게가 한곳에 작용한다고 볼 수 있는 점", "물체의 기하학적 정중앙", "물체의 표면 중 가장 낮은 점"], ans:2, exp:"무게중심은 물체 각 부분에 작용하는 중력들을 대표하여 하나의 점에 작용한다고 볼 수 있는 점입니다."},
+
+  {num:15, text:"모양이 대칭적인 물체(예: 정육면체, 균일한 구)의 무게중심 위치로 옳은 것은?", opts:["물체의 표면 위 임의의 점", "물체의 중앙점(기하학적 중심)", "물체의 밑면", "무게중심을 결정할 수 없다"], ans:2, exp:"대칭적이고 질량 분포가 균일한 물체의 무게중심은 물체의 기하학적 중심(중앙점)에 있습니다. 모양이 불규칙한 경우에는 질량이 많은 쪽으로 치우칩니다."},
+
+  // ══════════════════════════════════════
+  // 블록 G. 안정/불안정 평형 + 구조물 안정성 (Q16~Q20)
+  // ══════════════════════════════════════
+  {num:16, text:"'안정 평형'의 정의로 옳은 것은?", opts:["물체가 조금만 흔들려도 넘어지는 경우", "물체가 회전만 계속하는 경우", "물체가 평형 상태에서 조금 벗어날 경우 원래 위치로 되돌아오는 경우", "물체가 어떤 힘에도 반응하지 않는 경우"], ans:3, exp:"안정 평형: 평형 상태에서 물체가 조금 벗어나도, 힘(복원력) 또는 돌림힘이 원래 상태로 되돌리는 방향으로 작용하여 물체가 원래 위치로 돌아오는 경우입니다. (예: 오목한 그릇 안의 공)"},
+
+  {num:17, text:"'불안정 평형'의 정의로 옳은 것은?", opts:["물체가 흔들려도 반드시 원래 위치로 돌아오는 경우", "물체가 평형 상태에서 조금이라도 벗어나면 원래 위치로 돌아오지 못하고 더 멀어지는 경우", "물체가 정지 상태를 유지할 수 없는 경우", "무게중심이 아예 존재하지 않는 경우"], ans:2, exp:"불안정 평형: 평형 상태에서 조금이라도 벗어나면 원래 위치로 되돌아오지 못하고 오히려 더 멀어지는 경우입니다. (예: 볼록한 지붕 꼭대기의 공)"},
+
+  {num:18, text:"[심화] 구조물이 넘어지지 않고 안정된 상태를 유지하기 위한 조건으로 옳은 것은?", opts:["구조물의 무게중심을 지나는 연직선이 바닥면 안쪽에 있어야 한다.", "구조물의 무게중심이 바닥면보다 낮아야 한다.", "구조물의 부피가 커야 한다.", "구조물의 무게가 작아야 한다."], ans:1, exp:"물체를 기울여도 무게중심을 지나는 연직선이 바닥면 안쪽에 있으면 중력에 의한 돌림힘이 원래 위치로 되돌리는 방향으로 작용해 안정합니다. 반대로 이 연직선이 바닥면 밖으로 벗어나면 물체가 넘어집니다."},
+
+  {num:19, text:"[심화] 구조물의 안정성을 높이기 위한 조건으로 옳은 것은?", opts:["무게중심은 낮게, 바닥면은 넓게 한다.", "무게중심은 높게, 바닥면은 좁게 한다.", "무게중심은 높게, 바닥면은 넓게 한다.", "무게중심은 낮게, 바닥면은 좁게 한다."], ans:1, exp:"안정성 원리: 무게중심이 낮을수록, 바닥면이 넓을수록 안정합니다. 예: 원뿔 구조물, 초고층 건물의 넓은 바닥, 사다리차의 지지대 확장 등."},
+
+  {num:20, text:"[심화] 한 물체가 힘의 평형은 이루고 있지만 돌림힘의 평형은 이루지 못하고 있다. 이 물체의 운동 상태로 옳은 것은?", opts:["완전히 정지 상태로 유지된다.", "한 방향으로 등속 직선 운동만 한다.", "정지·등속 상태와 관계없이 회전 운동은 일어나지 않는다.", "물체는 무게중심의 이동 없이(전체적인 이동 없이) 그 자리에서 회전한다."], ans:4, exp:"힘의 평형(알짜힘 = 0)이므로 무게중심은 이동하지 않지만, 돌림힘의 합이 0이 아니므로 물체는 회전 운동을 합니다. 즉 '제자리에서 회전'하는 상태입니다."},
+];
+
+// ══════════════════════════════════════
+// 상태
+// ══════════════════════════════════════
+let userName = '', userSchool = '', userPhone = '';
+let userAnswers = {}; // num → chosen index (1~4)
+let timerInterval = null;
+let elapsedSec = 0;
+let quizStarted = false;
+
+// ══════════════════════════════════════
+// 유틸
+// ══════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function fmtTime(sec) {
+  const m = String(Math.floor(sec / 60)).padStart(2, '0');
+  const s = String(sec % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function toast(msg, duration = 2500) {
+  const el = document.getElementById('savingToast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration);
+}
+
+// ══════════════════════════════════════
+// SCREEN 1 → 시작
+// ══════════════════════════════════════
+function startQuiz() {
+  const name = document.getElementById('input-name').value.trim();
+  const school = document.getElementById('input-school').value.trim();
+  const phone = document.getElementById('input-phone').value.trim();
+  if (!name) { alert('이름을 입력해주세요.'); return; }
+  if (!school) { alert('학교를 입력해주세요.'); return; }
+  if (!/^[0-9]{4}$/.test(phone)) { alert('전화번호 뒷자리 4자리(숫자)를 입력해주세요.'); return; }
+
+  userName = name;
+  userSchool = school;
+  userPhone = phone;
+  userAnswers = {};
+  elapsedSec = 0;
+
+  renderQuiz();
+  showScreen('screen-quiz');
+  startTimer();
+}
+
+// ══════════════════════════════════════
+// 타이머
+// ══════════════════════════════════════
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    elapsedSec++;
+    document.getElementById('timerDisplay').textContent = fmtTime(elapsedSec);
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// ══════════════════════════════════════
+// 퀴즈 렌더
+// ══════════════════════════════════════
+const LABELS = ['①','②','③','④'];
+
+function renderQuiz() {
+  const body = document.getElementById('quizBody');
+  body.innerHTML = QUIZ.map(q => `
+    <div class="q-card" id="qcard-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="q-options">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="opt-${q.num}-${i+1}" onclick="selectOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  updateProgress();
+}
+
+function selectOpt(num, chosen) {
+  userAnswers[num] = chosen;
+
+  // 선택 표시
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`opt-${num}-${i}`);
+    btn.style.borderColor = i === chosen ? 'var(--accent)' : '';
+    btn.style.background = i === chosen ? 'var(--accent-light)' : '';
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = Object.keys(userAnswers).length;
+  const total = QUIZ.length;
+  document.getElementById('metaProgress').textContent = `${answered} / ${total}`;
+  document.getElementById('progressFill').style.width = `${(answered / total) * 100}%`;
+}
+
+// ══════════════════════════════════════
+// 제출
+// ══════════════════════════════════════
+function submitQuiz() {
+  const answered = Object.keys(userAnswers).length;
+  if (answered < QUIZ.length) {
+    if (!confirm(`아직 ${QUIZ.length - answered}문제가 남아 있어요. 제출하시겠어요?`)) return;
+  }
+  stopTimer();
+  showResult();
+}
+
+// ══════════════════════════════════════
+// 결과
+// ══════════════════════════════════════
+function showResult() {
+  const correct = QUIZ.filter(q => userAnswers[q.num] === q.ans);
+  const wrong   = QUIZ.filter(q => userAnswers[q.num] !== q.ans);
+  const score   = correct.length;
+  const total   = QUIZ.length;
+
+  document.getElementById('resultName').textContent = `${userName} · ${userSchool} · ${userPhone}`;
+  document.getElementById('resultScore').textContent = score;
+  document.getElementById('resultScoreSub').textContent = `/ ${total} 문항`;
+  document.getElementById('statTime').textContent = fmtTime(elapsedSec);
+  document.getElementById('statCorrect').textContent = `${score}개`;
+  document.getElementById('statWrong').textContent = `${wrong.length}개`;
+
+  // 오답 리뷰
+  const reviewSection = document.getElementById('reviewSection');
+  if (wrong.length === 0) {
+    reviewSection.innerHTML = `<div style="text-align:center;padding:32px 0;color:var(--accent);font-weight:700;">🎉 전부 맞혔어요!</div>`;
+  } else {
+    reviewSection.innerHTML = `
+      <h2>틀린 문제 <span class="badge-wrong">${wrong.length}문제</span></h2>
+      ${wrong.map(q => renderReviewCard(q)).join('')}
+    `;
+  }
+
+  showScreen('screen-result');
+  saveScore(score, total);
+}
+
+function renderReviewCard(q) {
+  return `
+    <div class="review-card" id="review-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="review-retry-wrap" id="retry-opts-${q.num}">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="retry-opt-${q.num}-${i+1}" onclick="retryOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="review-exp">
+        <div class="review-exp-label">✦ 해설</div>
+        <p>${q.exp}</p>
+      </div>
+    </div>
+  `;
+}
+
+function retryOpt(num, chosen) {
+  const q = QUIZ.find(x => x.num === num);
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`retry-opt-${num}-${i}`);
+    if (!btn) continue;
+    btn.disabled = true;
+    if (i === q.ans) btn.className = 'opt-btn correct';
+    else if (i === chosen && chosen !== q.ans) btn.className = 'opt-btn wrong';
+    else btn.className = 'opt-btn reveal';
+  }
+}
+
+// ══════════════════════════════════════
+// Airtable 저장
+// ══════════════════════════════════════
+async function saveScore(score, total) {
+  toast('점수 저장 중...');
+  try {
+    const res = await fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_SCORES}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${AT_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        fields: {
+          '이름': userName,
+          '학교': userSchool,
+          'phone_last4': userPhone,
+          '날짜': new Date().toISOString().split('T')[0],
+          '과목코드': QUIZ_META.subjectCode,
+          '과목명': QUIZ_META.subjectName,
+          '대단원번호': QUIZ_META.mainNo,
+          '대단원명': QUIZ_META.mainName,
+          '중단원번호': QUIZ_META.subNo,
+          '중단원명': QUIZ_META.subName,
+          '섹션번호': QUIZ_META.sectionNo,
+          '섹션명': QUIZ_META.sectionName,
+          '총점': score,
+          '총문항수': total,
+          '풀이시간': fmtTime(elapsedSec)
+        }
+      })
+    });
+    if (res.ok) toast('✓ 점수가 저장되었습니다.');
+    else toast('저장 실패 — 네트워크를 확인해주세요.');
+  } catch(e) {
+    toast('저장 실패 — 네트워크를 확인해주세요.');
+  }
+}
+
+// ══════════════════════════════════════
+// 리셋
+// ══════════════════════════════════════
+function resetQuiz() {
+  userName = '';
+  userSchool = '';
+  userPhone = '';
+  userAnswers = {};
+  elapsedSec = 0;
+  document.getElementById('input-name').value = '';
+  document.getElementById('input-school').value = '';
+  document.getElementById('input-phone').value = '';
+  document.getElementById('timerDisplay').textContent = '00:00';
+  showScreen('screen-intro');
+}
+</script>
+</body>
+</html>
