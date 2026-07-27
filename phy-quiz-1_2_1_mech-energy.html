@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>역학적 에너지 보존 · 물리 퀴즈</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --border: #e2ddd6;
+  --text: #1a1714;
+  --text-dim: #8a8480;
+  --accent: #2d5a3d;
+  --accent-light: #e8f0eb;
+  --wrong: #c0392b;
+  --wrong-light: #fdf0ef;
+  --correct: #2d5a3d;
+  --correct-light: #e8f0eb;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+  padding: 0 0 60px;
+}
+
+/* ── 공통 ── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 14px 28px;
+  font-size: 0.95rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  width: 100%;
+}
+
+.btn:hover { opacity: 0.88; }
+.btn:active { transform: scale(0.98); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+}
+
+.btn-ghost:hover { background: var(--accent-light); opacity: 1; }
+
+/* ── SCREEN 1: 입력 ── */
+#screen-intro {
+  padding-top: 80px;
+}
+
+.intro-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.intro-header .tag {
+  display: inline-block;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: 0.08em;
+}
+
+.intro-header h1 { margin-bottom: 8px; }
+.intro-header p { color: var(--text-dim); font-size: 0.9rem; }
+
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: var(--shadow);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+}
+
+.form-group input {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 13px 16px;
+  font-size: 1rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus { border-color: var(--accent); }
+
+.form-info {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  background: var(--accent-light);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.form-info span {
+  font-size: 0.82rem;
+  color: var(--accent);
+}
+
+/* ── SCREEN 2: 퀴즈 ── */
+#screen-quiz { padding-top: 0; }
+
+.quiz-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+}
+
+.quiz-topbar-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.progress-wrap {
+  flex: 1;
+  background: var(--border);
+  border-radius: 99px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 6px;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.quiz-meta {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.meta-item {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.meta-item span {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.quiz-body {
+  padding: 32px 20px;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: border-color 0.3s;
+}
+
+.q-card.correct { border-color: var(--correct); }
+.q-card.wrong { border-color: var(--wrong); }
+
+.q-head {
+  padding: 20px 24px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.q-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.q-text {
+  font-size: 0.93rem;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+
+.q-options {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.opt-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+  transition: all 0.15s;
+  width: 100%;
+}
+
+.opt-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.opt-btn:disabled { cursor: default; }
+
+.opt-btn.correct {
+  border-color: var(--correct);
+  background: var(--correct-light);
+  color: var(--correct);
+}
+
+.opt-btn.wrong {
+  border-color: var(--wrong);
+  background: var(--wrong-light);
+  color: var(--wrong);
+}
+
+.opt-btn.reveal {
+  border-color: rgba(45,90,61,0.35);
+  background: rgba(45,90,61,0.04);
+  color: rgba(45,90,61,0.6);
+}
+
+.opt-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 0.15s;
+}
+
+.opt-btn.correct .opt-label { background: var(--correct); border-color: var(--correct); color: #fff; }
+.opt-btn.wrong .opt-label { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+
+/* submit btn area */
+.submit-wrap {
+  padding: 0 20px 40px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ── SCREEN 3: 결과 ── */
+#screen-result { padding-top: 48px; }
+
+.result-hero {
+  text-align: center;
+  padding: 48px 20px 32px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.result-name {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  font-family: 'DM Mono', monospace;
+}
+
+.result-score {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin-bottom: 4px;
+}
+
+.result-score-sub {
+  font-size: 1rem;
+  color: var(--text-dim);
+  margin-bottom: 24px;
+}
+
+.result-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.result-section {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.result-section h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-wrong {
+  background: var(--wrong-light);
+  color: var(--wrong);
+  font-size: 0.72rem;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* review card */
+.review-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.review-card .q-head { padding-bottom: 12px; }
+
+.review-exp {
+  padding: 14px 24px 18px;
+  border-top: 1px solid var(--border);
+  background: var(--accent-light);
+}
+
+.review-exp-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--accent);
+  margin-bottom: 5px;
+  letter-spacing: 0.06em;
+}
+
+.review-exp p {
+  font-size: 0.84rem;
+  color: var(--accent);
+  line-height: 1.65;
+}
+
+.review-retry-wrap {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.result-actions {
+  max-width: 720px;
+  margin: 32px auto 0;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* saving overlay */
+.saving-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 99px;
+  font-size: 0.82rem;
+  font-family: 'DM Mono', monospace;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 999;
+  white-space: nowrap;
+}
+
+.saving-toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1: 이름 / 학교 입력
+══════════════════════════════════════ -->
+<div id="screen-intro" class="screen active">
+  <div class="container">
+    <div class="intro-header">
+      <div class="tag">PHYSICS QUIZ</div>
+      <h1>역학적 에너지 보존</h1>
+      <p>물리학 · 1단원 힘과 에너지 · 2중단원 에너지와 열 · 1섹션</p>
+    </div>
+
+    <div class="form-card">
+      <div class="form-info">
+        <span>📋 총 20문항 · 객관식 4지선다 · 시간 제한 없음</span>
+      </div>
+
+      <div class="form-group">
+        <label>이름</label>
+        <input type="text" id="input-name" placeholder="홍길동" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>학교</label>
+        <input type="text" id="input-school" placeholder="○○고등학교" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>전화번호 뒷자리 4자리 <span style="color:var(--text-dim);font-weight:300;">(동명이인 구별용)</span></label>
+        <input type="tel" id="input-phone" placeholder="1234" autocomplete="off" maxlength="4" inputmode="numeric" pattern="[0-9]{4}">
+      </div>
+
+      <button class="btn" onclick="startQuiz()">시작하기 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2: 퀴즈
+══════════════════════════════════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-topbar">
+    <div class="quiz-topbar-inner">
+      <div class="progress-wrap">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="quiz-meta">
+        <div class="meta-item" id="metaProgress">0 / 20</div>
+        <div class="meta-item">⏱ <span id="timerDisplay">00:00</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-body" id="quizBody"></div>
+
+  <div class="submit-wrap">
+    <button class="btn" onclick="submitQuiz()">제출하기</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 3: 결과
+══════════════════════════════════════ -->
+<div id="screen-result" class="screen">
+  <div class="result-hero">
+    <div class="result-name" id="resultName"></div>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-score-sub" id="resultScoreSub"></div>
+    <div class="result-stats">
+      <div class="stat-item">
+        <div class="stat-val" id="statTime"></div>
+        <div class="stat-label">풀이 시간</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statCorrect"></div>
+        <div class="stat-label">정답</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statWrong"></div>
+        <div class="stat-label">오답</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-section" id="reviewSection"></div>
+
+  <div class="result-actions">
+    <button class="btn btn-ghost" onclick="resetQuiz()">↺ 새로 응시하기</button>
+  </div>
+</div>
+
+<div class="saving-toast" id="savingToast"></div>
+
+<script>
+// ══════════════════════════════════════
+// Airtable 설정
+// ══════════════════════════════════════
+const AT_TOKEN   = "patBcLElKAr7fPbgS.0f288a25e39501f27d9d33569371fc819acb54173cf44daa68fc028f16e479f9";
+const AT_BASE    = "appmCOjqp5xIJuPqt";
+const AT_SCORES  = "scores";
+
+// ══════════════════════════════════════
+// 퀴즈 메타
+// ══════════════════════════════════════
+const QUIZ_META = {
+  subjectCode: "PHY",
+  subjectName: "물리학",
+  mainNo:      1,
+  mainName:    "힘과 에너지",
+  subNo:       2,
+  subName:     "에너지와 열",
+  sectionNo:   1,
+  sectionName: "역학적 에너지 보존"
+};
+
+// ══════════════════════════════════════
+// 퀴즈 데이터
+// ══════════════════════════════════════
+// ══════════════════════════════════════
+// 1-2-1 역학적 에너지 보존 (20문항, ba 15 + ad 5)
+// 정답 시퀀스: 2,3,1,4,2,1,3,2,4,3,1,4,2,3,1,4,2,4,1,3
+// 정답 분포: ①5 ②5 ③5 ④5
+// ══════════════════════════════════════
+const QUIZ = [
+  // ══════════════════════════════════════
+  // 블록 A. 일의 정의 · 단위 · F-s 그래프 (Q1~Q3)
+  // ══════════════════════════════════════
+  {num:1, text:"물체에 크기가 F인 힘이 작용하여 힘의 방향으로 거리 s만큼 이동했을 때, 이 힘이 한 일 W를 나타내는 식으로 옳은 것은?", opts:["W = F / s", "W = Fs", "W = F + s", "W = Fs²"], ans:2, exp:"일 W = Fs 입니다. 힘의 크기와, 힘의 방향으로 이동한 거리의 곱입니다. 힘의 방향과 이동 방향이 서로 수직이면 힘의 방향으로 이동한 거리가 0이므로 한 일도 0입니다."},
+
+  {num:2, text:"일의 SI 단위와 그 의미로 옳은 것은?", opts:["N — 질량 1 kg인 물체를 1 m/s²으로 가속시키는 힘의 크기", "W — 물체가 1초 동안 1 m 이동한 양", "J — 1 N의 힘을 작용하여 힘의 방향으로 1 m 이동시켰을 때 한 일의 양", "kg·m — 질량 1 kg인 물체를 1 m 옮긴 양"], ans:3, exp:"일의 단위는 J(줄)입니다. 1 J = 1 N × 1 m 이므로, 1 N의 힘으로 힘의 방향으로 1 m 이동시켰을 때 한 일이 1 J입니다. N은 힘의 단위이므로 혼동하지 않도록 합니다."},
+
+  {num:3, text:"힘의 크기 F와 이동 거리 s를 축으로 그린 F-s 그래프에서, 그래프 아래의 넓이가 나타내는 물리량은?", opts:["힘이 한 일", "물체의 질량", "물체의 가속도", "물체의 운동량"], ans:1, exp:"W = Fs 이므로 (세로축 F) × (가로축 s) = 넓이 = 일 입니다. 힘의 크기가 일정하면 넓이는 직사각형이 되고, 힘의 크기가 변하더라도 그래프 아래 넓이가 곧 한 일이라는 사실은 그대로 성립합니다."},
+
+  // ══════════════════════════════════════
+  // 블록 B. 일 · 운동 에너지 정리 (Q4~Q5)
+  // ══════════════════════════════════════
+  {num:4, text:"정지해 있던 질량 m인 물체에 알짜힘 F가 거리 s만큼 작용하여 속력이 v가 되었다. 등가속도 공식 2as = v^2 - v₀^2를 이용하여 W = Fs를 정리한 결과로 옳은 것은?", opts:["W = mv", "W = mv²", "W = 2mv²", "W = ½mv²"], ans:4, exp:"W = Fs = mas 입니다. 처음에 정지해 있었으므로 v₀ = 0, 따라서 2as = v², 즉 as = ½v² 입니다. 이를 대입하면 W = m × ½v² = ½mv². 이렇게 얻어진 양을 운동 에너지 Eₖ = ½mv² 로 정의합니다."},
+
+  {num:5, text:"일 · 운동 에너지 정리의 내용으로 옳은 것은?", opts:["물체에 작용한 알짜힘이 한 일은 물체의 중력에 의한 위치 에너지와 같다.", "물체에 작용한 알짜힘이 한 일은 물체의 운동 에너지의 변화량과 같다.", "물체에 작용한 알짜힘이 한 일은 물체의 질량 변화량과 같다.", "물체에 작용한 알짜힘이 한 일은 항상 0이다."], ans:2, exp:"W = ½mv² − ½mv₀² = ΔEₖ. 알짜힘이 한 일만큼 운동 에너지가 변합니다. '변화량'이라는 점이 중요합니다. 알짜힘이 한 일이 음수이면 운동 에너지는 줄어듭니다."},
+
+  // ══════════════════════════════════════
+  // 블록 C. 위치 에너지 — 중력 · 탄성력 (Q6~Q8)
+  // ══════════════════════════════════════
+  {num:6, text:"질량 m인 물체를 지표면에서 높이 h만큼 서서히 들어 올렸다. 중력에 의한 위치 에너지 E_P와 각 기호의 의미로 옳은 것은?", opts:["Eₚ = mgh — m은 질량, g는 중력 가속도, h는 기준점으로부터의 높이", "Eₚ = ½mh² — m은 질량, h는 높이", "Eₚ = mgh² — m은 질량, g는 중력 가속도, h는 높이", "Eₚ = mg / h — m은 질량, g는 중력 가속도, h는 높이"], ans:1, exp:"물체를 서서히 들어 올릴 때 중력에 대해 한 일 W = mgh 가 그대로 위치 에너지로 저장됩니다. 위치 에너지는 기준점으로부터의 높이에 비례하므로, 기준점을 어디로 잡느냐에 따라 값이 달라진다는 점도 함께 기억해 둡니다."},
+
+  {num:7, text:"용수철 상수가 k인 용수철을 평형 위치로부터 x만큼 변형시켰을 때, 탄성력에 의한 위치 에너지로 옳은 것은?", opts:["½kx", "kx²", "½kx²", "½k²x"], ans:3, exp:"탄성력의 크기는 kx로 변형된 길이에 비례하므로 F-x 그래프가 원점을 지나는 직선입니다. 그래프 아래 삼각형의 넓이 = ½ × (밑변 x) × (높이 kx) = ½kx². 중력의 경우(mgh)와 달리 제곱이 들어간다는 점이 핵심입니다."},
+
+  {num:8, text:"용수철의 탄성력을 나타내는 식 F = -kx에서 음(−) 부호가 뜻하는 것으로 옳은 것은?", opts:["탄성력의 크기가 항상 음수라는 뜻이다.", "탄성력의 방향이 변형된 방향과 반대라는 뜻이다.", "용수철 상수 k가 음수라는 뜻이다.", "용수철이 늘어날 때만 힘이 작용한다는 뜻이다."], ans:2, exp:"탄성력은 언제나 평형 위치로 되돌아가려는 방향(복원력)으로 작용합니다. 당기면 반대로 끌어당기고 압축하면 반대로 밀어냅니다. 음 부호는 이 '반대 방향'을 나타내며, 크기 자체는 kx로 양수입니다."},
+
+  // ══════════════════════════════════════
+  // 블록 D. 역학적 에너지 보존 (Q9~Q11)
+  // ══════════════════════════════════════
+  {num:9, text:"공기 저항이 없을 때 자유 낙하하는 질량 m인 물체가 높이 h에서 속력 v, 높이 h'에서 속력 v'이었다. 성립하는 역학적 에너지 보존식으로 옳은 것은?", opts:["mgh = mgh′", "½mv² = ½mv′²", "mgh − ½mv² = mgh′ − ½mv′²", "mgh + ½mv² = mgh′ + ½mv′²"], ans:4, exp:"역학적 에너지 E = Eₚ + Eₖ 가 일정하므로, 어느 두 지점에서든 (위치 에너지 + 운동 에너지)의 합이 같습니다. 즉 mgh + ½mv² = mgh′ + ½mv′². 두 에너지를 '더한' 값이 보존된다는 점을 놓치지 않도록 합니다."},
+
+  {num:10, text:"공기 저항이 없는 자유 낙하에서 높이에 따른 위치 에너지와 운동 에너지의 변화를 옳게 설명한 것은?", opts:["높이가 낮아질수록 위치 에너지와 운동 에너지가 모두 증가한다.", "높이가 낮아질수록 위치 에너지는 증가하고 운동 에너지는 감소한다.", "높이가 낮아질수록 위치 에너지는 감소하고, 감소한 만큼 운동 에너지가 증가한다.", "높이가 낮아질수록 위치 에너지와 운동 에너지가 모두 감소한다."], ans:3, exp:"Eₚ = mgh 이므로 위치 에너지는 높이에 정비례하여 직선으로 감소합니다. 역학적 에너지 총합이 일정하므로 줄어든 만큼 그대로 운동 에너지가 늘어납니다. 따라서 두 그래프를 더하면 어느 높이에서나 같은 값이 되어 수평선이 됩니다."},
+
+  {num:11, text:"마찰과 공기 저항이 없는 롤러코스터에 대한 설명으로 옳은 것은?", opts:["가장 낮은 지점에서 속력이 최대이다.", "가장 높은 지점에서 운동 에너지가 최대이다.", "높이가 같은 두 지점에서 속력이 서로 다르다.", "아래로 내려갈수록 역학적 에너지의 총합이 커진다."], ans:1, exp:"E = Eₚ + Eₖ 가 일정합니다. 가장 낮은 지점에서 위치 에너지가 최소이므로 운동 에너지가 최대가 되어 속력이 가장 빠릅니다. 또 높이가 같으면 위치 에너지가 같으므로 운동 에너지도 같아 속력이 같습니다. 역학적 에너지 총합은 어디서나 일정합니다."},
+
+  // ══════════════════════════════════════
+  // 블록 E. 용수철의 좌우 진동과 에너지 보존 (Q12~Q13)
+  // ══════════════════════════════════════
+  {num:12, text:"마찰이 없는 수평면에서 용수철에 연결된 물체가 진폭 A로 좌우 진동한다. 물체의 속력이 최대가 되는 지점은?", opts:["진폭의 양 끝 지점", "진폭의 절반이 되는 지점", "어느 지점에서나 속력이 같다", "평형 위치"], ans:4, exp:"½mv² + ½kx² = ½kA² 가 일정합니다. 평형 위치(x = 0)에서는 탄성력에 의한 위치 에너지가 0이므로 운동 에너지가 최대가 되어 속력이 가장 빠릅니다. 반대로 양 끝(x = ±A)에서는 모든 에너지가 위치 에너지이므로 속력이 0입니다."},
+
+  {num:13, text:"[심화] 마찰이 없는 수평면에서 진폭 A로 진동하는 물체의 운동 에너지와 탄성력에 의한 위치 에너지가 서로 같아지는 지점의 위치 x는?", opts:["x = A / 2", "x = A / √2", "x = A / 4", "x = A / √3"], ans:2, exp:"전체 역학적 에너지는 ½kA² 입니다. 두 에너지가 같으려면 위치 에너지가 그 절반이어야 하므로 ½kx² = ½ × ½kA², 즉 x² = A²/2 → x = A/√2 ≈ 0.71A. 에너지가 반씩 나뉘는 지점이 진폭의 절반(A/2)이 아니라는 점이 핵심입니다. 위치 에너지가 x의 제곱에 비례하기 때문입니다."},
+
+  // ══════════════════════════════════════
+  // 블록 F. 유형 문제 — 도르래 · 용수철 분리 · 언덕 (Q14~Q17)
+  // ══════════════════════════════════════
+  {num:14, text:"[유형] 고정 도르래 양쪽에 질량 M과 m(M > m)인 물체를 실로 연결하고 가만히 놓았다. 무거운 물체가 h만큼 내려갔을 때 두 물체의 속력을 v라 하면, 옳은 에너지 보존식은?", opts:["Mgh = ½Mv²", "Mgh + mgh = ½(M + m)v²", "Mgh − mgh = ½(M + m)v²", "Mgh − mgh = ½(M − m)v²"], ans:3, exp:"M은 h만큼 내려가 위치 에너지가 Mgh 감소하고, m은 같은 h만큼 올라가 위치 에너지가 mgh 증가합니다. 순수하게 줄어든 위치 에너지 (Mgh − mgh)가 두 물체 전체의 운동 에너지로 바뀝니다. 두 물체는 실로 연결되어 속력이 같으므로 운동 에너지는 ½Mv² + ½mv² = ½(M + m)v² 입니다. 무거운 쪽만 계산하지 않도록 주의합니다."},
+
+  {num:15, text:"[유형][심화] 마찰이 없는 수평면에서 용수철 상수 k인 용수철을 x만큼 압축한 채 질량 m₁, m₂인 두 물체를 붙여 두었다가 놓았더니, 두 물체가 각각 v₁, v₂의 속력으로 양쪽으로 분리되었다. 옳은 에너지 보존식은?", opts:["½kx² = ½m₁v₁² + ½m₂v₂²", "½kx² = ½(m₁ + m₂)(v₁ + v₂)²", "kx² = ½m₁v₁² + ½m₂v₂²", "½kx = ½m₁v₁² + ½m₂v₂²"], ans:1, exp:"압축된 용수철에 저장되어 있던 탄성력에 의한 위치 에너지 ½kx² 가 두 물체의 운동 에너지로 모두 전환됩니다. 두 물체의 속력이 서로 다르므로 각각 따로 계산해서 더해야 합니다. 참고로 이 상황에서는 운동량 보존 m₁v₁ = m₂v₂ 도 동시에 성립하므로, 두 식을 연립하면 각각의 속력을 구할 수 있습니다."},
+
+  {num:16, text:"[유형] 높이차가 h인 언덕 위에서 처음 속력 v₀으로 출발하여 마찰 없이 언덕 아래로 내려왔다. 언덕 아래에서의 속력 v에 대해 성립하는 식으로 옳은 것은?", opts:["½mv₀² = ½mv²", "mgh = ½mv²", "½mv₀² = ½mv² + mgh", "½mv₀² + mgh = ½mv²"], ans:4, exp:"언덕 위에서는 운동 에너지 ½mv₀² 와 위치 에너지 mgh 를 가지고, 언덕 아래(기준점)에서는 운동 에너지 ½mv² 만 가집니다. 보존 법칙에 의해 ½mv₀² + mgh = ½mv². 처음 속력이 0이 아니라는 점에 주의합니다."},
+
+  {num:17, text:"[유형][심화] 위와 같은 상황에서 내리막 구간에 크기가 F인 마찰력이 작용하고 마찰 구간의 길이가 S일 때, 성립하는 관계식으로 옳은 것은?", opts:["½mv₀² + mgh + FS = ½mv²", "½mv₀² + mgh = ½mv² + FS", "½mv₀² + mgh = ½mv² − FS", "½mv₀² = ½mv² + mgh + FS"], ans:2, exp:"마찰이 있으면 역학적 에너지는 보존되지 않습니다. (처음 역학적 에너지) = (나중 역학적 에너지) + (마찰력이 한 일). 마찰력이 한 일 FS 만큼의 역학적 에너지가 열로 전환되어 사라집니다. 마찰력은 운동을 방해하는 방향으로 작용하므로 에너지를 빼앗는 쪽, 즉 나중 상태에 더해 주는 자리에 놓입니다."},
+
+  // ══════════════════════════════════════
+  // 블록 G. 심화 — 용수철의 세로 진동 (Q18~Q19)
+  // ══════════════════════════════════════
+  {num:18, text:"[심화] 용수철 상수 k인 용수철에 질량 m인 물체를 매달았더니 x₀만큼 늘어난 채 정지하였다. 이 상태에서 성립하는 관계식으로 옳은 것은?", opts:["½kx₀² = mg", "kx₀ = mgx₀", "kx₀² = mg", "kx₀ = mg"], ans:4, exp:"정지해 있으므로 알짜힘이 0입니다. 위로 작용하는 탄성력 kx₀ 와 아래로 작용하는 중력 mg 가 힘의 평형을 이룹니다. 따라서 kx₀ = mg. 이 관계식은 세로 진동 문제를 풀 때 마지막 정리 단계에서 반드시 필요하므로 꼭 기억해 둡니다."},
+
+  {num:19, text:"[심화] 위 상황에서 물체를 평형 위치로부터 A만큼 더 아래로 당겼다가 가만히 놓았다. 진동하는 동안 물체의 최대 속력 v_max에 대해 성립하는 관계식으로 옳은 것은?", opts:["½kA² = ½mv(max)²", "½k(x₀ + A)² = ½mv(max)²", "mgA = ½mv(max)²", "½kx₀² = ½mv(max)²"], ans:1, exp:"당긴 지점의 역학적 에너지 ½k(x₀ + A)² 와, 평형 위치를 지날 때의 역학적 에너지 mgA + ½kx₀² + ½mv(max)² 를 같다고 놓습니다. 좌변을 전개한 뒤 kx₀ = mg 를 대입하면 중력 항과 x₀ 항이 모두 상쇄되어 ½kA² = ½mv(max)² 만 남습니다. 결론이 중요합니다. 세로 진동도 평형 위치를 기준으로 보면 수평면에서 진동하는 경우와 완전히 같은 형태가 됩니다."},
+
+  // ══════════════════════════════════════
+  // 블록 H. 역학적 에너지의 전환 (Q20)
+  // ══════════════════════════════════════
+  {num:20, text:"굴러가던 공이 마찰력과 공기 저항 때문에 점점 느려지다가 결국 멈추었다. 이에 대한 설명으로 옳은 것은?", opts:["공의 에너지가 완전히 사라졌으므로 에너지 보존 법칙이 성립하지 않는다.", "공의 역학적 에너지는 그대로 보존되었다.", "감소한 역학적 에너지는 마찰력과 공기 저항이 한 일과 같으며, 주로 열의 형태로 전환되었다.", "마찰력은 공에 일을 하지 않는다."], ans:3, exp:"마찰력과 공기 저항이 운동 방향과 반대로 작용하며 공에 일을 하고, 그만큼 역학적 에너지가 감소합니다. 감소한 역학적 에너지는 열, 소리 등으로 전환되며 최종적으로는 열의 형태로 주변에 흩어집니다. 열까지 포함하면 에너지의 총량은 여전히 보존됩니다."},
+];
+
+
+// ══════════════════════════════════════
+// 상태
+// ══════════════════════════════════════
+let userName = '', userSchool = '', userPhone = '';
+let userAnswers = {}; // num → chosen index (1~4)
+let timerInterval = null;
+let elapsedSec = 0;
+let quizStarted = false;
+
+// ══════════════════════════════════════
+// 유틸
+// ══════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function fmtTime(sec) {
+  const m = String(Math.floor(sec / 60)).padStart(2, '0');
+  const s = String(sec % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function toast(msg, duration = 2500) {
+  const el = document.getElementById('savingToast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration);
+}
+
+// ══════════════════════════════════════
+// SCREEN 1 → 시작
+// ══════════════════════════════════════
+function startQuiz() {
+  const name = document.getElementById('input-name').value.trim();
+  const school = document.getElementById('input-school').value.trim();
+  const phone = document.getElementById('input-phone').value.trim();
+  if (!name) { alert('이름을 입력해주세요.'); return; }
+  if (!school) { alert('학교를 입력해주세요.'); return; }
+  if (!/^[0-9]{4}$/.test(phone)) { alert('전화번호 뒷자리 4자리(숫자)를 입력해주세요.'); return; }
+
+  userName = name;
+  userSchool = school;
+  userPhone = phone;
+  userAnswers = {};
+  elapsedSec = 0;
+
+  renderQuiz();
+  showScreen('screen-quiz');
+  startTimer();
+}
+
+// ══════════════════════════════════════
+// 타이머
+// ══════════════════════════════════════
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    elapsedSec++;
+    document.getElementById('timerDisplay').textContent = fmtTime(elapsedSec);
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// ══════════════════════════════════════
+// 퀴즈 렌더
+// ══════════════════════════════════════
+const LABELS = ['①','②','③','④'];
+
+function renderQuiz() {
+  const body = document.getElementById('quizBody');
+  body.innerHTML = QUIZ.map(q => `
+    <div class="q-card" id="qcard-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="q-options">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="opt-${q.num}-${i+1}" onclick="selectOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  updateProgress();
+}
+
+function selectOpt(num, chosen) {
+  userAnswers[num] = chosen;
+
+  // 선택 표시
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`opt-${num}-${i}`);
+    btn.style.borderColor = i === chosen ? 'var(--accent)' : '';
+    btn.style.background = i === chosen ? 'var(--accent-light)' : '';
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = Object.keys(userAnswers).length;
+  const total = QUIZ.length;
+  document.getElementById('metaProgress').textContent = `${answered} / ${total}`;
+  document.getElementById('progressFill').style.width = `${(answered / total) * 100}%`;
+}
+
+// ══════════════════════════════════════
+// 제출
+// ══════════════════════════════════════
+function submitQuiz() {
+  const answered = Object.keys(userAnswers).length;
+  if (answered < QUIZ.length) {
+    if (!confirm(`아직 ${QUIZ.length - answered}문제가 남아 있어요. 제출하시겠어요?`)) return;
+  }
+  stopTimer();
+  showResult();
+}
+
+// ══════════════════════════════════════
+// 결과
+// ══════════════════════════════════════
+function showResult() {
+  const correct = QUIZ.filter(q => userAnswers[q.num] === q.ans);
+  const wrong   = QUIZ.filter(q => userAnswers[q.num] !== q.ans);
+  const score   = correct.length;
+  const total   = QUIZ.length;
+
+  document.getElementById('resultName').textContent = `${userName} · ${userSchool} · ${userPhone}`;
+  document.getElementById('resultScore').textContent = score;
+  document.getElementById('resultScoreSub').textContent = `/ ${total} 문항`;
+  document.getElementById('statTime').textContent = fmtTime(elapsedSec);
+  document.getElementById('statCorrect').textContent = `${score}개`;
+  document.getElementById('statWrong').textContent = `${wrong.length}개`;
+
+  // 오답 리뷰
+  const reviewSection = document.getElementById('reviewSection');
+  if (wrong.length === 0) {
+    reviewSection.innerHTML = `<div style="text-align:center;padding:32px 0;color:var(--accent);font-weight:700;">🎉 전부 맞혔어요!</div>`;
+  } else {
+    reviewSection.innerHTML = `
+      <h2>틀린 문제 <span class="badge-wrong">${wrong.length}문제</span></h2>
+      ${wrong.map(q => renderReviewCard(q)).join('')}
+    `;
+  }
+
+  showScreen('screen-result');
+  saveScore(score, total);
+}
+
+function renderReviewCard(q) {
+  return `
+    <div class="review-card" id="review-${q.num}">
+      <div class="q-head">
+        <span class="q-num">Q${String(q.num).padStart(2,'0')}</span>
+        <span class="q-text">${q.text}</span>
+      </div>
+      <div class="review-retry-wrap" id="retry-opts-${q.num}">
+        ${q.opts.map((opt, i) => `
+          <button class="opt-btn" id="retry-opt-${q.num}-${i+1}" onclick="retryOpt(${q.num}, ${i+1})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="review-exp">
+        <div class="review-exp-label">✦ 해설</div>
+        <p>${q.exp}</p>
+      </div>
+    </div>
+  `;
+}
+
+function retryOpt(num, chosen) {
+  const q = QUIZ.find(x => x.num === num);
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`retry-opt-${num}-${i}`);
+    if (!btn) continue;
+    btn.disabled = true;
+    if (i === q.ans) btn.className = 'opt-btn correct';
+    else if (i === chosen && chosen !== q.ans) btn.className = 'opt-btn wrong';
+    else btn.className = 'opt-btn reveal';
+  }
+}
+
+// ══════════════════════════════════════
+// Airtable 저장
+// ══════════════════════════════════════
+async function saveScore(score, total) {
+  toast('점수 저장 중...');
+  try {
+    const res = await fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_SCORES}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${AT_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        fields: {
+          '이름': userName,
+          '학교': userSchool,
+          'phone_last4': userPhone,
+          '날짜': new Date().toISOString().split('T')[0],
+          '과목코드': QUIZ_META.subjectCode,
+          '과목명': QUIZ_META.subjectName,
+          '대단원번호': QUIZ_META.mainNo,
+          '대단원명': QUIZ_META.mainName,
+          '중단원번호': QUIZ_META.subNo,
+          '중단원명': QUIZ_META.subName,
+          '섹션번호': QUIZ_META.sectionNo,
+          '섹션명': QUIZ_META.sectionName,
+          '총점': score,
+          '총문항수': total,
+          '풀이시간': fmtTime(elapsedSec)
+        }
+      })
+    });
+    if (res.ok) toast('✓ 점수가 저장되었습니다.');
+    else toast('저장 실패 — 네트워크를 확인해주세요.');
+  } catch(e) {
+    toast('저장 실패 — 네트워크를 확인해주세요.');
+  }
+}
+
+// ══════════════════════════════════════
+// 리셋
+// ══════════════════════════════════════
+function resetQuiz() {
+  userName = '';
+  userSchool = '';
+  userPhone = '';
+  userAnswers = {};
+  elapsedSec = 0;
+  document.getElementById('input-name').value = '';
+  document.getElementById('input-school').value = '';
+  document.getElementById('input-phone').value = '';
+  document.getElementById('timerDisplay').textContent = '00:00';
+  showScreen('screen-intro');
+}
+</script>
+</body>
+</html>
