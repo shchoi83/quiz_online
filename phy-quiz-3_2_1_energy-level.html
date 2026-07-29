@@ -575,6 +575,10 @@ const AT_TOKEN   = "patBcLElKAr7fPbgS.0f288a25e39501f27d9d33569371fc819acb54173c
 const AT_BASE    = "appmCOjqp5xIJuPqt";
 const AT_SCORES  = "scores";
 
+// ── Google Sheets 웹앱 (주 저장소) ──
+const GS_ENDPOINT = "https://script.google.com/macros/s/AKfycbzay6SAgvghcFDisFxk32UjxOpSg7aa7k85PrlqIYYE6fuCrAZAsbb_yyQI6N06y0zzrA/exec";
+const DUAL_WRITE  = true;   // 전환 완료 후 false 로 바꾸면 Airtable 전송 중단
+
 // ══════════════════════════════════════
 // 퀴즈 메타
 // ══════════════════════════════════════
@@ -807,40 +811,71 @@ function retryOpt(num, chosen) {
 }
 
 // ══════════════════════════════════════
-// Airtable 저장
+// 점수 저장 (Google Sheets 주 저장소 + Airtable 병행)
 // ══════════════════════════════════════
+function buildPayload(score, total) {
+  return {
+    '이름': userName,
+    '학교': userSchool,
+    'phone_last4': userPhone,
+    '날짜': new Date().toISOString().split('T')[0],
+    '과목코드': QUIZ_META.subjectCode,
+    '과목명': QUIZ_META.subjectName,
+    '대단원번호': QUIZ_META.mainNo,
+    '대단원명': QUIZ_META.mainName,
+    '중단원번호': QUIZ_META.subNo,
+    '중단원명': QUIZ_META.subName,
+    '섹션번호': QUIZ_META.sectionNo,
+    '섹션명': QUIZ_META.sectionName,
+    '총점': score,
+    '총문항수': total,
+    '풀이시간': fmtTime(elapsedSec)
+  };
+}
+
+async function saveToSheets(payload) {
+  // Content-Type을 text/plain 으로 보내야 preflight(OPTIONS)가 생기지 않음.
+  // Apps Script 웹앱은 OPTIONS를 처리하지 못하므로 이 설정이 필수.
+  const res = await fetch(GS_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  });
+  const data = await res.json();
+  if (data.ok !== true) throw new Error(data.error || 'sheets rejected');
+  return data;
+}
+
+async function saveToAirtable(payload) {
+  const res = await fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_SCORES}`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${AT_TOKEN}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ fields: payload })
+  });
+  if (!res.ok) throw new Error('airtable ' + res.status);
+  return true;
+}
+
 async function saveScore(score, total) {
   toast('점수 저장 중...');
-  try {
-    const res = await fetch(`https://api.airtable.com/v0/${AT_BASE}/${AT_SCORES}`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${AT_TOKEN}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        fields: {
-          '이름': userName,
-          '학교': userSchool,
-          'phone_last4': userPhone,
-          '날짜': new Date().toISOString().split('T')[0],
-          '과목코드': QUIZ_META.subjectCode,
-          '과목명': QUIZ_META.subjectName,
-          '대단원번호': QUIZ_META.mainNo,
-          '대단원명': QUIZ_META.mainName,
-          '중단원번호': QUIZ_META.subNo,
-          '중단원명': QUIZ_META.subName,
-          '섹션번호': QUIZ_META.sectionNo,
-          '섹션명': QUIZ_META.sectionName,
-          '총점': score,
-          '총문항수': total,
-          '풀이시간': fmtTime(elapsedSec)
-        }
-      })
-    });
-    if (res.ok) toast('✓ 점수가 저장되었습니다.');
-    else toast('저장 실패 — 네트워크를 확인해주세요.');
-  } catch(e) {
+  const payload = buildPayload(score, total);
+
+  const jobs = [saveToSheets(payload)];
+  if (DUAL_WRITE) jobs.push(saveToAirtable(payload));
+
+  const results = await Promise.allSettled(jobs);
+  const sheetsOk   = results[0].status === 'fulfilled';
+  const airtableOk = DUAL_WRITE ? results[1].status === 'fulfilled' : false;
+
+  if (!sheetsOk) console.warn('[Sheets 저장 실패]', results[0].reason);
+  if (DUAL_WRITE && !airtableOk) console.warn('[Airtable 저장 실패]', results[1].reason);
+
+  if (sheetsOk || airtableOk) {
+    toast('✓ 점수가 저장되었습니다.');
+  } else {
     toast('저장 실패 — 네트워크를 확인해주세요.');
   }
 }
